@@ -2,8 +2,6 @@ package com.podcasses.manager;
 
 import android.content.SharedPreferences;
 
-import com.podcasses.constant.SharedPreferencesConstant;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -12,6 +10,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SharedPreferencesManager {
+
+    private static final String IS_LOGGED_IN = "isLoggedIn";
+
+    private static final String USERNAME = "username";
+
+    private static final String PASSWORD = "password";
+
+    private static final String USER_ID = "userId";
 
     private SharedPreferences sharedPreferences;
 
@@ -22,10 +28,10 @@ public class SharedPreferencesManager {
 
     public void setLoginState(boolean loginState, String username, String password, String userId) {
         sharedPreferences.edit()
-                .putBoolean(SharedPreferencesConstant.IS_LOGGED_IN, loginState)
-                .putString(SharedPreferencesConstant.USERNAME, username)
-                .putString(SharedPreferencesConstant.PASSWORD, password)
-                .putString(SharedPreferencesConstant.USER_ID, userId)
+                .putBoolean(IS_LOGGED_IN, loginState)
+                .putString(USERNAME, username)
+                .putString(PASSWORD, password)
+                .putString(USER_ID, userId)
                 .apply();
     }
 
@@ -34,7 +40,7 @@ public class SharedPreferencesManager {
     }
 
     public boolean isLoggedIn() {
-        return sharedPreferences.getBoolean(SharedPreferencesConstant.IS_LOGGED_IN, false);
+        return sharedPreferences.getBoolean(IS_LOGGED_IN, false);
     }
 
     public void remove(String key) {
@@ -43,10 +49,10 @@ public class SharedPreferencesManager {
 
     public void clearLoginState() {
         sharedPreferences.edit()
-                .remove(SharedPreferencesConstant.IS_LOGGED_IN)
-                .remove(SharedPreferencesConstant.USERNAME)
-                .remove(SharedPreferencesConstant.PASSWORD)
-                .remove(SharedPreferencesConstant.USER_ID)
+                .remove(IS_LOGGED_IN)
+                .remove(USERNAME)
+                .remove(PASSWORD)
+                .remove(USER_ID)
                 .apply();
     }
 
