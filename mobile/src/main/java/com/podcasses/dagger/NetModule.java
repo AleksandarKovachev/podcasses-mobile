@@ -8,9 +8,13 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.viewmodel.ViewModelFactory;
 
 import javax.inject.Singleton;
 
+import androidx.lifecycle.ViewModelProvider;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -70,6 +74,24 @@ public class NetModule {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         return retrofit;
+    }
+
+    @Provides
+    @Singleton
+    ApiCallInterface provideApiCallInterface(Retrofit retrofit) {
+        return retrofit.create(ApiCallInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    MainDataRepository provideMainDataRepository(ApiCallInterface apiCallInterface) {
+        return new MainDataRepository(apiCallInterface);
+    }
+
+    @Provides
+    @Singleton
+    ViewModelProvider.Factory provideViewModelFactory(MainDataRepository repository) {
+        return new ViewModelFactory(repository);
     }
 
 }

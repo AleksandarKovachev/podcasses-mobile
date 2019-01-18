@@ -1,4 +1,4 @@
-package com.podcasses.view.main;
+package com.podcasses.view;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;

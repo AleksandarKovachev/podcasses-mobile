@@ -2,7 +2,7 @@ package com.podcasses.dagger;
 
 import android.app.Application;
 
-import com.podcasses.constant.ApiUrl;
+import com.podcasses.retrofit.ApiCallInterface;
 
 /**
  * Created by aleksandar.kovachev.
@@ -17,7 +17,7 @@ public class BaseApplication extends Application {
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
-                .netModule(new NetModule(ApiUrl.BASE_URL))
+                .netModule(new NetModule(ApiCallInterface.BASE_URL))
                 .build();
     }
 

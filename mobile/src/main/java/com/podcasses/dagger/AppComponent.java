@@ -1,7 +1,8 @@
 package com.podcasses.dagger;
 
-import com.podcasses.view.login.LoginActivity;
-import com.podcasses.view.main.MainActivity;
+import com.podcasses.view.AccountFragment;
+import com.podcasses.view.LoginActivity;
+import com.podcasses.view.MainActivity;
 
 import javax.inject.Singleton;
 
@@ -17,5 +18,7 @@ public interface AppComponent {
     void inject(MainActivity activity);
 
     void inject(LoginActivity activity);
+
+    void inject(AccountFragment fragment);
 
 }

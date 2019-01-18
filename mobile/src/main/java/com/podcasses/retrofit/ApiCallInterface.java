@@ -1,9 +1,8 @@
 package com.podcasses.retrofit;
 
 import com.google.gson.JsonObject;
-import com.podcasses.constant.ApiUrl;
 
-import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
@@ -12,7 +11,9 @@ import retrofit2.http.Path;
  */
 public interface ApiCallInterface {
 
-    @GET(ApiUrl.ACCOUNT)
-    Observable<JsonObject> account(@Path("username") String username);
+    String BASE_URL = "http://192.168.0.103:9090";
+
+    @GET("/account/{username}")
+    Call<JsonObject> account(@Path("username") String username);
 
 }
