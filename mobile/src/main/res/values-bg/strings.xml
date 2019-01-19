@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Podcasses</string>
+
+    <string name="title_home">Начало</string>
+    <string name="title_search">Търси</string>
+    <string name="title_account">Акаунт</string>
+</resources>
