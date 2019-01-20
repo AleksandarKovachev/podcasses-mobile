@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_upload"
+        android:icon="@drawable/ic_headset_white"
+        android:title="@string/title_upload"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search_white"
+        android:title="@string/title_search"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/navigation_account"
+        android:icon="@drawable/ic_person_white"
+        android:title="@string/title_account"
+        app:showAsAction="always" />
+
+</menu>
