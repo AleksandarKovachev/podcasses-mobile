@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="extra_large_offset">40dp</dimen>
+    <dimen name="large_offset">30dp</dimen>
+    <dimen name="medium_offset">20dp</dimen>
+    <dimen name="small_offset">15dp</dimen>
+    <dimen name="extra_small_offset">10dp</dimen>
+
+    <dimen name="large_text_size">30sp</dimen>
+    <dimen name="medium_text_size">25sp</dimen>
+    <dimen name="small_text_size">20sp</dimen>
+    <dimen name="extra_small_text_size">17sp</dimen>
+
+</resources>

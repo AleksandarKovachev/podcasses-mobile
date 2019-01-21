@@ -7,11 +7,13 @@ import android.preference.PreferenceManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.AuthenticationCallInterface;
+import com.podcasses.retrofit.interceptor.BasicAuthInterceptor;
 import com.podcasses.viewmodel.ViewModelFactory;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import androidx.lifecycle.ViewModelProvider;
@@ -30,8 +32,11 @@ public class NetModule {
 
     private String baseUrl;
 
-    public NetModule(String baseUrl) {
+    private String authenticationUrl;
+
+    public NetModule(String baseUrl, String authenticationUrl) {
         this.baseUrl = baseUrl;
+        this.authenticationUrl = authenticationUrl;
     }
 
     @Provides
@@ -59,27 +64,50 @@ public class NetModule {
     @Provides
     @Singleton
     OkHttpClient provideOkHttpClient(Cache cache) {
-        OkHttpClient.Builder client = new OkHttpClient.Builder();
-        client.cache(cache);
-        return client.build();
+        return new OkHttpClient.Builder().cache(cache).build();
     }
 
     @Provides
     @Singleton
     Retrofit provideRetrofit(Gson gson, OkHttpClient okHttpClient) {
-        Retrofit retrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
                 .client(okHttpClient)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        return retrofit;
     }
 
     @Provides
     @Singleton
     ApiCallInterface provideApiCallInterface(Retrofit retrofit) {
         return retrofit.create(ApiCallInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    @Named("authenticationOkHttp")
+    OkHttpClient provideAuthenticationOkHttpClient(Cache cache) {
+        return new OkHttpClient.Builder()
+                .addInterceptor(
+                        new BasicAuthInterceptor(AuthenticationCallInterface.CLIENT_ID, AuthenticationCallInterface.CLIENT_SECRET))
+                .cache(cache).build();
+    }
+
+    @Provides
+    @Singleton
+    @Named("authenticationRetrofit")
+    Retrofit provideAuthenticationRetrofit(Gson gson, @Named("authenticationOkHttp") OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl(authenticationUrl)
+                .client(okHttpClient)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    AuthenticationCallInterface provideAuthenticationCallInterface(@Named("authenticationRetrofit") Retrofit retrofit) {
+        return retrofit.create(AuthenticationCallInterface.class);
     }
 
     @Provides

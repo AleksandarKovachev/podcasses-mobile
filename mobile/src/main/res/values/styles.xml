@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="DarkAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="DarkAppTheme" parent="Theme.MaterialComponents">
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

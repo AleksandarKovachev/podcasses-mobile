@@ -2,8 +2,8 @@ package com.podcasses.retrofit.util;
 
 import com.google.gson.JsonElement;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.podcasses.retrofit.util.Status.ERROR;
 import static com.podcasses.retrofit.util.Status.LOADING;

@@ -4,8 +4,8 @@ import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import io.reactivex.annotations.NonNull;
 
 /**
  * Created by aleksandar.kovachev.

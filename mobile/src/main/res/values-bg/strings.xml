@@ -1,7 +1,23 @@
 <resources>
     <string name="app_name">Podcasses</string>
+    <string name="account_type">com.podcasses</string>
 
     <string name="title_home">Начало</string>
+    <string name="title_trending">Популярни</string>
+    <string name="title_notifications">Известия</string>
+
+    <string name="title_upload">Качи</string>
     <string name="title_search">Търси</string>
     <string name="title_account">Акаунт</string>
+
+    <string name="username_input">Потребителско име</string>
+    <string name="password_input">Парола</string>
+    <string name="email_input">Имейл</string>
+    <string name="login_with_facebook">Вход с Facebook</string>
+    <string name="login_with_google">Вход с Google</string>
+    <string name="login_input">Вход</string>
+    <string name="or_text">или</string>
+    <string name="forgot_password">Забравена парола?</string>
+    <string name="register">Регистрация</string>
+
 </resources>
