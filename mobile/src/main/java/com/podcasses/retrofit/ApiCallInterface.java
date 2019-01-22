@@ -11,7 +11,7 @@ import retrofit2.http.Path;
  */
 public interface ApiCallInterface {
 
-    String BASE_URL = "http://192.168.0.103:9090";
+    String BASE_URL = "http://192.168.0.102:9090";
 
     @GET("/account/{username}")
     Call<JsonObject> account(@Path("username") String username);

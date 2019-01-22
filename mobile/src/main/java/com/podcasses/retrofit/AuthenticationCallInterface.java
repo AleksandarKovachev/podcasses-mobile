@@ -12,28 +12,19 @@ import retrofit2.http.POST;
  */
 public interface AuthenticationCallInterface {
 
-    String BASE_URL = "http://192.168.0.103:8080/auth/realms/podcast/protocol/openid-connect/";
+    String BASE_URL = "http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/";
 
     String ACCESS_TOKEN_GRANT_TYPE = "password";
 
-    String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+    String CLIENT_ID = "android-app";
 
-    String CLIENT_ID = "web-app";
-
-    String CLIENT_SECRET = "eafc3ccc-8390-4999-b84d-23cb76b4776e";
+    String CLIENT_SECRET = "3d541700-0250-424f-8b19-53c883f841ab";
 
     @POST("token")
     @FormUrlEncoded
     Call<KeycloakToken> grantNewAccessToken(
             @Field("username") String username,
             @Field("password") String password,
-            @Field("grant_type") String grantType
-    );
-
-    @POST("token")
-    @FormUrlEncoded
-    Call<KeycloakToken> refreshAccessToken(
-            @Field("refresh_token") String refreshToken,
             @Field("grant_type") String grantType
     );
 

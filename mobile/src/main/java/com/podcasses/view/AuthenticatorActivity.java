@@ -25,15 +25,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.accounts.AccountManager.KEY_ERROR_MESSAGE;
+import static com.podcasses.authentication.AccountAuthenticator.ACCOUNT_TYPE;
+import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
 /**
  * Created by aleksandar.kovachev.
  */
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
-
-    public static final String AUTH_TOKEN_TYPE = "AUTH_TOKEN_TYPE";
-
-    public static final String ACCOUNT_TYPE = "com.podcasses";
 
     @Inject
     AuthenticationCallInterface authenticationCall;

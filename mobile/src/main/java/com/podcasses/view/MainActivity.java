@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 getSupportActionBar().setHomeButtonEnabled(false);
             }
-            
+
             Fragment selectedFragment = null;
             switch (menuItem.getItemId()) {
                 case R.id.navigation_home:

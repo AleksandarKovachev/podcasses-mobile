@@ -22,7 +22,9 @@ import static android.accounts.AccountManager.KEY_BOOLEAN_RESULT;
  */
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
-    private static final String AUTH_TOKEN_TYPE = "Full access";
+    public static final String AUTH_TOKEN_TYPE = "AUTH_TOKEN_TYPE";
+
+    public static final String ACCOUNT_TYPE = "com.podcasses";
 
     private Context context;
     private AuthenticationCallInterface authenticationCall;
@@ -39,7 +41,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         Bundle bundle = new Bundle();
         Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-        intent.putExtra(AuthenticatorActivity.AUTH_TOKEN_TYPE, authTokenType);
+        intent.putExtra(AUTH_TOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -77,7 +79,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-        intent.putExtra(AuthenticatorActivity.AUTH_TOKEN_TYPE, authTokenType);
+        intent.putExtra(AUTH_TOKEN_TYPE, authTokenType);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
 
