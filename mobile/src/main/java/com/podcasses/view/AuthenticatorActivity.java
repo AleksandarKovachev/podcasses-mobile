@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
@@ -24,7 +23,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.accounts.AccountManager.KEY_ERROR_MESSAGE;
 import static com.podcasses.authentication.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
@@ -63,18 +61,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             @Override
             public void onResponse(Call<KeycloakToken> call, Response<KeycloakToken> response) {
                 if (response.body() != null) {
-                    Toast.makeText(getBaseContext(), response.body().getAccessToken(), Toast.LENGTH_SHORT).show();
                     Account account = addOrFindAccount(binder.username.getText().toString(), binder.password.getText().toString());
                     accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, response.body().getAccessToken());
                     finishAccountAdd(intent, binder.username.getText().toString(), response.body().getAccessToken(), response.body().getRefreshToken());
-                } else {
-                    Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<KeycloakToken> call, Throwable t) {
-                Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
                 Log.e(AuthenticatorActivity.class.getName(), "onFailure", t);
             }
         });

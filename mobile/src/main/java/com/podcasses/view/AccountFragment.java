@@ -14,6 +14,7 @@ import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.retrofit.util.ConnectivityUtil;
 import com.podcasses.retrofit.util.LoadingUtil;
+import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 
@@ -22,13 +23,13 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountFragment extends Fragment {
+public class AccountFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -49,6 +50,9 @@ public class AccountFragment extends Fragment {
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
+        LiveData<String> token = isAuthenticated();
+        token.observe(this, s -> Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show());
+
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
 
         progressDialog = LoadingUtil.getProgressDialog(getContext(), "Loading...");
@@ -63,7 +67,7 @@ public class AccountFragment extends Fragment {
     }
 
 
-    private void consumeResponse(ApiResponse apiResponse) {
+    private void consumeResponse(@NonNull ApiResponse apiResponse) {
         switch (apiResponse.status) {
             case LOADING:
                 progressDialog.show();

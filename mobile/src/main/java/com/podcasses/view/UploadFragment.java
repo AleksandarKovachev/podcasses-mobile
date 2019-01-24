@@ -7,9 +7,8 @@ import android.view.ViewGroup;
 
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
-import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.databinding.FragmentUploadBinding;
-import com.podcasses.viewmodel.SearchViewModel;
+import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 
@@ -18,13 +17,12 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class UploadFragment extends Fragment {
+public class UploadFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
