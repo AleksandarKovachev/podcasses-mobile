@@ -1,8 +1,6 @@
 package com.podcasses.dagger;
 
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -37,12 +35,6 @@ public class NetModule {
     public NetModule(String baseUrl, String authenticationUrl) {
         this.baseUrl = baseUrl;
         this.authenticationUrl = authenticationUrl;
-    }
-
-    @Provides
-    @Singleton
-    SharedPreferences providesSharedPreferences(Application application) {
-        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
     @Provides
@@ -112,8 +104,8 @@ public class NetModule {
 
     @Provides
     @Singleton
-    MainDataRepository provideMainDataRepository(ApiCallInterface apiCallInterface) {
-        return new MainDataRepository(apiCallInterface);
+    MainDataRepository provideMainDataRepository(ApiCallInterface apiCallInterface, Application application) {
+        return new MainDataRepository(apiCallInterface, application);
     }
 
     @Provides

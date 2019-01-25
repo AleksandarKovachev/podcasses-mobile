@@ -16,7 +16,7 @@ public class AccountViewModel extends BaseViewModel {
         super(repository);
     }
 
-    public LiveData<ApiResponse> accountResponse(@NonNull String username) {
+    public LiveData<ApiResponse> account(@NonNull String username) {
         return repository.getAccount(username);
     }
 

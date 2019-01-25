@@ -62,12 +62,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
+    // Circle image
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+
     // JWT
     implementation 'com.auth0.android:jwtdecode:1.2.0'
-
-    // Lombok
-    implementation 'org.projectlombok:lombok:1.18.4'
-    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'

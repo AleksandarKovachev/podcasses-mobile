@@ -1,19 +1,20 @@
 package com.podcasses.view;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.JWT;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.podcasses.R;
+import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
+import com.podcasses.model.entity.Account;
 import com.podcasses.retrofit.util.ApiResponse;
-import com.podcasses.retrofit.util.ConnectivityUtil;
-import com.podcasses.retrofit.util.LoadingUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -34,9 +35,12 @@ public class AccountFragment extends BaseFragment {
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private AccountViewModel accountViewModel;
+    @Inject
+    Gson gson;
 
-    private ProgressDialog progressDialog;
+    private Account account = new Account();
+
+    private AccountViewModel accountViewModel;
 
     public static AccountFragment newInstance() {
         return new AccountFragment();
@@ -47,20 +51,18 @@ public class AccountFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         FragmentAccountBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
+        binder.setLifecycleOwner(this);
+        binder.setAccount(account);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
-        LiveData<String> token = isAuthenticated();
-        token.observe(this, s -> Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show());
-
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
 
-        progressDialog = LoadingUtil.getProgressDialog(getContext(), "Loading...");
-
-        binder.button.setOnClickListener(v -> {
-            if (ConnectivityUtil.checkInternetConnection(getContext())) {
-                accountViewModel.accountResponse("drage503").observe(this, this::consumeResponse);
-            }
+        LiveData<String> token = isAuthenticated();
+        token.observe(this, s -> {
+            JWT jwt = new JWT(s);
+            LiveData<ApiResponse> apiResponse = accountViewModel.account(jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString());
+            apiResponse.observe(this, this::consumeResponse);
         });
 
         return binder.getRoot();
@@ -70,14 +72,11 @@ public class AccountFragment extends BaseFragment {
     private void consumeResponse(@NonNull ApiResponse apiResponse) {
         switch (apiResponse.status) {
             case LOADING:
-                progressDialog.show();
                 break;
             case SUCCESS:
-                progressDialog.dismiss();
                 renderSuccessResponse(apiResponse.data);
                 break;
             case ERROR:
-                progressDialog.dismiss();
                 Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -87,9 +86,7 @@ public class AccountFragment extends BaseFragment {
 
     private void renderSuccessResponse(JsonElement response) {
         if (!response.isJsonNull()) {
-            Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "error response", Toast.LENGTH_SHORT).show();
+            account.consume(gson.fromJson(response, Account.class));
         }
     }
 

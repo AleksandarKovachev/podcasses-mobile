@@ -19,4 +19,6 @@
     <string name="or_text">or</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="register">Register</string>
+
+    <string name="subscribe">Subscribe</string>
 </resources>
