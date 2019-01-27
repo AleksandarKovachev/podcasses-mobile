@@ -18,7 +18,7 @@ public class BaseApplication extends Application {
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
-                .netModule(new NetModule(ApiCallInterface.BASE_URL, AuthenticationCallInterface.BASE_URL))
+                .netModule(new NetModule(ApiCallInterface.API_GATEWAY_URL, AuthenticationCallInterface.KEYCLOAK_URL))
                 .build();
     }
 

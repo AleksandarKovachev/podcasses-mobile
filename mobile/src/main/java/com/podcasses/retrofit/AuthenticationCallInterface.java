@@ -1,5 +1,6 @@
 package com.podcasses.retrofit;
 
+import com.podcasses.BuildConfig;
 import com.podcasses.authentication.KeycloakToken;
 
 import retrofit2.Call;
@@ -12,7 +13,7 @@ import retrofit2.http.POST;
  */
 public interface AuthenticationCallInterface {
 
-    String BASE_URL = "http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/";
+    String KEYCLOAK_URL = BuildConfig.KEYCLOAK_URL;
 
     String ACCESS_TOKEN_GRANT_TYPE = "password";
 

@@ -1,12 +1,9 @@
 package com.podcasses.model.entity;
 
-import androidx.databinding.BaseObservable;
-import androidx.databinding.Bindable;
-
 /**
  * Created by aleksandar.kovachev.
  */
-public class Account extends BaseObservable {
+public class Account {
 
     private String username;
 
@@ -22,7 +19,6 @@ public class Account extends BaseObservable {
 
     private int emailVerified;
 
-    @Bindable
     public String getUsername() {
         return username;
     }
@@ -47,7 +43,6 @@ public class Account extends BaseObservable {
         this.keycloakId = keycloakId;
     }
 
-    @Bindable
     public String getEmail() {
         return email;
     }
@@ -56,7 +51,6 @@ public class Account extends BaseObservable {
         this.email = email;
     }
 
-    @Bindable
     public String getFirstName() {
         return firstName;
     }
@@ -65,7 +59,6 @@ public class Account extends BaseObservable {
         this.firstName = firstName;
     }
 
-    @Bindable
     public String getLastName() {
         return lastName;
     }
@@ -80,17 +73,6 @@ public class Account extends BaseObservable {
 
     public void setEmailVerified(int emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public void consume(Account account) {
-        this.username = account.getUsername();
-        this.password = account.password;
-        this.email = account.getEmail();
-        this.keycloakId = account.keycloakId;
-        this.firstName = account.firstName;
-        this.lastName = account.lastName;
-        this.emailVerified = account.emailVerified;
-        notifyChange();
     }
 
 }

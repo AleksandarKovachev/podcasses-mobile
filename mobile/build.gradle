@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.podcasses"
@@ -10,27 +12,45 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     dataBinding {
         enabled true
     }
-
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
+        }
+
+        qa {
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
+        }
+
+        dev {
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
+        }
+
+        debug {
+            debuggable true
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
         }
     }
-
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

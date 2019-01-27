@@ -1,6 +1,7 @@
 package com.podcasses.retrofit;
 
 import com.google.gson.JsonObject;
+import com.podcasses.BuildConfig;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -11,7 +12,7 @@ import retrofit2.http.Path;
  */
 public interface ApiCallInterface {
 
-    String BASE_URL = "http://192.168.0.102:9090";
+    String API_GATEWAY_URL = BuildConfig.API_GATEWAY_URL;
 
     @GET("/account/{username}")
     Call<JsonObject> account(@Path("username") String username);

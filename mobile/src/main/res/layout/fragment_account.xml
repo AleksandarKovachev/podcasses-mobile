@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="account"
-            type="com.podcasses.model.entity.Account" />
+            name="viewModel"
+            type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,6 +22,7 @@
             android:layout_height="200dp"
             android:scaleType="fitXY"
             android:src="@drawable/cover_placeholder"
+            app:imageUrl="@{viewModel.coverImage}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -31,6 +32,7 @@
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:src="@drawable/profile_placeholder"
+            app:imageUrl="@{viewModel.profileImage}"
             app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -64,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:padding="@dimen/small_offset"
-                    android:text="@{account.username}"
+                    android:text="@{viewModel.account.username}"
                     android:textColor="@color/colorPrimaryText"
                     android:textSize="@dimen/small_text_size"
                     app:layout_constraintLeft_toLeftOf="parent"
