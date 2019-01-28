@@ -1,7 +1,5 @@
 package com.podcasses.retrofit.util;
 
-import com.google.gson.JsonElement;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,12 +15,12 @@ public class ApiResponse {
     public final Status status;
 
     @Nullable
-    public final JsonElement data;
+    public final Object data;
 
     @Nullable
     public final Throwable error;
 
-    private ApiResponse(Status status, @Nullable JsonElement data, @Nullable Throwable error) {
+    private ApiResponse(Status status, @Nullable Object data, @Nullable Throwable error) {
         this.status = status;
         this.data = data;
         this.error = error;
@@ -32,7 +30,7 @@ public class ApiResponse {
         return new ApiResponse(LOADING, null, null);
     }
 
-    public static ApiResponse success(@NonNull JsonElement data) {
+    public static ApiResponse success(@NonNull Object data) {
         return new ApiResponse(SUCCESS, data, null);
     }
 

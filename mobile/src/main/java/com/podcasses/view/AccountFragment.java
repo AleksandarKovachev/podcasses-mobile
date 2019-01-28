@@ -1,10 +1,10 @@
 package com.podcasses.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.retrofit.util.ApiResponse;
-import com.podcasses.util.GlideUtil;
+import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -57,14 +57,21 @@ public class AccountFragment extends BaseFragment {
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binder.setViewModel(accountViewModel);
 
-
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
             JWT jwt = new JWT(s);
-            accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + GlideUtil.PROFILE_IMAGE + jwt.getSubject());
-            accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + GlideUtil.COVER_IMAGE + jwt.getSubject());
-            LiveData<ApiResponse> apiResponse = accountViewModel.account(jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString());
-            apiResponse.observe(this, this::consumeResponse);
+            String username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
+            String accountId = jwt.getSubject();
+
+            accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+            accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+
+            LiveData<ApiResponse> accountResponse = accountViewModel.account(username);
+
+            LiveData<ApiResponse> accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
+
+            accountResponse.observe(this, this::consumeResponse);
+            accountSubscribesResponse.observe(this, this::consumeResponse);
         });
 
         return binder.getRoot();
@@ -76,10 +83,14 @@ public class AccountFragment extends BaseFragment {
             case LOADING:
                 break;
             case SUCCESS:
-                accountViewModel.setAccount(gson.fromJson(apiResponse.data, Account.class));
+                if (apiResponse.data instanceof Account) {
+                    accountViewModel.setAccount((Account) apiResponse.data);
+                } else {
+                    accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
+                }
                 break;
             case ERROR:
-                Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+                Log.e(getTag(), "consumeResponse: ", apiResponse.error);
                 break;
             default:
                 break;

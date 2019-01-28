@@ -17,6 +17,8 @@ public class Account {
 
     private String lastName;
 
+    private String description;
+
     private int emailVerified;
 
     public String getUsername() {
@@ -65,6 +67,14 @@ public class Account {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getEmailVerified() {

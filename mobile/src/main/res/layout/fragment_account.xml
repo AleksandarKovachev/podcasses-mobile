@@ -31,12 +31,36 @@
             android:id="@+id/account_profile_image"
             android:layout_width="128dp"
             android:layout_height="128dp"
+            android:layout_marginStart="@dimen/medium_offset"
             android:src="@drawable/profile_placeholder"
             app:imageUrl="@{viewModel.profileImage}"
             app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/small_offset"
+            android:text="@{viewModel.account.username}"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/small_text_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/subscribe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/medium_offset"
+            android:layout_marginBottom="@dimen/medium_offset"
+            android:text="@{viewModel.accountSubscribes}"
+            app:icon="@drawable/ic_record_voice_over"
+            app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView"
@@ -51,7 +75,6 @@
             android:focusable="true"
             app:cardCornerRadius="10dp"
             app:cardUseCompatPadding="true"
-            app:contentPaddingBottom="@dimen/extra_large_offset"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/account_profile_image">
@@ -61,43 +84,27 @@
                 android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="@dimen/small_offset"
-                    android:text="@{viewModel.account.username}"
-                    android:textColor="@color/colorPrimaryText"
-                    android:textSize="@dimen/small_text_size"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/subscribe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/medium_offset"
-                    android:text="@string/subscribe"
-                    app:icon="@drawable/ic_record_voice_over"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/username" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/subscribes"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/medium_offset"
                     android:layout_marginEnd="@dimen/medium_offset"
-                    app:layout_constraintBottom_toBottomOf="@id/subscribe"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/subscribe"
-                    app:layout_constraintTop_toBottomOf="@id/username" />
-
+                    android:padding="@dimen/medium_offset"
+                    android:text="@{viewModel.account.description}"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/podcast_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/materialCardView"
+            app:setAdapter="@{viewModel.podcastAdapter}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

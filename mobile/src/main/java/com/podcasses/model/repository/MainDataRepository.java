@@ -2,7 +2,7 @@ package com.podcasses.model.repository;
 
 import android.app.Application;
 
-import com.google.gson.JsonObject;
+import com.podcasses.model.entity.Account;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.retrofit.util.ConnectivityUtil;
@@ -21,7 +21,9 @@ public class MainDataRepository {
 
     private NetworkDataSource networkDataSource;
 
-    private MutableLiveData<ApiResponse> userResponse = new MutableLiveData<>();
+    private MutableLiveData<ApiResponse> accountResponse = new MutableLiveData<>();
+
+    private MutableLiveData<ApiResponse> accountSubscrbiesResponse = new MutableLiveData<>();
 
     private Application context;
 
@@ -32,22 +34,42 @@ public class MainDataRepository {
     }
 
     public LiveData<ApiResponse> getAccount(String username) {
-        userResponse.setValue(ApiResponse.loading());
+        accountResponse.setValue(ApiResponse.loading());
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getUserAccount(username, new IDataCallback<JsonObject>() {
+            networkDataSource.getUserAccount(username, new IDataCallback<Account>() {
                 @Override
-                public void onSuccess(JsonObject data) {
-                    userResponse.setValue(ApiResponse.success(data));
+                public void onSuccess(Account data) {
+                    accountResponse.setValue(ApiResponse.success(data));
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
-                    userResponse.setValue(ApiResponse.error(error));
+                    accountResponse.setValue(ApiResponse.error(error));
                 }
             });
         }
 
-        return userResponse;
+        return accountResponse;
+    }
+
+    public LiveData<ApiResponse> getAccountSubscribes(String accountId) {
+        accountSubscrbiesResponse.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    accountSubscrbiesResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountSubscrbiesResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        }
+
+        return accountSubscrbiesResponse;
     }
 }
