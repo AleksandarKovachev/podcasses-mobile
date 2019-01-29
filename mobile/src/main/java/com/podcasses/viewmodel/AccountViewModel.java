@@ -1,10 +1,17 @@
 package com.podcasses.viewmodel;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.BR;
+import com.podcasses.BuildConfig;
+import com.podcasses.R;
+import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.util.ApiResponse;
-import com.podcasses.viewmodel.base.BaseViewModel;
+import com.podcasses.viewmodel.base.BasePodcastViewModel;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
@@ -14,25 +21,36 @@ import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import static com.podcasses.util.CustomViewBindings.PODCAST_IMAGE;
+
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountViewModel extends BaseViewModel implements Observable {
+public class AccountViewModel extends BasePodcastViewModel implements Observable {
 
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
-
     private MutableLiveData<Account> account = new MutableLiveData<>();
-
     private ObservableField<String> profileImage = new ObservableField<>();
-
     private ObservableField<String> coverImage = new ObservableField<>();
+    private ObservableField<String> accountSubscribes = new ObservableField<>();
+    private MutableLiveData<List<Podcast>> podcasts = new MutableLiveData<>();
+    private MutableLiveData<Podcast> selected = new MutableLiveData<>();
+    private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
 
-    public AccountViewModel(MainDataRepository repository) {
+    AccountViewModel(MainDataRepository repository) {
         super(repository);
     }
 
     public LiveData<ApiResponse> account(@NonNull String username) {
         return repository.getAccount(username);
+    }
+
+    public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
+        return repository.getAccountSubscribes(accountId);
+    }
+
+    public LiveData<ApiResponse> podcasts(@NonNull String podcast) {
+        return repository.getPodcasts(podcast);
     }
 
     @Override
@@ -60,6 +78,48 @@ public class AccountViewModel extends BaseViewModel implements Observable {
         return coverImage.get();
     }
 
+    @Bindable
+    public String getAccountSubscribes() {
+        return accountSubscribes.get();
+    }
+
+    public PodcastAdapter getPodcastAdapter() {
+        return podcastAdapter;
+    }
+
+    public void setPodcastsInAdapter(List<Podcast> podcasts) {
+        this.podcasts.setValue(podcasts);
+        this.podcastAdapter.setPodcasts(podcasts);
+        this.podcastAdapter.notifyDataSetChanged();
+    }
+
+    public MutableLiveData<Podcast> getSelected() {
+        return selected;
+    }
+
+    @Override
+    public void onItemClick(Integer index) {
+        Podcast podcast = podcasts.getValue().get(index);
+        selected.setValue(podcast);
+    }
+
+    @Override
+    public Podcast getPodcastAt(Integer index) {
+        if (podcasts.getValue() != null && index != null && podcasts.getValue().size() > index) {
+            return podcasts.getValue().get(index);
+        }
+        return null;
+    }
+
+    @Override
+    public String podcastImage(Integer position) {
+        if (!CollectionUtils.isEmpty(podcasts.getValue())) {
+            Podcast podcast = podcasts.getValue().get(position);
+            return BuildConfig.API_GATEWAY_URL.concat(PODCAST_IMAGE).concat(podcast.getId());
+        }
+        return null;
+    }
+
     public void setProfileImage(String url) {
         profileImage.set(url);
         notifyPropertyChanged(BR.profileImage);
@@ -73,6 +133,11 @@ public class AccountViewModel extends BaseViewModel implements Observable {
     public void setAccount(Account account) {
         this.account.setValue(account);
         notifyPropertyChanged(BR.account);
+    }
+
+    public void setAccountSubscribes(String accountSubscribes) {
+        this.accountSubscribes.set(accountSubscribes);
+        notifyPropertyChanged(BR.accountSubscribes);
     }
 
     private void notifyPropertyChanged(int fieldId) {

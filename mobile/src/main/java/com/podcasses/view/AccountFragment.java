@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.gson.Gson;
@@ -14,11 +15,14 @@ import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -57,6 +61,9 @@ public class AccountFragment extends BaseFragment {
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binder.setViewModel(accountViewModel);
 
+        LiveData<ApiResponse> podcasts = accountViewModel.podcasts("test");
+        podcasts.observe(this, this::consumeResponse);
+
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
             JWT jwt = new JWT(s);
@@ -74,9 +81,10 @@ public class AccountFragment extends BaseFragment {
             accountSubscribesResponse.observe(this, this::consumeResponse);
         });
 
+        setListClick();
+
         return binder.getRoot();
     }
-
 
     private void consumeResponse(@NonNull ApiResponse apiResponse) {
         switch (apiResponse.status) {
@@ -85,8 +93,10 @@ public class AccountFragment extends BaseFragment {
             case SUCCESS:
                 if (apiResponse.data instanceof Account) {
                     accountViewModel.setAccount((Account) apiResponse.data);
-                } else {
+                } else if (apiResponse.data instanceof Integer) {
                     accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
+                } else if (apiResponse.data instanceof List) {
+                    accountViewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
                 }
                 break;
             case ERROR:
@@ -95,6 +105,14 @@ public class AccountFragment extends BaseFragment {
             default:
                 break;
         }
+    }
+
+    private void setListClick() {
+        accountViewModel.getSelected().observe(this, podcast -> {
+            if (podcast != null) {
+                Toast.makeText(getContext(), podcast.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

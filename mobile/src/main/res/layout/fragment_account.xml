@@ -10,101 +10,104 @@
             type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.AccountFragment">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/account_cover_image"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/cover_placeholder"
-            app:imageUrl="@{viewModel.coverImage}"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/account_profile_image"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_marginStart="@dimen/medium_offset"
-            android:src="@drawable/profile_placeholder"
-            app:imageUrl="@{viewModel.profileImage}"
-            app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/small_offset"
-            android:text="@{viewModel.account.username}"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="@dimen/small_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/subscribe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/medium_offset"
-            android:layout_marginBottom="@dimen/medium_offset"
-            android:text="@{viewModel.accountSubscribes}"
-            app:icon="@drawable/ic_record_voice_over"
-            app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-            app:layout_constraintRight_toRightOf="parent" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialCardView"
-            style="@style/Widget.MaterialComponents.CardView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/medium_offset"
-            android:layout_marginTop="@dimen/medium_offset"
-            android:layout_marginRight="@dimen/medium_offset"
-            android:layout_marginBottom="@dimen/medium_offset"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardCornerRadius="10dp"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_profile_image">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/account_cover_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                app:imageUrl="@{viewModel.coverImage}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/description"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/account_profile_image"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="@dimen/medium_offset"
+                app:imageUrl="@{viewModel.profileImage}"
+                app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/small_offset"
+                android:text="@{viewModel.account.username}"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/small_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/subscribe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:layout_marginBottom="@dimen/medium_offset"
+                android:text="@{viewModel.accountSubscribes}"
+                app:icon="@drawable/ic_record_voice_over"
+                app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView"
+                style="@style/Widget.MaterialComponents.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/medium_offset"
+                android:layout_marginTop="@dimen/medium_offset"
+                android:layout_marginRight="@dimen/medium_offset"
+                android:layout_marginBottom="@dimen/medium_offset"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="10dp"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_profile_image">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/medium_offset"
-                    android:layout_marginEnd="@dimen/medium_offset"
-                    android:padding="@dimen/medium_offset"
-                    android:text="@{viewModel.account.description}"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="wrap_content">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/medium_offset"
+                        android:layout_marginEnd="@dimen/medium_offset"
+                        android:padding="@dimen/medium_offset"
+                        android:text="@{viewModel.account.description}"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-        </com.google.android.material.card.MaterialCardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/podcast_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/materialCardView"
-            app:setAdapter="@{viewModel.podcastAdapter}" />
+            </com.google.android.material.card.MaterialCardView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/podcast_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/materialCardView"
+                app:setAdapter="@{viewModel.podcastAdapter}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

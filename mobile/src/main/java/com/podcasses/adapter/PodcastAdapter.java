@@ -71,7 +71,6 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         }
 
         void bind(BasePodcastViewModel viewModel, Integer position) {
-            viewModel.getPodcastImage(position);
             binding.setVariable(BR.position, position);
             binding.setVariable(BR.viewModel, viewModel);
             binding.executePendingBindings();

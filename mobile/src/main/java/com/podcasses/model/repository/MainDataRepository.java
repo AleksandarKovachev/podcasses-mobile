@@ -3,9 +3,13 @@ package com.podcasses.model.repository;
 import android.app.Application;
 
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.retrofit.util.ConnectivityUtil;
+
+import java.net.ConnectException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -23,7 +27,9 @@ public class MainDataRepository {
 
     private MutableLiveData<ApiResponse> accountResponse = new MutableLiveData<>();
 
-    private MutableLiveData<ApiResponse> accountSubscrbiesResponse = new MutableLiveData<>();
+    private MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>();
+
+    private MutableLiveData<ApiResponse> podcastResponse = new MutableLiveData<>();
 
     private Application context;
 
@@ -48,28 +54,55 @@ public class MainDataRepository {
                     accountResponse.setValue(ApiResponse.error(error));
                 }
             });
+        } else {
+            accountResponse.setValue(ApiResponse.error(new ConnectException()));
         }
 
         return accountResponse;
     }
 
     public LiveData<ApiResponse> getAccountSubscribes(String accountId) {
-        accountSubscrbiesResponse.setValue(ApiResponse.loading());
+        accountSubscribesResponse.setValue(ApiResponse.loading());
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
                 @Override
                 public void onSuccess(Integer data) {
-                    accountSubscrbiesResponse.setValue(ApiResponse.success(data));
+                    accountSubscribesResponse.setValue(ApiResponse.success(data));
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
-                    accountSubscrbiesResponse.setValue(ApiResponse.error(error));
+                    accountSubscribesResponse.setValue(ApiResponse.error(error));
                 }
             });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
 
-        return accountSubscrbiesResponse;
+        return accountSubscribesResponse;
     }
+
+    public LiveData<ApiResponse> getPodcasts(String podcast) {
+        podcastResponse.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getPodcasts(podcast, new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data) {
+                    podcastResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    podcastResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            podcastResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return podcastResponse;
+    }
+
 }

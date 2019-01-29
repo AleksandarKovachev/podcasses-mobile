@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="position"
+            type="java.lang.Integer" />
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.base.BasePodcastViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_offset"
+        android:onClick="@{() -> viewModel.onItemClick(position)}">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/podcast_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:scaleType="fitCenter"
+            app:imageUrl='@{viewModel.podcastImage(position)}'
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/podcast_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_offset"
+            android:text="@{viewModel.getPodcastAt(position).title}"
+            app:layout_constraintEnd_toStartOf="@id/play_button"
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/podcast_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.getPodcastAt(position).createdTimestamp.toString()}"
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/play_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:src="@drawable/ic_play"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
