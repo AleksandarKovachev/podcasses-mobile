@@ -1,5 +1,7 @@
 package com.podcasses.model.entity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -40,6 +42,8 @@ public class Podcast {
     private int dislikes;
 
     private int downloads;
+
+    private String duration;
 
     private String podcastFileName;
 
@@ -185,6 +189,14 @@ public class Podcast {
         this.downloads = downloads;
     }
 
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
     public String getPodcastFileName() {
         return podcastFileName;
     }
@@ -216,4 +228,10 @@ public class Podcast {
     public void setUpdatedTimestamp(Date updatedTimestamp) {
         this.updatedTimestamp = updatedTimestamp;
     }
+
+    public String getPodcastDate() {
+        DateFormat formatter = SimpleDateFormat.getDateInstance();
+        return formatter.format(getCreatedTimestamp());
+    }
+
 }

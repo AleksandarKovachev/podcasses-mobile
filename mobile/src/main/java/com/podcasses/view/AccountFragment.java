@@ -61,9 +61,6 @@ public class AccountFragment extends BaseFragment {
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binder.setViewModel(accountViewModel);
 
-        LiveData<ApiResponse> podcasts = accountViewModel.podcasts("test");
-        podcasts.observe(this, this::consumeResponse);
-
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
             JWT jwt = new JWT(s);
@@ -76,6 +73,9 @@ public class AccountFragment extends BaseFragment {
             LiveData<ApiResponse> accountResponse = accountViewModel.account(username);
 
             LiveData<ApiResponse> accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
+
+            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(null, null, accountId);
+            podcasts.observe(this, this::consumeResponse);
 
             accountResponse.observe(this, this::consumeResponse);
             accountSubscribesResponse.observe(this, this::consumeResponse);

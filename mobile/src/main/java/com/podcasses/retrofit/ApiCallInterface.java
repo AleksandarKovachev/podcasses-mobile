@@ -25,6 +25,9 @@ public interface ApiCallInterface {
     Call<Integer> accountSubscribes(@Path("accountId") String accountId);
 
     @GET("/podcast")
-    Call<List<Podcast>> podcast(@Query(value = "podcast", encoded = true) String podcast);
+    Call<List<Podcast>> podcast(
+            @Query(value = "podcast", encoded = true) String podcast,
+            @Query(value = "podcastId", encoded = true) String podcastId,
+            @Query(value = "userId", encoded = true) String userId);
 
 }

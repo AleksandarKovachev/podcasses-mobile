@@ -49,8 +49,8 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
         return repository.getAccountSubscribes(accountId);
     }
 
-    public LiveData<ApiResponse> podcasts(@NonNull String podcast) {
-        return repository.getPodcasts(podcast);
+    public LiveData<ApiResponse> podcasts(String podcast, String podcastId, String userId) {
+        return repository.getPodcasts(podcast, podcastId, userId);
     }
 
     @Override

@@ -83,11 +83,11 @@ public class MainDataRepository {
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> getPodcasts(String podcast) {
+    public LiveData<ApiResponse> getPodcasts(String podcast, String podcastId, String userId) {
         podcastResponse.setValue(ApiResponse.loading());
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getPodcasts(podcast, new IDataCallback<List<Podcast>>() {
+            networkDataSource.getPodcasts(podcast, podcastId, userId, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));

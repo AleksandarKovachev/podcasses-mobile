@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.podcasses.BR;
+import com.podcasses.R;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
@@ -50,10 +51,6 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        return getLayoutIdForPosition(position);
-    }
-
-    private int getLayoutIdForPosition(int position) {
         return layoutId;
     }
 
@@ -71,6 +68,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         }
 
         void bind(BasePodcastViewModel viewModel, Integer position) {
+            binding.getRoot().findViewById(R.id.podcast_title).setSelected(true);
             binding.setVariable(BR.position, position);
             binding.setVariable(BR.viewModel, viewModel);
             binding.executePendingBindings();
