@@ -2,6 +2,7 @@ package com.podcasses.model.repository;
 
 import android.app.Application;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,22 +23,23 @@ import androidx.lifecycle.MutableLiveData;
  */
 public class MainDataRepository {
 
-    private LocalDataSource localDataSource;
+    private final Application context;
 
-    private NetworkDataSource networkDataSource;
+    private final LocalDataSource localDataSource;
+    private final NetworkDataSource networkDataSource;
 
-    private MutableLiveData<ApiResponse> accountResponse = new MutableLiveData<>();
-
-    private MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>();
-
-    private MutableLiveData<ApiResponse> podcastResponse = new MutableLiveData<>();
-
-    private Application context;
+    private final MutableLiveData<ApiResponse> accountResponse;
+    private final MutableLiveData<ApiResponse> accountSubscribesResponse;
+    private final MutableLiveData<ApiResponse> podcastResponse;
 
     @Inject
-    public MainDataRepository(ApiCallInterface apiCallInterface, Application context) {
-        networkDataSource = new NetworkDataSource(apiCallInterface);
+    public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
+        this.localDataSource = localDataSource;
+        networkDataSource = new NetworkDataSource(apiCallInterface);
+        accountResponse = new MutableLiveData<>();
+        accountSubscribesResponse = new MutableLiveData<>();
+        podcastResponse = new MutableLiveData<>();
     }
 
     public LiveData<ApiResponse> getAccount(String username) {
@@ -86,11 +89,29 @@ public class MainDataRepository {
     public LiveData<ApiResponse> getPodcasts(String podcast, String podcastId, String userId) {
         podcastResponse.setValue(ApiResponse.loading());
 
+        localDataSource.getUserPodcasts(userId).observe(
+                (LifecycleOwner) context,
+                podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
+
+        return podcastResponse;
+    }
+
+    private void onPodcastsFetched(List<Podcast> podcasts, String podcast, String podcastId, String userId) {
+        if (CollectionUtils.isEmpty(podcasts)) {
+            fetchPodcastsOnNewtork(podcast, podcastId, userId);
+        } else {
+            podcastResponse.setValue(ApiResponse.success(podcasts));
+        }
+    }
+
+    private void fetchPodcastsOnNewtork(String podcast, String podcastId, String userId) {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getPodcasts(podcast, podcastId, userId, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));
+
+                    localDataSource.insertPodcasts(data.toArray(new Podcast[data.size()]));
                 }
 
                 @Override
@@ -101,8 +122,6 @@ public class MainDataRepository {
         } else {
             podcastResponse.setValue(ApiResponse.error(new ConnectException()));
         }
-
-        return podcastResponse;
     }
 
 }

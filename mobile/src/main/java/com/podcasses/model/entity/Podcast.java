@@ -1,14 +1,24 @@
 package com.podcasses.model.entity;
 
+import com.podcasses.database.DateConverter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 /**
  * Created by aleksandar.kovachev.
  */
+@Entity
 public class Podcast {
 
+    @NonNull
+    @PrimaryKey
     private String id;
 
     private String title;
@@ -49,8 +59,10 @@ public class Podcast {
 
     private String imageFileName;
 
+    @TypeConverters({DateConverter.class})
     private Date createdTimestamp;
 
+    @TypeConverters({DateConverter.class})
     private Date updatedTimestamp;
 
     public String getId() {

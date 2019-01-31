@@ -1,10 +1,14 @@
 package com.podcasses.dagger;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.podcasses.database.AppDatabase;
+import com.podcasses.database.dao.PodcastDao;
+import com.podcasses.model.repository.LocalDataSource;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
@@ -15,6 +19,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -103,14 +108,36 @@ public class NetModule {
 
     @Provides
     @Singleton
-    MainDataRepository provideMainDataRepository(ApiCallInterface apiCallInterface, Application application) {
-        return new MainDataRepository(apiCallInterface, application);
+    MainDataRepository provideMainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application application) {
+        return new MainDataRepository(apiCallInterface, localDataSource, application);
     }
 
     @Provides
     @Singleton
     ViewModelProvider.Factory provideViewModelFactory(MainDataRepository repository) {
         return new ViewModelFactory(repository);
+    }
+
+    @Singleton
+    @Provides
+    public AppDatabase provideAppDatabase(Context context) {
+        return Room.databaseBuilder(context,
+                AppDatabase.class, AppDatabase.DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
+    }
+
+    @Singleton
+    @Provides
+    public LocalDataSource provideLocalDataSource(PodcastDao podcastDao) {
+        return new LocalDataSource(podcastDao);
+    }
+
+    @Singleton
+    @Provides
+    public PodcastDao providePodcastDao(AppDatabase appDatabase) {
+        return appDatabase.podcastDao();
     }
 
 }

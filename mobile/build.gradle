@@ -40,19 +40,19 @@ android {
         debug {
             debuggable true
             buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.104:9090"'
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.cardview:cardview:1.0.0'
 
@@ -63,11 +63,15 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha01'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha02'
 
-    //Android Jetpack
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha01'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.1.0-alpha01'
+    // Android Jetpack
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.1.0-alpha02'
+
+    // Room
+    implementation 'androidx.room:room-runtime:2.0.0'
+    annotationProcessor 'androidx.room:room-compiler:2.0.0'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
