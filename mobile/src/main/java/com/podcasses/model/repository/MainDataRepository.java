@@ -14,14 +14,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class MainDataRepository {
+public class MainDataRepository implements LifecycleOwner {
 
     private final Application context;
 
@@ -32,6 +35,8 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
 
+    private LifecycleRegistry lifecycleRegistry;
+
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
@@ -40,6 +45,9 @@ public class MainDataRepository {
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
+
+        lifecycleRegistry = new LifecycleRegistry(this);
+        lifecycleRegistry.setCurrentState(Lifecycle.State.CREATED);
     }
 
     public LiveData<ApiResponse> getAccount(String username) {
@@ -89,8 +97,9 @@ public class MainDataRepository {
     public LiveData<ApiResponse> getPodcasts(String podcast, String podcastId, String userId) {
         podcastResponse.setValue(ApiResponse.loading());
 
-        localDataSource.getUserPodcasts(userId).observe(
-                (LifecycleOwner) context,
+        lifecycleRegistry.setCurrentState(Lifecycle.State.STARTED);
+
+        localDataSource.getUserPodcasts(userId).observe(this,
                 podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
 
         return podcastResponse;
@@ -102,6 +111,8 @@ public class MainDataRepository {
         } else {
             podcastResponse.setValue(ApiResponse.success(podcasts));
         }
+
+        lifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
     }
 
     private void fetchPodcastsOnNewtork(String podcast, String podcastId, String userId) {
@@ -124,4 +135,9 @@ public class MainDataRepository {
         }
     }
 
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
+    }
 }

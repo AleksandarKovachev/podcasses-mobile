@@ -1,6 +1,5 @@
 package com.podcasses.dagger;
 
-import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.service.AccountAuthenticatorService;
 import com.podcasses.view.AccountFragment;
 import com.podcasses.view.AuthenticatorActivity;
@@ -35,8 +34,6 @@ public interface AppComponent {
     void inject(TrendingFragment fragment);
 
     void inject(NotificationsFragment fragment);
-
-    void inject(AccountAuthenticator authenticator);
 
     void inject(AuthenticatorActivity activity);
 

@@ -1,7 +1,6 @@
 package com.podcasses.dagger;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -118,10 +117,10 @@ public class NetModule {
         return new ViewModelFactory(repository);
     }
 
-    @Singleton
     @Provides
-    public AppDatabase provideAppDatabase(Context context) {
-        return Room.databaseBuilder(context,
+    @Singleton
+    AppDatabase provideAppDatabase(Application context) {
+        return Room.databaseBuilder(context.getApplicationContext(),
                 AppDatabase.class, AppDatabase.DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
@@ -130,13 +129,13 @@ public class NetModule {
 
     @Singleton
     @Provides
-    public LocalDataSource provideLocalDataSource(PodcastDao podcastDao) {
+    LocalDataSource provideLocalDataSource(PodcastDao podcastDao) {
         return new LocalDataSource(podcastDao);
     }
 
     @Singleton
     @Provides
-    public PodcastDao providePodcastDao(AppDatabase appDatabase) {
+    PodcastDao providePodcastDao(AppDatabase appDatabase) {
         return appDatabase.podcastDao();
     }
 
