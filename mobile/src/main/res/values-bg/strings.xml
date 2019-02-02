@@ -9,6 +9,7 @@
     <string name="title_upload">Качи</string>
     <string name="title_search">Търси</string>
     <string name="title_account">Акаунт</string>
+    <string name="title_dark_theme">Тъмна тема</string>
 
     <string name="username_input">Потребителско име</string>
     <string name="password_input">Парола</string>

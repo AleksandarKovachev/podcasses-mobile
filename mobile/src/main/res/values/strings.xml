@@ -9,6 +9,7 @@
     <string name="title_upload">Upload</string>
     <string name="title_search">Search</string>
     <string name="title_account">Account</string>
+    <string name="title_dark_theme">Dark theme</string>
 
     <string name="username_input">Username</string>
     <string name="password_input">Password</string>

@@ -7,4 +7,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LightAppTheme" parent="Theme.MaterialComponents.Light">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorPrimaryInverse">@android:color/white</item>
+    </style>
+
 </resources>

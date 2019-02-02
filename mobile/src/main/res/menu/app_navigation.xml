@@ -20,4 +20,9 @@
         android:title="@string/title_account"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/navigation_dark_theme"
+        android:checkable="true"
+        android:title="@string/title_dark_theme" />
+
 </menu>
