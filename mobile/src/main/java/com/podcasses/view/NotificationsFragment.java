@@ -29,8 +29,12 @@ public class NotificationsFragment extends BaseFragment {
 
     private NotificationsViewModel viewModel;
 
-    public static NotificationsFragment newInstance() {
-        return new NotificationsFragment();
+    static NotificationsFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        NotificationsFragment fragment = new NotificationsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable

@@ -7,9 +7,8 @@ import android.view.ViewGroup;
 
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
-import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.databinding.FragmentTrendingBinding;
-import com.podcasses.viewmodel.SearchViewModel;
+import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.TrendingViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 
@@ -31,8 +30,12 @@ public class TrendingFragment extends Fragment {
 
     private TrendingViewModel viewModel;
 
-    public static TrendingFragment newInstance() {
-        return new TrendingFragment();
+    static TrendingFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        TrendingFragment fragment = new TrendingFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable

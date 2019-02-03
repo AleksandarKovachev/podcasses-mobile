@@ -2,9 +2,10 @@ package com.podcasses.view.base;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.authentication.InvalidateToken;
@@ -12,6 +13,8 @@ import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.retrofit.util.ConnectivityUtil;
 import com.podcasses.view.AuthenticatorActivity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -24,7 +27,29 @@ import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
  */
 public class BaseFragment extends Fragment {
 
+    public static final String ARGS_INSTANCE = "com.podcasses.argsInstance";
+
+    protected FragmentNavigation fragmentNavigation;
+    protected int fragmentCount;
+
     private MutableLiveData<String> token = new MutableLiveData<>();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            fragmentCount = args.getInt(ARGS_INSTANCE);
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof FragmentNavigation) {
+            fragmentNavigation = (FragmentNavigation) context;
+        }
+    }
 
     protected LiveData<String> isAuthenticated() {
         AccountManager accountManager = AccountManager.get(getContext());
@@ -62,6 +87,10 @@ public class BaseFragment extends Fragment {
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
         intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
         startActivityForResult(intent, 22);
+    }
+
+    public interface FragmentNavigation {
+        void pushFragment(Fragment fragment);
     }
 
 }

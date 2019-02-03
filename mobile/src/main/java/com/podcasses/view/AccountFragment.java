@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.gson.Gson;
@@ -45,8 +44,12 @@ public class AccountFragment extends BaseFragment {
 
     private AccountViewModel accountViewModel;
 
-    public static AccountFragment newInstance() {
-        return new AccountFragment();
+    static AccountFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        AccountFragment fragment = new AccountFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -71,12 +74,10 @@ public class AccountFragment extends BaseFragment {
             accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
             LiveData<ApiResponse> accountResponse = accountViewModel.account(username);
-
             LiveData<ApiResponse> accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
+            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(this, null, null, accountId);
 
-            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(null, null, accountId);
             podcasts.observe(this, this::consumeResponse);
-
             accountResponse.observe(this, this::consumeResponse);
             accountSubscribesResponse.observe(this, this::consumeResponse);
         });
@@ -110,7 +111,8 @@ public class AccountFragment extends BaseFragment {
     private void setListClick() {
         accountViewModel.getSelected().observe(this, podcast -> {
             if (podcast != null) {
-                Toast.makeText(getContext(), podcast.getTitle(), Toast.LENGTH_SHORT).show();
+                fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1));
+                accountViewModel.getSelected().setValue(null);
             }
         });
     }

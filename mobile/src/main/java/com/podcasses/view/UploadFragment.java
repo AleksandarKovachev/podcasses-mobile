@@ -29,8 +29,12 @@ public class UploadFragment extends BaseFragment {
 
     private UploadViewModel viewModel;
 
-    public static UploadFragment newInstance() {
-        return new UploadFragment();
+    static UploadFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        UploadFragment fragment = new UploadFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable

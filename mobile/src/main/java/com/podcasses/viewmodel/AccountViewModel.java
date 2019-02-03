@@ -18,6 +18,7 @@ import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -49,8 +50,8 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
         return repository.getAccountSubscribes(accountId);
     }
 
-    public LiveData<ApiResponse> podcasts(String podcast, String podcastId, String userId) {
-        return repository.getPodcasts(podcast, podcastId, userId);
+    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId) {
+        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId);
     }
 
     @Override

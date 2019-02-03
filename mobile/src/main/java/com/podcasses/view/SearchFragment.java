@@ -9,6 +9,7 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
 import com.podcasses.databinding.FragmentSearchBinding;
+import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.HomeViewModel;
 import com.podcasses.viewmodel.SearchViewModel;
@@ -25,15 +26,19 @@ import androidx.lifecycle.ViewModelProviders;
 /**
  * Created by aleksandar.kovachev.
  */
-public class SearchFragment extends Fragment {
+public class SearchFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
 
     private SearchViewModel viewModel;
 
-    public static SearchFragment newInstance() {
-        return new SearchFragment();
+    static SearchFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        SearchFragment fragment = new SearchFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable

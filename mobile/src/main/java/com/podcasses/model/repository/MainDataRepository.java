@@ -14,17 +14,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class MainDataRepository implements LifecycleOwner {
+public class MainDataRepository {
 
     private final Application context;
 
@@ -35,8 +32,6 @@ public class MainDataRepository implements LifecycleOwner {
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
 
-    private LifecycleRegistry lifecycleRegistry;
-
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
@@ -45,9 +40,6 @@ public class MainDataRepository implements LifecycleOwner {
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
-
-        lifecycleRegistry = new LifecycleRegistry(this);
-        lifecycleRegistry.setCurrentState(Lifecycle.State.CREATED);
     }
 
     public LiveData<ApiResponse> getAccount(String username) {
@@ -94,12 +86,10 @@ public class MainDataRepository implements LifecycleOwner {
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> getPodcasts(String podcast, String podcastId, String userId) {
+    public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId) {
         podcastResponse.setValue(ApiResponse.loading());
 
-        lifecycleRegistry.setCurrentState(Lifecycle.State.STARTED);
-
-        localDataSource.getUserPodcasts(userId).observe(this,
+        localDataSource.getUserPodcasts(userId).observe(lifecycleOwner,
                 podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
 
         return podcastResponse;
@@ -111,8 +101,6 @@ public class MainDataRepository implements LifecycleOwner {
         } else {
             podcastResponse.setValue(ApiResponse.success(podcasts));
         }
-
-        lifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
     }
 
     private void fetchPodcastsOnNewtork(String podcast, String podcastId, String userId) {
@@ -135,9 +123,4 @@ public class MainDataRepository implements LifecycleOwner {
         }
     }
 
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycleRegistry;
-    }
 }

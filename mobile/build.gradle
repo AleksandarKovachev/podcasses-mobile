@@ -92,6 +92,9 @@ dependencies {
     // JWT
     implementation 'com.auth0.android:jwtdecode:1.2.0'
 
+    // FragNav
+    implementation 'com.ncapdevi:frag-nav:3.1.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
