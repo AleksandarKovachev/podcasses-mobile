@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.auth0.android.jwt.JWT;
-import com.google.gson.Gson;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
@@ -38,9 +37,6 @@ public class AccountFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
-
-    @Inject
-    Gson gson;
 
     private AccountViewModel accountViewModel;
 
@@ -111,7 +107,7 @@ public class AccountFragment extends BaseFragment {
     private void setListClick() {
         accountViewModel.getSelected().observe(this, podcast -> {
             if (podcast != null) {
-                fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1));
+                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId()));
                 accountViewModel.getSelected().setValue(null);
             }
         });

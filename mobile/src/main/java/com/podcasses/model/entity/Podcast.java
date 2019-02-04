@@ -1,5 +1,9 @@
 package com.podcasses.model.entity;
 
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
+
 import com.podcasses.database.DateConverter;
 
 import java.text.DateFormat;
@@ -244,6 +248,14 @@ public class Podcast {
     public String getPodcastDate() {
         DateFormat formatter = SimpleDateFormat.getDateInstance();
         return formatter.format(getCreatedTimestamp());
+    }
+
+    public Spanned getPodcastDescription() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT);
+        } else {
+            return Html.fromHtml(description);
+        }
     }
 
 }

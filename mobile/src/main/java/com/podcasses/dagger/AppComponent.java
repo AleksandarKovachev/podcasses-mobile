@@ -6,6 +6,7 @@ import com.podcasses.view.AuthenticatorActivity;
 import com.podcasses.view.HomeFragment;
 import com.podcasses.view.MainActivity;
 import com.podcasses.view.NotificationsFragment;
+import com.podcasses.view.PodcastFragment;
 import com.podcasses.view.SearchFragment;
 import com.podcasses.view.TrendingFragment;
 import com.podcasses.view.UploadFragment;
@@ -38,5 +39,7 @@ public interface AppComponent {
     void inject(AuthenticatorActivity activity);
 
     void inject(AccountAuthenticatorService service);
+
+    void inject(PodcastFragment fragment);
 
 }

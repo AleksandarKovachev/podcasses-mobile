@@ -20,6 +20,9 @@ public interface PodcastDao {
     @Query("SELECT * FROM podcast WHERE userId = (:userId)")
     LiveData<List<Podcast>> getUserPodcasts(String userId);
 
+    @Query("SELECT * FROM podcast WHERE id = (:podcastId)")
+    LiveData<Podcast> getPodcastById(String podcastId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Podcast... podcasts);
 

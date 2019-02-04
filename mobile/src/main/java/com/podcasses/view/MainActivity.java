@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, BaseFragment.FragmentNavigation, FragNavController.RootFragmentListener, FragNavController.TransactionListener {
 
@@ -54,12 +55,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragNavController.setTransactionListener(this);
 
         fragNavController.setDefaultTransactionOptions(
-                new FragNavTransactionOptions.Builder().customAnimations(
-                        R.anim.slide_in_from_right,
-                        R.anim.slide_out_to_left,
-                        R.anim.slide_in_from_left,
-                        R.anim.slide_out_to_right).build()
-        );
+                new FragNavTransactionOptions.Builder().transition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).build());
+
         fragNavController.setFragmentHideStrategy(FragNavController.DETACH_ON_NAVIGATE_HIDE_ON_SWITCH);
         fragNavController.setNavigationStrategy(new UniqueTabHistoryStrategy((i, fragNavTransactionOptions) -> {
             switch (i) {

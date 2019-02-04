@@ -25,6 +25,10 @@ public class LocalDataSource {
         return podcastDao.getUserPodcasts(userId);
     }
 
+    LiveData<Podcast> getPodcastById(String podcastId) {
+        return podcastDao.getPodcastById(podcastId);
+    }
+
     void insertPodcasts(Podcast... podcasts) {
         podcastDao.insertAll(podcasts);
     }

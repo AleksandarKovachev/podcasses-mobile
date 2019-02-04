@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.PodcastViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.AccountFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".view.AccountFragment">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/podcast_image"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:scaleType="fitXY"
+                app:imageUrl='@{viewModel.podcastImage}'
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/medium_offset"
+                android:text="@{viewModel.podcast.title}"
+                android:textSize="@dimen/medium_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_image" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_offset"
+                android:text="@{viewModel.podcast.podcastDate}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_offset"
+                android:text="@{viewModel.podcast.duration}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:minWidth="150dp"
+                android:minHeight="150dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/play_pause_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/like_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:padding="@dimen/medium_offset"
+                android:src="@drawable/ic_thumb_up"
+                app:layout_constraintBottom_toBottomOf="@id/play_button"
+                app:layout_constraintEnd_toStartOf="@id/play_button"
+                app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/dislike_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:padding="@dimen/medium_offset"
+                android:src="@drawable/ic_thumb_down"
+                app:layout_constraintBottom_toBottomOf="@id/play_button"
+                app:layout_constraintStart_toEndOf="@id/play_button"
+                app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/download_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:padding="@dimen/medium_offset"
+                android:src="@drawable/ic_file_download"
+                app:layout_constraintBottom_toBottomOf="@id/play_button"
+                app:layout_constraintEnd_toStartOf="@id/options_button"
+                app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/options_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:padding="@dimen/medium_offset"
+                android:src="@drawable/ic_more_options"
+                app:layout_constraintBottom_toBottomOf="@id/play_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_offset"
+                android:text="@{viewModel.podcast.podcastDescription}"
+                app:layout_constraintTop_toBottomOf="@id/play_button" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

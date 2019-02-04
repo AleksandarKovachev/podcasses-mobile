@@ -3,6 +3,7 @@ package com.podcasses.model.repository;
 import android.app.Application;
 
 import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -89,10 +90,23 @@ public class MainDataRepository {
     public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId) {
         podcastResponse.setValue(ApiResponse.loading());
 
-        localDataSource.getUserPodcasts(userId).observe(lifecycleOwner,
-                podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
+        if (!Strings.isEmptyOrWhitespace(userId)) {
+            localDataSource.getUserPodcasts(userId).observe(lifecycleOwner,
+                    podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
+        } else if (!Strings.isEmptyOrWhitespace(podcastId)) {
+            localDataSource.getPodcastById(podcastId).observe(lifecycleOwner,
+                    p -> onPodcastsFetched(p, podcast, podcastId, userId));
+        }
 
         return podcastResponse;
+    }
+
+    private void onPodcastsFetched(Podcast podcast, String podcastTitle, String podcastId, String userId) {
+        if (podcast == null) {
+            fetchPodcastsOnNewtork(podcastTitle, podcastId, userId);
+        } else {
+            podcastResponse.setValue(ApiResponse.success(podcast));
+        }
     }
 
     private void onPodcastsFetched(List<Podcast> podcasts, String podcast, String podcastId, String userId) {
