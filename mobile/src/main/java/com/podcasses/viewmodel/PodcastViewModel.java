@@ -1,5 +1,8 @@
 package com.podcasses.viewmodel;
 
+import android.view.View;
+
+import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
@@ -50,6 +53,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @Bindable
     public String getPodcastImage() {
         return podcastImage.get();
+    }
+
+    public void onPlayPauseButtonClick(View view) {
+        ((PlayPauseView) view).toggle();
     }
 
     public void setPodcast(Podcast podcast) {
