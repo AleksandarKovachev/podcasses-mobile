@@ -21,5 +21,8 @@
     <string name="forgot_password">Забравена парола?</string>
     <string name="register">Регистрация</string>
 
-    <string name="subscribe">Subscribe %1$s</string>
+    <string name="subscribe">Абониране %1$s</string>
+
+    <string name="no_internet_connection">Няма интернет достъп!</string>
+    <string name="could_not_fetch_data">Неуспешно извличане на данни!</string>
 </resources>

@@ -50,8 +50,8 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
         return repository.getAccountSubscribes(accountId);
     }
 
-    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId) {
-        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId);
+    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId, boolean isSwipedToRefresh) {
+        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isSwipedToRefresh);
     }
 
     @Override

@@ -31,8 +31,8 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         super(repository);
     }
 
-    public LiveData<ApiResponse> podcast(@NonNull LifecycleOwner lifecycleOwner, @NonNull String podcastId) {
-        return repository.getPodcasts(lifecycleOwner, null, podcastId, null);
+    public LiveData<ApiResponse> podcast(@NonNull LifecycleOwner lifecycleOwner, @NonNull String podcastId, boolean isSwipedToRefresh) {
+        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, isSwipedToRefresh);
     }
 
     @Override

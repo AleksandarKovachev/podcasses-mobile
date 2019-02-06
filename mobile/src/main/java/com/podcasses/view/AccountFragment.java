@@ -71,7 +71,7 @@ public class AccountFragment extends BaseFragment {
 
             LiveData<ApiResponse> accountResponse = accountViewModel.account(username);
             LiveData<ApiResponse> accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
-            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(this, null, null, accountId);
+            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(this, null, null, accountId, false);
 
             podcasts.observe(this, this::consumeResponse);
             accountResponse.observe(this, this::consumeResponse);

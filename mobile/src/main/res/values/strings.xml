@@ -22,4 +22,7 @@
     <string name="register">Register</string>
 
     <string name="subscribe">Subscribe %1$s</string>
+
+    <string name="no_internet_connection">No internet connection!</string>
+    <string name="could_not_fetch_data">Could not fetch data!</string>
 </resources>
