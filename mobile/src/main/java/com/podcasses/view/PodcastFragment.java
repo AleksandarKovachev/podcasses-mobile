@@ -1,11 +1,9 @@
 package com.podcasses.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
@@ -20,7 +18,6 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import java.net.ConnectException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,7 +25,6 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -88,33 +84,24 @@ public class PodcastFragment extends BaseFragment {
                 break;
             case SUCCESS:
                 response.removeObservers(this);
+                if (refreshLayout != null) {
+                    refreshLayout.finishRefresh();
+                }
                 if (apiResponse.data instanceof Podcast) {
                     viewModel.setPodcast((Podcast) apiResponse.data);
                 } else {
                     viewModel.setPodcast(((List<Podcast>) apiResponse.data).get(0));
                 }
-                if (refreshLayout != null) {
-                    refreshLayout.finishRefresh();
-                }
                 break;
             case ERROR:
                 response.removeObservers(this);
-                logError(apiResponse);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
+                logError(apiResponse);
                 break;
             default:
                 break;
-        }
-    }
-
-    private void logError(@NonNull ApiResponse apiResponse) {
-        Log.e(getTag(), "consumeResponse: ", apiResponse.error);
-        if (apiResponse.error instanceof ConnectException) {
-            Toast.makeText(getContext(), getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), getString(R.string.could_not_fetch_data), Toast.LENGTH_SHORT).show();
         }
     }
 

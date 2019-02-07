@@ -1,7 +1,6 @@
 package com.podcasses.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
 
 import java.util.List;
 
@@ -40,6 +40,13 @@ public class AccountFragment extends BaseFragment {
 
     private AccountViewModel accountViewModel;
 
+    private LiveData<ApiResponse> accountResponse;
+    private LiveData<ApiResponse> accountSubscribesResponse;
+    private LiveData<ApiResponse> podcasts;
+
+    private String username;
+    private String accountId;
+
     static AccountFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
@@ -60,22 +67,18 @@ public class AccountFragment extends BaseFragment {
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binder.setViewModel(accountViewModel);
 
+        binder.refreshLayout.setOnRefreshListener(this::getAccountData);
+
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
             JWT jwt = new JWT(s);
-            String username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
-            String accountId = jwt.getSubject();
+            username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
+            accountId = jwt.getSubject();
 
             accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
             accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
-            LiveData<ApiResponse> accountResponse = accountViewModel.account(username);
-            LiveData<ApiResponse> accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
-            LiveData<ApiResponse> podcasts = accountViewModel.podcasts(this, null, null, accountId, false);
-
-            podcasts.observe(this, this::consumeResponse);
-            accountResponse.observe(this, this::consumeResponse);
-            accountSubscribesResponse.observe(this, this::consumeResponse);
+            getAccountData(null);
         });
 
         setListClick();
@@ -83,11 +86,25 @@ public class AccountFragment extends BaseFragment {
         return binder.getRoot();
     }
 
-    private void consumeResponse(@NonNull ApiResponse apiResponse) {
+    private void getAccountData(RefreshLayout refreshLayout) {
+        accountResponse = accountViewModel.account(username);
+        accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
+        podcasts = accountViewModel.podcasts(this, null, null, accountId, refreshLayout != null);
+
+        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
+        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
+    }
+
+    private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
         switch (apiResponse.status) {
             case LOADING:
                 break;
             case SUCCESS:
+                liveData.removeObservers(this);
+                if (refreshLayout != null) {
+                    refreshLayout.finishRefresh();
+                }
                 if (apiResponse.data instanceof Account) {
                     accountViewModel.setAccount((Account) apiResponse.data);
                 } else if (apiResponse.data instanceof Integer) {
@@ -97,7 +114,11 @@ public class AccountFragment extends BaseFragment {
                 }
                 break;
             case ERROR:
-                Log.e(getTag(), "consumeResponse: ", apiResponse.error);
+                liveData.removeObservers(this);
+                if (refreshLayout != null) {
+                    refreshLayout.finishRefresh();
+                }
+                logError(apiResponse);
                 break;
             default:
                 break;

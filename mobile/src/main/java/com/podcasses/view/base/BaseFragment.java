@@ -6,12 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.authentication.InvalidateToken;
 import com.podcasses.authentication.KeycloakToken;
+import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.retrofit.util.ConnectivityUtil;
 import com.podcasses.view.AuthenticatorActivity;
+
+import java.net.ConnectException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,6 +96,15 @@ public class BaseFragment extends Fragment {
 
     public interface FragmentNavigation {
         void pushFragment(Fragment fragment);
+    }
+
+    protected void logError(@NonNull ApiResponse apiResponse) {
+        Log.e(getTag(), "consumeResponse: ", apiResponse.error);
+        if (apiResponse.error instanceof ConnectException) {
+            Toast.makeText(getContext(), getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), getString(R.string.could_not_fetch_data), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
