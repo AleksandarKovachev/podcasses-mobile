@@ -10,6 +10,7 @@
     <string name="title_search">Търси</string>
     <string name="title_account">Акаунт</string>
     <string name="title_dark_theme">Тъмна тема</string>
+    <string name="title_logout">Изход</string>
 
     <string name="username_input">Потребителско име</string>
     <string name="password_input">Парола</string>
@@ -25,4 +26,8 @@
 
     <string name="no_internet_connection">Няма интернет достъп!</string>
     <string name="could_not_fetch_data">Неуспешно извличане на данни!</string>
+
+    <string name="successful_logout">Вие успешно излязохте от системата!</string>
+    <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
+
 </resources>

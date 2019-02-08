@@ -23,6 +23,12 @@
     <item
         android:id="@+id/navigation_dark_theme"
         android:checkable="true"
-        android:title="@string/title_dark_theme" />
+        android:title="@string/title_dark_theme"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/navigation_logout"
+        android:title="@string/title_logout"
+        app:showAsAction="never" />
 
 </menu>

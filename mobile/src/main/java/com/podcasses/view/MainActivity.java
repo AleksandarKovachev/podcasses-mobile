@@ -1,19 +1,24 @@
 package com.podcasses.view;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.UniqueTabHistoryStrategy;
 import com.podcasses.R;
+import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.MainActivityBinding;
 import com.podcasses.manager.SharedPreferencesManager;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.view.base.BaseFragment;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +31,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
+import static com.podcasses.authentication.AccountAuthenticator.REFRESH_TOKEN;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, BaseFragment.FragmentNavigation, FragNavController.RootFragmentListener, FragNavController.TransactionListener {
 
@@ -39,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
+
+    @Inject
+    AuthenticationCallInterface authenticationCall;
 
     private FragNavController fragNavController;
 
@@ -138,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 sharedPreferencesManager.setIsDarkTheme(item.isChecked());
                 this.recreate();
                 break;
+            case R.id.navigation_logout:
+                handleLogout();
+                break;
             default:
                 return fragNavController.popFragment();
         }
@@ -203,6 +220,34 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (!fragNavController.popFragment()) {
             super.onBackPressed();
         }
+    }
+
+    private void handleLogout() {
+        AccountManager accountManager = AccountManager.get(this);
+        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        if (accounts.length != 0) {
+            String authToken = accountManager.peekAuthToken(accounts[0], AUTH_TOKEN_TYPE);
+            String refreshToken = accountManager.getUserData(accounts[0], REFRESH_TOKEN);
+            authenticationCall.logout(AuthenticationCallInterface.TOKEN_TYPE + authToken,
+                    AuthenticationCallInterface.CLIENT_ID,
+                    AuthenticationCallInterface.CLIENT_SECRET,
+                    refreshToken).enqueue(logoutRequest(accounts[0], accountManager));
+        }
+    }
+
+    private Callback<Void> logoutRequest(Account account, AccountManager accountManager) {
+        return new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                accountManager.removeAccount(account, null, null);
+                Toast.makeText(MainActivity.this, getString(R.string.successful_logout), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, getString(R.string.error_response), Toast.LENGTH_SHORT).show();
+            }
+        };
     }
 
 }

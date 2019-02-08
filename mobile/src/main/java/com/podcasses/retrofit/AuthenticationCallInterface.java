@@ -6,6 +6,7 @@ import com.podcasses.authentication.KeycloakToken;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 /**
@@ -21,6 +22,8 @@ public interface AuthenticationCallInterface {
 
     String CLIENT_SECRET = "3d541700-0250-424f-8b19-53c883f841ab";
 
+    String TOKEN_TYPE = "Bearer ";
+
     @POST("token")
     @FormUrlEncoded
     Call<KeycloakToken> grantNewAccessToken(
@@ -31,9 +34,10 @@ public interface AuthenticationCallInterface {
 
     @POST("logout")
     @FormUrlEncoded
-    Call<Void> logout(
-            @Field("client_id") String clientId,
-            @Field("refresh_token") String refreshToken
+    Call<Void> logout(@Header("Authorization") String auth,
+                      @Field("client_id") String clientId,
+                      @Field("client_secret") String clientSecret,
+                      @Field("refresh_token") String refreshToken
     );
 
 }

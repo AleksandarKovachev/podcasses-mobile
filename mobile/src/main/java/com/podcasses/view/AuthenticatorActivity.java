@@ -25,6 +25,7 @@ import retrofit2.Response;
 
 import static com.podcasses.authentication.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
+import static com.podcasses.authentication.AccountAuthenticator.REFRESH_TOKEN;
 
 /**
  * Created by aleksandar.kovachev.
@@ -61,7 +62,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             @Override
             public void onResponse(Call<KeycloakToken> call, Response<KeycloakToken> response) {
                 if (response.body() != null) {
-                    Account account = addOrFindAccount(binder.username.getText().toString(), binder.password.getText().toString());
+                    Account account = addOrFindAccount(binder.username.getText().toString(), binder.password.getText().toString(), response.body().getRefreshToken());
                     accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, response.body().getAccessToken());
                     finishAccountAdd(intent, binder.username.getText().toString(), response.body().getAccessToken(), response.body().getRefreshToken());
                 }
@@ -74,7 +75,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         });
     };
 
-    private Account addOrFindAccount(String username, String password) {
+    private Account addOrFindAccount(String username, String password, String refreshToken) {
         Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
         Account account = accounts.length != 0 ? accounts[0] :
                 new Account(username, ACCOUNT_TYPE);
@@ -84,6 +85,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         } else {
             accountManager.setPassword(accounts[0], password);
         }
+        accountManager.setUserData(account, REFRESH_TOKEN, refreshToken);
         return account;
     }
 

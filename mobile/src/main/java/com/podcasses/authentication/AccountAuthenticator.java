@@ -26,6 +26,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     public static final String ACCOUNT_TYPE = "com.podcasses";
 
+    public static final String REFRESH_TOKEN = "refreshToken";
+
     private Context context;
     private AuthenticationCallInterface authenticationCall;
 
