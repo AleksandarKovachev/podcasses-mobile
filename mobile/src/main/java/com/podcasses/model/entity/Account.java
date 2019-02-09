@@ -1,15 +1,22 @@
 package com.podcasses.model.entity;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 /**
  * Created by aleksandar.kovachev.
  */
+@Entity
 public class Account {
+
+    @NonNull
+    @PrimaryKey
+    private String keycloakId;
 
     private String username;
 
     private String password;
-
-    private String keycloakId;
 
     private String email;
 
@@ -20,6 +27,8 @@ public class Account {
     private String description;
 
     private int emailVerified;
+
+    private Integer subscribes;
 
     public String getUsername() {
         return username;
@@ -83,6 +92,14 @@ public class Account {
 
     public void setEmailVerified(int emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public Integer getSubscribes() {
+        return subscribes;
+    }
+
+    public void setSubscribes(Integer subscribes) {
+        this.subscribes = subscribes;
     }
 
 }

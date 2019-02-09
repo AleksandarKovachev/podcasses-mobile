@@ -42,12 +42,12 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
         super(repository);
     }
 
-    public LiveData<ApiResponse> account(@NonNull String username) {
-        return repository.getAccount(username);
+    public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, @NonNull String username, boolean isSwipedToRefresh) {
+        return repository.getAccount(lifecycleOwner, username, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
-        return repository.getAccountSubscribes(accountId);
+    public LiveData<ApiResponse> accountSubscribes(LifecycleOwner lifecycleOwner, @NonNull String accountId, boolean isSwipedToRefresh) {
+        return repository.getAccountSubscribes(lifecycleOwner, accountId, isSwipedToRefresh);
     }
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId, boolean isSwipedToRefresh) {

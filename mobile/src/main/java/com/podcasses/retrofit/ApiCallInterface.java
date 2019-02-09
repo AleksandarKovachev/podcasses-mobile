@@ -6,8 +6,13 @@ import com.podcasses.model.entity.Podcast;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -29,5 +34,11 @@ public interface ApiCallInterface {
             @Query(value = "podcast", encoded = true) String podcast,
             @Query(value = "podcastId", encoded = true) String podcastId,
             @Query(value = "userId", encoded = true) String userId);
+
+    @POST
+    @Multipart
+    Call<Void> postPodcast(
+            @Header("Authorization") String auth,
+            @Part MultipartBody.Part podcast);
 
 }

@@ -33,6 +33,10 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
 
+    private LiveData<Podcast> podcastLiveData;
+    private LiveData<List<Podcast>> podcastsLiveData;
+    private LiveData<Account> accountLiveData;
+
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
@@ -43,45 +47,31 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
     }
 
-    public LiveData<ApiResponse> getAccount(String username) {
+    public LiveData<ApiResponse> getAccount(LifecycleOwner lifecycleOwner, String username, boolean isSwipedToRefresh) {
         accountResponse.setValue(ApiResponse.loading());
 
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getUserAccount(username, new IDataCallback<Account>() {
-                @Override
-                public void onSuccess(Account data) {
-                    accountResponse.setValue(ApiResponse.success(data));
-                }
-
-                @Override
-                public void onFailure(Throwable error) {
-                    accountResponse.setValue(ApiResponse.error(error));
-                }
-            });
+        if (isSwipedToRefresh) {
+            fetchAccountOnNetwork(username);
+        } else if (accountLiveData != null && accountLiveData.getValue() != null) {
+            accountResponse.setValue(ApiResponse.success(accountLiveData.getValue()));
         } else {
-            accountResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountLiveData = localDataSource.getAccountByUsername(username);
+            accountLiveData.observe(lifecycleOwner, account -> onAccountFetched(lifecycleOwner, account, username));
         }
 
         return accountResponse;
     }
 
-    public LiveData<ApiResponse> getAccountSubscribes(String accountId) {
+    public LiveData<ApiResponse> getAccountSubscribes(LifecycleOwner lifecycleOwner, String accountId, boolean isSwipedToRefresh) {
         accountSubscribesResponse.setValue(ApiResponse.loading());
 
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
-                @Override
-                public void onSuccess(Integer data) {
-                    accountSubscribesResponse.setValue(ApiResponse.success(data));
-                }
-
-                @Override
-                public void onFailure(Throwable error) {
-                    accountSubscribesResponse.setValue(ApiResponse.error(error));
-                }
-            });
+        if (isSwipedToRefresh) {
+            fetchAccountSubscribesOnNetwork(accountId);
+        } else if (accountLiveData != null && accountLiveData.getValue() != null && accountLiveData.getValue().getSubscribes() != null) {
+            accountSubscribesResponse.setValue(ApiResponse.success(accountLiveData.getValue().getSubscribes()));
         } else {
-            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountLiveData = localDataSource.getAccountById(accountId);
+            accountLiveData.observe(lifecycleOwner, account -> onAccountSubscribesFetched(lifecycleOwner, account, accountId));
         }
 
         return accountSubscribesResponse;
@@ -94,18 +84,19 @@ public class MainDataRepository {
             fetchPodcastsOnNetwork(podcast, podcastId, userId);
         } else {
             if (!Strings.isEmptyOrWhitespace(userId)) {
-                localDataSource.getUserPodcasts(userId).observe(lifecycleOwner,
-                        podcasts -> onPodcastsFetched(podcasts, podcast, podcastId, userId));
+                podcastsLiveData = localDataSource.getUserPodcasts(userId);
+                podcastsLiveData.observe(lifecycleOwner, podcasts -> onPodcastsFetched(lifecycleOwner, podcasts, podcast, podcastId, userId));
             } else if (!Strings.isEmptyOrWhitespace(podcastId)) {
-                localDataSource.getPodcastById(podcastId).observe(lifecycleOwner,
-                        p -> onPodcastsFetched(p, podcast, podcastId, userId));
+                podcastLiveData = localDataSource.getPodcastById(podcastId);
+                podcastLiveData.observe(lifecycleOwner, p -> onPodcastsFetched(lifecycleOwner, p, podcast, podcastId, userId));
             }
         }
 
         return podcastResponse;
     }
 
-    private void onPodcastsFetched(Podcast podcast, String podcastTitle, String podcastId, String userId) {
+    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId) {
+        podcastLiveData.removeObservers(lifecycleOwner);
         if (podcast == null) {
             fetchPodcastsOnNetwork(podcastTitle, podcastId, userId);
         } else {
@@ -113,11 +104,50 @@ public class MainDataRepository {
         }
     }
 
-    private void onPodcastsFetched(List<Podcast> podcasts, String podcast, String podcastId, String userId) {
+    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, List<Podcast> podcasts, String podcast, String podcastId, String userId) {
+        podcastsLiveData.removeObservers(lifecycleOwner);
         if (CollectionUtils.isEmpty(podcasts)) {
             fetchPodcastsOnNetwork(podcast, podcastId, userId);
         } else {
             podcastResponse.setValue(ApiResponse.success(podcasts));
+        }
+    }
+
+    private void onAccountFetched(LifecycleOwner lifecycleOwner, Account account, String username) {
+        accountLiveData.removeObservers(lifecycleOwner);
+        if (account != null) {
+            accountResponse.setValue(ApiResponse.success(account));
+        } else {
+            fetchAccountOnNetwork(username);
+        }
+    }
+
+    private void onAccountSubscribesFetched(LifecycleOwner lifecycleOwner, Account account, String accountId) {
+        accountLiveData.removeObservers(lifecycleOwner);
+        if (account != null && account.getSubscribes() != null) {
+            accountResponse.setValue(ApiResponse.success(account.getSubscribes()));
+        } else {
+            fetchAccountSubscribesOnNetwork(accountId);
+        }
+    }
+
+    private void fetchAccountOnNetwork(String username) {
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getUserAccount(username, new IDataCallback<Account>() {
+                @Override
+                public void onSuccess(Account data) {
+                    accountResponse.setValue(ApiResponse.success(data));
+
+                    localDataSource.insertAccount(data);
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountResponse.setValue(ApiResponse.error(new ConnectException()));
         }
     }
 
@@ -138,6 +168,26 @@ public class MainDataRepository {
             });
         } else {
             podcastResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+    }
+
+    private void fetchAccountSubscribesOnNetwork(String accountId) {
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    accountSubscribesResponse.setValue(ApiResponse.success(data));
+
+                    localDataSource.updateAccountSubscribes(data, accountId);
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountSubscribesResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
     }
 

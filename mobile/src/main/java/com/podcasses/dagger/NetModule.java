@@ -7,6 +7,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.podcasses.database.AppDatabase;
+import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.repository.LocalDataSource;
@@ -137,14 +138,20 @@ public class NetModule {
 
     @Singleton
     @Provides
-    LocalDataSource provideLocalDataSource(PodcastDao podcastDao) {
-        return new LocalDataSource(podcastDao);
+    LocalDataSource provideLocalDataSource(PodcastDao podcastDao, AccountDao accountDao) {
+        return new LocalDataSource(podcastDao, accountDao);
     }
 
     @Singleton
     @Provides
     PodcastDao providePodcastDao(AppDatabase appDatabase) {
         return appDatabase.podcastDao();
+    }
+
+    @Singleton
+    @Provides
+    AccountDao provideAccountDao(AppDatabase appDatabase) {
+        return appDatabase.accountDao();
     }
 
 }

@@ -87,8 +87,8 @@ public class AccountFragment extends BaseFragment {
     }
 
     private void getAccountData(RefreshLayout refreshLayout) {
-        accountResponse = accountViewModel.account(username);
-        accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
+        accountResponse = accountViewModel.account(this, username, refreshLayout != null);
+        accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
         podcasts = accountViewModel.podcasts(this, null, null, accountId, refreshLayout != null);
 
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
