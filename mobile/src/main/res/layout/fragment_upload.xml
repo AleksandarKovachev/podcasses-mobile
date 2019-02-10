@@ -133,10 +133,10 @@
                 android:layout_margin="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:spinnerMode="dropdown"
-                app:privacies="@{viewModel.privacies}"
                 app:layout_constraintEnd_toStartOf="@id/podcast_category"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input" />
+                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input"
+                app:privacies="@{viewModel.privacies}" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/podcast_category"
@@ -180,9 +180,17 @@
                 app:layout_constraintBottom_toTopOf="@id/podcast_description"
                 app:layout_constraintTop_toBottomOf="@id/podcast_language">
 
-                <include layout="@layout/rte_toolbar_character" />
+                <include
+                    layout="@layout/rte_toolbar_character_local"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
 
-                <include layout="@layout/rte_toolbar_paragraph" />
+                <include
+                    layout="@layout/rte_toolbar_paragraph_local"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatCheckBox
