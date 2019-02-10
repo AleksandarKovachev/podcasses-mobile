@@ -1,6 +1,7 @@
 package com.podcasses.model.repository;
 
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.ApiCallInterface;
 
@@ -66,4 +67,32 @@ class NetworkDataSource {
         });
     }
 
+    void getCategories(IDataCallback<List<Nomenclature>> callback) {
+        Call<List<Nomenclature>> call = apiCallInterface.categories();
+        call.enqueue(nomenclatureCallback(callback));
+    }
+
+    void getLanguages(IDataCallback<List<Nomenclature>> callback) {
+        Call<List<Nomenclature>> call = apiCallInterface.languages();
+        call.enqueue(nomenclatureCallback(callback));
+    }
+
+    void getPrivacies(IDataCallback<List<Nomenclature>> callback) {
+        Call<List<Nomenclature>> call = apiCallInterface.privacies();
+        call.enqueue(nomenclatureCallback(callback));
+    }
+
+    private Callback<List<Nomenclature>> nomenclatureCallback(IDataCallback<List<Nomenclature>> callback) {
+        return new Callback<List<Nomenclature>>() {
+            @Override
+            public void onResponse(Call<List<Nomenclature>> call, Response<List<Nomenclature>> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Nomenclature>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        };
+    }
 }

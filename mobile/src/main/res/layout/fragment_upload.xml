@@ -1,14 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data></data>
+    <data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.UploadViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.AccountFragment">
+        android:layout_height="match_parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".view.UploadFragment">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/podcast_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/cover_placeholder"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/podcast_image_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@id/podcast_image"
+                app:layout_constraintEnd_toEndOf="@id/podcast_image"
+                app:layout_constraintTop_toBottomOf="@id/podcast_image" />
+
+            <com.daimajia.numberprogressbar.NumberProgressBar
+                android:id="@+id/number_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/podcast_upload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:text="@string/podcast_upload"
+                app:cornerRadius="@dimen/small_offset"
+                app:elevation="@dimen/medium_offset"
+                app:icon="@drawable/ic_file_upload"
+                app:layout_constraintTop_toBottomOf="@id/podcast_image_upload" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_title_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="@string/podcast_title"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_upload"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcast_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_quote_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="@string/podcast_quote"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/podcast_participator_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcast_quote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_participator_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="@string/podcast_participator"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/podcast_quote_input"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcast_participator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/podcast_privacy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"
+                app:layout_constraintEnd_toStartOf="@id/podcast_category"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/podcast_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dialog"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/podcast_privacy"
+                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input" />
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/podcast_language"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:gravity="center"
+                android:hint="@string/podcast_language"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_category" />
+
+            <com.onegravity.rteditor.RTEditText
+                android:id="@+id/podcast_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:hint="@string/podcast_description"
+                android:imeOptions="actionDone|flagNoEnterAction"
+                android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
+                app:layout_constraintTop_toBottomOf="@id/rte_toolbar_container" />
+
+            <LinearLayout
+                android:id="@+id/rte_toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@id/podcast_description"
+                app:layout_constraintTop_toBottomOf="@id/podcast_language">
+
+                <include layout="@layout/rte_toolbar_character" />
+
+                <include layout="@layout/rte_toolbar_paragraph" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/podcast_comments"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:gravity="center"
+                android:text="@string/podcast_comments"
+                app:layout_constraintBottom_toTopOf="@id/podcast_add"
+                app:layout_constraintEnd_toStartOf="@id/podcast_canDownload"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_description" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/podcast_canDownload"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:gravity="center"
+                android:text="@string/podcast_canDownload"
+                app:layout_constraintBottom_toTopOf="@id/podcast_add"
+                app:layout_constraintEnd_toStartOf="@id/podcast_ageRestriction"
+                app:layout_constraintStart_toEndOf="@id/podcast_comments"
+                app:layout_constraintTop_toBottomOf="@id/podcast_description" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/podcast_ageRestriction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:gravity="center"
+                android:text="@string/podcast_ageRestriction"
+                app:layout_constraintBottom_toTopOf="@id/podcast_add"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/podcast_canDownload"
+                app:layout_constraintTop_toBottomOf="@id/podcast_description" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/podcast_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:text="@string/podcast_add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

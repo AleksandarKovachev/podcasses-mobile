@@ -30,6 +30,7 @@ import static com.podcasses.util.CustomViewBindings.PODCAST_IMAGE;
 public class AccountViewModel extends BasePodcastViewModel implements Observable {
 
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();

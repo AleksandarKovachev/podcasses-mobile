@@ -14,6 +14,7 @@ import com.podcasses.model.repository.LocalDataSource;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
+import com.podcasses.retrofit.interceptor.AcceptLanguageHeaderInterceptor;
 import com.podcasses.retrofit.interceptor.BasicAuthInterceptor;
 import com.podcasses.viewmodel.ViewModelFactory;
 
@@ -68,7 +69,7 @@ public class NetModule {
     @Provides
     @Singleton
     OkHttpClient provideOkHttpClient(Cache cache) {
-        return new OkHttpClient.Builder().cache(cache).build();
+        return new OkHttpClient.Builder().addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
     }
 
     @Provides
@@ -94,6 +95,7 @@ public class NetModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(
                         new BasicAuthInterceptor(AuthenticationCallInterface.CLIENT_ID, AuthenticationCallInterface.CLIENT_SECRET))
+                .addInterceptor(new AcceptLanguageHeaderInterceptor())
                 .cache(cache).build();
     }
 

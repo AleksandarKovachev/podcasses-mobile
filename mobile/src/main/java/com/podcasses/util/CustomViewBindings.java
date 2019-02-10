@@ -21,14 +21,14 @@ public class CustomViewBindings {
 
     public static final String PODCAST_IMAGE = "/podcast/image/";
 
-    @BindingAdapter("bind:setAdapter")
+    @BindingAdapter("setAdapter")
     public static void bindRecyclerViewAdapter(RecyclerView recyclerView, RecyclerView.Adapter<?> adapter) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
     }
 
-    @BindingAdapter("bind:imageUrl")
+    @BindingAdapter("imageUrl")
     public static void loadImage(ImageView view, String url) {
         Glide.with(view).load(url).apply(RequestOptions.placeholderOf(R.drawable.cover_placeholder)).into(view);
     }

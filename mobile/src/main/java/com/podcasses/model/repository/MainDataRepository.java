@@ -1,10 +1,12 @@
 package com.podcasses.model.repository;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
@@ -37,6 +39,10 @@ public class MainDataRepository {
     private LiveData<List<Podcast>> podcastsLiveData;
     private LiveData<Account> accountLiveData;
 
+    private MutableLiveData<List<Nomenclature>> categories;
+    private MutableLiveData<List<Nomenclature>> languages;
+    private MutableLiveData<List<Nomenclature>> privacies;
+
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
@@ -45,6 +51,9 @@ public class MainDataRepository {
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
+        categories = new MutableLiveData<>();
+        languages = new MutableLiveData<>();
+        privacies = new MutableLiveData<>();
     }
 
     public LiveData<ApiResponse> getAccount(LifecycleOwner lifecycleOwner, String username, boolean isSwipedToRefresh) {
@@ -93,6 +102,21 @@ public class MainDataRepository {
         }
 
         return podcastResponse;
+    }
+
+    public MutableLiveData<List<Nomenclature>> getCategories() {
+        networkDataSource.getCategories(getNomenclaturesCallback(categories, "getCategories"));
+        return categories;
+    }
+
+    public MutableLiveData<List<Nomenclature>> getLanguages() {
+        networkDataSource.getLanguages(getNomenclaturesCallback(languages, "getLanguages"));
+        return languages;
+    }
+
+    public MutableLiveData<List<Nomenclature>> getPrivacies() {
+        networkDataSource.getPrivacies(getNomenclaturesCallback(privacies, "getPrivacies"));
+        return privacies;
     }
 
     private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId) {
@@ -189,6 +213,20 @@ public class MainDataRepository {
         } else {
             accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
+    }
+
+    private IDataCallback<List<Nomenclature>> getNomenclaturesCallback(MutableLiveData<List<Nomenclature>> nomenclatures, String method) {
+        return new IDataCallback<List<Nomenclature>>() {
+            @Override
+            public void onSuccess(List<Nomenclature> data) {
+                nomenclatures.setValue(data);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                Log.e("MainDataRepository", method, error);
+            }
+        };
     }
 
 }
