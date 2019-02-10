@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -31,6 +31,7 @@
             android:excludeFromRecents="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"></activity>
+        <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
 
         <service
             android:name=".service.AccountAuthenticatorService"

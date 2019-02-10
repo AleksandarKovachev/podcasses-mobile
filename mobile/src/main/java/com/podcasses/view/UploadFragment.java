@@ -11,7 +11,6 @@ import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
 import com.podcasses.R;
-import com.podcasses.adapter.NomenclatureAdapter;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
 import com.podcasses.model.entity.Nomenclature;
@@ -44,8 +43,6 @@ public class UploadFragment extends BaseFragment {
 
     private LifecycleOwner lifecycleOwner;
 
-    private FragmentUploadBinding binder;
-
     static UploadFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
@@ -58,13 +55,14 @@ public class UploadFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
+        FragmentUploadBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
         lifecycleOwner = this;
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UploadViewModel.class);
+        binder.setViewModel(viewModel);
 
         binder.numberProgressBar.setProgress(20);
 
@@ -97,8 +95,7 @@ public class UploadFragment extends BaseFragment {
         LiveData<List<Nomenclature>> categories = viewModel.getCategoryNomenclatures();
         categories.observe(lifecycleOwner, nomenclatures -> {
             categories.removeObservers(lifecycleOwner);
-            binder.podcastCategory.setAdapter(
-                    new NomenclatureAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, nomenclatures, getString(R.string.podcast_category)));
+            viewModel.setCategories(nomenclatures);
         });
     }
 
@@ -106,8 +103,7 @@ public class UploadFragment extends BaseFragment {
         LiveData<List<Nomenclature>> privacies = viewModel.getPrivacyNomenclatures();
         privacies.observe(lifecycleOwner, nomenclatures -> {
             privacies.removeObservers(lifecycleOwner);
-            binder.podcastPrivacy.setAdapter(
-                    new NomenclatureAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, nomenclatures, getString(R.string.podcast_privacy)));
+            viewModel.setPrivacies(nomenclatures);
         });
     }
 

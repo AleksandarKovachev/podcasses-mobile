@@ -1,6 +1,10 @@
 package com.podcasses.viewmodel;
 
+import android.widget.Spinner;
+
 import com.podcasses.BR;
+import com.podcasses.R;
+import com.podcasses.adapter.NomenclatureAdapter;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.viewmodel.base.BaseViewModel;
@@ -8,6 +12,8 @@ import com.podcasses.viewmodel.base.BaseViewModel;
 import java.util.List;
 
 import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import androidx.databinding.Observable;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LiveData;
@@ -20,6 +26,8 @@ public class UploadViewModel extends BaseViewModel implements Observable {
 
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
 
+    private MutableLiveData<List<Nomenclature>> categories = new MutableLiveData<>();
+    private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
     private MutableLiveData<List<String>> languages = new MutableLiveData<>();
 
     UploadViewModel(MainDataRepository repository) {
@@ -49,6 +57,16 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     }
 
     @Bindable
+    public List<Nomenclature> getCategories() {
+        return categories.getValue();
+    }
+
+    public void setCategories(List<Nomenclature> categories) {
+        this.categories.setValue(categories);
+        notifyPropertyChanged(BR.categories);
+    }
+
+    @Bindable
     public List<String> getLanguages() {
         return languages.getValue();
     }
@@ -56,6 +74,32 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     public void setLanguages(List<String> languages) {
         this.languages.setValue(languages);
         notifyPropertyChanged(BR.languages);
+    }
+
+    @Bindable
+    public List<Nomenclature> getPrivacies() {
+        return privacies.getValue();
+    }
+
+    public void setPrivacies(List<Nomenclature> privacies) {
+        this.privacies.setValue(privacies);
+        notifyPropertyChanged(BR.privacies);
+    }
+
+    @BindingAdapter(value = {"privacies", "selectedPrivacyAttrChanged"}, requireAll = false)
+    public static void setPrivacies(Spinner spinner, List<Nomenclature> privacies, InverseBindingListener listener) {
+        if (privacies == null) {
+            return;
+        }
+        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, privacies, spinner.getContext().getString(R.string.podcast_category)));
+    }
+
+    @BindingAdapter(value = {"categories", "selectedCategoryAttrChanged"}, requireAll = false)
+    public static void setCategoriesAdapter(Spinner spinner, List<Nomenclature> categories, InverseBindingListener listener) {
+        if (categories == null) {
+            return;
+        }
+        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, categories, spinner.getContext().getString(R.string.podcast_category)));
     }
 
     private void notifyPropertyChanged(int fieldId) {

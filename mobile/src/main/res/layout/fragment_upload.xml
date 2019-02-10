@@ -133,6 +133,7 @@
                 android:layout_margin="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:spinnerMode="dropdown"
+                app:privacies="@{viewModel.privacies}"
                 app:layout_constraintEnd_toStartOf="@id/podcast_category"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/podcast_quote_input" />
@@ -144,6 +145,7 @@
                 android:layout_margin="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:spinnerMode="dialog"
+                app:categories="@{viewModel.categories}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/podcast_privacy"
                 app:layout_constraintTop_toBottomOf="@id/podcast_quote_input" />
