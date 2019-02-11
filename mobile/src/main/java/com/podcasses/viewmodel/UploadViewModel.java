@@ -15,6 +15,7 @@ import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingListener;
 import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -29,6 +30,7 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<List<Nomenclature>> categories = new MutableLiveData<>();
     private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
     private MutableLiveData<List<String>> languages = new MutableLiveData<>();
+    private ObservableField<String> podcastImage = new ObservableField<>();
 
     UploadViewModel(MainDataRepository repository) {
         super(repository);
@@ -84,6 +86,16 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     public void setPrivacies(List<Nomenclature> privacies) {
         this.privacies.setValue(privacies);
         notifyPropertyChanged(BR.privacies);
+    }
+
+    @Bindable
+    public String getPodcastImage() {
+        return podcastImage.get();
+    }
+
+    public void setPodcastImage(String podcastImage) {
+        this.podcastImage.set(podcastImage);
+        notifyPropertyChanged(BR.podcastImage);
     }
 
     @BindingAdapter(value = {"privacies", "selectedPrivacyAttrChanged"}, requireAll = false)

@@ -26,6 +26,7 @@
                 android:layout_height="200dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/cover_placeholder"
+                app:imageUrl="@{viewModel.podcastImage}"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton

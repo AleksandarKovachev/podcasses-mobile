@@ -13,10 +13,13 @@ import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.repository.LocalDataSource;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.ApiFileUploadInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.retrofit.interceptor.AcceptLanguageHeaderInterceptor;
 import com.podcasses.retrofit.interceptor.BasicAuthInterceptor;
 import com.podcasses.viewmodel.ViewModelFactory;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -69,7 +72,8 @@ public class NetModule {
     @Provides
     @Singleton
     OkHttpClient provideOkHttpClient(Cache cache) {
-        return new OkHttpClient.Builder().addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
+        return new OkHttpClient.Builder()
+                .addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
     }
 
     @Provides
@@ -86,6 +90,34 @@ public class NetModule {
     @Singleton
     ApiCallInterface provideApiCallInterface(Retrofit retrofit) {
         return retrofit.create(ApiCallInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    @Named("fileUploadOkHttp")
+    OkHttpClient provideFileUploadOkHttpClient(Cache cache) {
+        return new OkHttpClient.Builder()
+                .readTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
+                .addInterceptor(new AcceptLanguageHeaderInterceptor())
+                .cache(cache).build();
+    }
+
+    @Provides
+    @Singleton
+    @Named("fileRetrofit")
+    Retrofit provideFileUploadRetrofit(Gson gson, @Named("fileUploadOkHttp") OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl(baseUrl)
+                .client(okHttpClient)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    ApiFileUploadInterface provideApiFileUploadInterface(@Named("fileRetrofit") Retrofit retrofit) {
+        return retrofit.create(ApiFileUploadInterface.class);
     }
 
     @Provides

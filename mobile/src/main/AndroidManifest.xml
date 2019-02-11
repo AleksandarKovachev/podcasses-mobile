@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.podcasses">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +20,8 @@
         android:roundIcon="@drawable/ic_podcast"
         android:supportsRtl="true"
         android:theme="@style/DarkAppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +32,7 @@
             android:name=".view.AuthenticatorActivity"
             android:excludeFromRecents="true"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"></activity>
-        <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
+            android:launchMode="singleTop" />
 
         <service
             android:name=".service.AccountAuthenticatorService"

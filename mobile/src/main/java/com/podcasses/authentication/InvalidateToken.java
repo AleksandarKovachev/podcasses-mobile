@@ -24,7 +24,7 @@ public class InvalidateToken extends AsyncTask<String, Void, String> {
         try {
             accountManager.invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE, params[0]);
             token = accountManager.blockingGetAuthToken(account,
-                    AccountAuthenticator.ACCOUNT_TYPE, true);
+                    AccountAuthenticator.AUTH_TOKEN_TYPE, true);
         } catch (Exception e) {
             Log.e(this.getClass().getName(), "invalidateToken: ", e);
         }
