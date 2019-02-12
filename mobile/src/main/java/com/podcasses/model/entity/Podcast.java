@@ -4,6 +4,7 @@ import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 
+import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 
 import java.text.DateFormat;
@@ -11,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
@@ -19,7 +22,7 @@ import androidx.room.TypeConverters;
  * Created by aleksandar.kovachev.
  */
 @Entity
-public class Podcast {
+public class Podcast extends BaseObservable {
 
     @NonNull
     @PrimaryKey
@@ -213,20 +216,24 @@ public class Podcast {
         this.duration = duration;
     }
 
+    @Bindable
     public String getPodcastFileName() {
         return podcastFileName;
     }
 
     public void setPodcastFileName(String podcastFileName) {
         this.podcastFileName = podcastFileName;
+        notifyPropertyChanged(BR.podcastFileName);
     }
 
+    @Bindable
     public String getImageFileName() {
         return imageFileName;
     }
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+        notifyPropertyChanged(BR.imageFileName);
     }
 
     public Date getCreatedTimestamp() {

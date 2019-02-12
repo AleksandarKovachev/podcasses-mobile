@@ -211,7 +211,7 @@ public class UploadFragment extends BaseFragment {
         binder.podcastUploadFab.setVisibility(VISIBLE);
         binder.podcastFileName.setVisibility(VISIBLE);
 
-        viewModel.setPodcastFileName(podcast.getName());
+        viewModel.getPodcast().setPodcastFileName(podcast.getName());
 
         ProgressRequestBody fileBody = new ProgressRequestBody(requestBody,
                 (bytesWritten, contentLength) -> viewModel.setPodcastUploadProgress(((double) bytesWritten / contentLength) * 100));
@@ -242,6 +242,7 @@ public class UploadFragment extends BaseFragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 viewModel.setPodcastImage(image.getAbsolutePath());
+                viewModel.getPodcast().setImageFileName(image.getName());
             }
 
             @Override

@@ -4,11 +4,14 @@ import com.podcasses.BuildConfig;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.response.BaseResponse;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -39,5 +42,8 @@ public interface ApiCallInterface {
 
     @GET("/nomenclature/privacies")
     Call<List<Nomenclature>> privacies();
+
+    @POST("/podcast")
+    Call<BaseResponse> podcast(@Field("podcast") Podcast podcast);
 
 }
