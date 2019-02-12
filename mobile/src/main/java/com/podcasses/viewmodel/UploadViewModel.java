@@ -1,5 +1,6 @@
 package com.podcasses.viewmodel;
 
+import android.view.View;
 import android.widget.Spinner;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
@@ -12,6 +13,7 @@ import com.podcasses.viewmodel.base.BaseViewModel;
 
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -20,6 +22,8 @@ import androidx.databinding.ObservableField;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import static android.graphics.Color.GREEN;
 
 /**
  * Created by aleksandar.kovachev.
@@ -33,6 +37,7 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<List<String>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
     private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
+    private ObservableField<String> podcastFileName = new ObservableField<>();
 
     UploadViewModel(MainDataRepository repository) {
         super(repository);
@@ -110,10 +115,28 @@ public class UploadViewModel extends BaseViewModel implements Observable {
         notifyPropertyChanged(BR.podcastUploadProgress);
     }
 
+    @Bindable
+    public String getPodcastFileName() {
+        return podcastFileName.get();
+    }
+
+    public void setPodcastFileName(String podcastFileName) {
+        this.podcastFileName.set(podcastFileName);
+        notifyPropertyChanged(BR.podcastFileName);
+    }
+
     @BindingAdapter(value = {"progress_current"}, requireAll = false)
     public static void setCurrentProgress(NumberProgressBar progressBar, Integer progress) {
         if (progress != null) {
+            progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(progress);
+            if (progress == 100) {
+                progressBar.setReachedBarColor(GREEN);
+                progressBar.setProgressTextColor(GREEN);
+            } else {
+                progressBar.setReachedBarColor(ContextCompat.getColor(progressBar.getContext(), R.color.colorAccent));
+                progressBar.setProgressTextColor(ContextCompat.getColor(progressBar.getContext(), R.color.colorAccent));
+            }
         }
     }
 

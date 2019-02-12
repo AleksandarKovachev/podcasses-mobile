@@ -50,13 +50,44 @@
                 app:icon="@drawable/ic_file_upload"
                 app:layout_constraintTop_toBottomOf="@id/podcast_image_upload" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_file_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:freezesText="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="@{viewModel.podcastFileName}"
+                android:visibility="gone"
+                app:cornerRadius="@dimen/small_offset"
+                app:layout_constraintEnd_toStartOf="@id/podcast_upload_fab"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/podcast_upload_fab" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/podcast_upload_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:src="@drawable/ic_file_upload"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/podcast_file_name"
+                app:layout_constraintTop_toBottomOf="@id/podcast_image_upload" />
+
             <com.daimajia.numberprogressbar.NumberProgressBar
                 android:id="@+id/number_progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/medium_offset"
+                android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_upload"
+                app:layout_constraintTop_toBottomOf="@id/podcast_upload_fab"
                 app:progress_current="@{viewModel.podcastUploadProgress}" />
 
             <com.google.android.material.textfield.TextInputLayout

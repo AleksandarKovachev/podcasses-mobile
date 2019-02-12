@@ -52,6 +52,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by aleksandar.kovachev.
@@ -72,6 +74,8 @@ public class UploadFragment extends BaseFragment {
 
     private LiveData<String> token;
 
+    private FragmentUploadBinding binder;
+
     static UploadFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
@@ -84,7 +88,7 @@ public class UploadFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentUploadBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
+        binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
@@ -103,6 +107,7 @@ public class UploadFragment extends BaseFragment {
         rtManager.registerEditor(binder.podcastDescription, true);
 
         binder.podcastUpload.setOnClickListener(onPodcastUpload);
+        binder.podcastUploadFab.setOnClickListener(onPodcastUpload);
         binder.podcastImageUpload.setOnClickListener(onPodcastImageUpload);
 
         setPrivacies();
@@ -199,14 +204,21 @@ public class UploadFragment extends BaseFragment {
     }
 
     private void sendPodcastUploadRequest(Intent data) {
-        File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
-        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/*"), image);
+        File podcast = new File(getRealPathFromURIPath(data.getData(), getContext()));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/*"), podcast);
+
+        binder.podcastUpload.setVisibility(GONE);
+        binder.podcastUploadFab.setVisibility(VISIBLE);
+        binder.podcastFileName.setVisibility(VISIBLE);
+
+        viewModel.setPodcastFileName(podcast.getName());
+
         ProgressRequestBody fileBody = new ProgressRequestBody(requestBody,
                 (bytesWritten, contentLength) -> viewModel.setPodcastUploadProgress(((double) bytesWritten / contentLength) * 100));
 
         Call<ResponseBody> call = fileUploadInterface.podcastUpload(
                 "Bearer " + token.getValue(),
-                MultipartBody.Part.createFormData("podcastFile", image.getName(), fileBody));
+                MultipartBody.Part.createFormData("podcastFile", podcast.getName(), fileBody));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
