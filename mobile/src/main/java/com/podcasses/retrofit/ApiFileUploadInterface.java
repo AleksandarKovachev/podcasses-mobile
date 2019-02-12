@@ -17,4 +17,8 @@ public interface ApiFileUploadInterface {
     @POST("/podcast/image")
     Call<ResponseBody> podcastImage(@Header("Authorization") String token, @Part MultipartBody.Part podcastImage);
 
+    @Multipart
+    @POST("/podcast/upload")
+    Call<ResponseBody> podcastUpload(@Header("Authorization") String token, @Part MultipartBody.Part podcast);
+
 }

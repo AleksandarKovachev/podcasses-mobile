@@ -2,6 +2,7 @@ package com.podcasses.viewmodel;
 
 import android.widget.Spinner;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.NomenclatureAdapter;
@@ -31,6 +32,7 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
     private MutableLiveData<List<String>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
+    private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
 
     UploadViewModel(MainDataRepository repository) {
         super(repository);
@@ -96,6 +98,23 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     public void setPodcastImage(String podcastImage) {
         this.podcastImage.set(podcastImage);
         notifyPropertyChanged(BR.podcastImage);
+    }
+
+    @Bindable
+    public Integer getPodcastUploadProgress() {
+        return podcastUploadProgress.get();
+    }
+
+    public void setPodcastUploadProgress(Double progress) {
+        this.podcastUploadProgress.set(progress.intValue());
+        notifyPropertyChanged(BR.podcastUploadProgress);
+    }
+
+    @BindingAdapter(value = {"progress_current"}, requireAll = false)
+    public static void setCurrentProgress(NumberProgressBar progressBar, Integer progress) {
+        if (progress != null) {
+            progressBar.setProgress(progress);
+        }
     }
 
     @BindingAdapter(value = {"privacies", "selectedPrivacyAttrChanged"}, requireAll = false)

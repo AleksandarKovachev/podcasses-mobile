@@ -95,8 +95,6 @@ public class UploadFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UploadViewModel.class);
         binder.setViewModel(viewModel);
 
-        binder.numberProgressBar.setProgress(20);
-
         RTApi rtApi = new RTApi(getContext(), new RTProxyImpl((Activity) getContext()), new RTMediaFactoryImpl(getContext(), true));
         rtManager = new RTManager(rtApi, savedInstanceState);
 
@@ -175,7 +173,11 @@ public class UploadFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-
+            if (requestCode == 1) {
+                sendPodcastUploadRequest(data);
+            } else if (requestCode == 2) {
+                sendPodcastImageUploadRequest(data);
+            }
         }
     }
 
@@ -193,6 +195,58 @@ public class UploadFragment extends BaseFragment {
             } else {
                 Toast.makeText(getContext(), getString(R.string.storage_permission_audio), Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void sendPodcastUploadRequest(Intent data) {
+        File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/*"), image);
+        ProgressRequestBody fileBody = new ProgressRequestBody(requestBody,
+                (bytesWritten, contentLength) -> viewModel.setPodcastUploadProgress(((double) bytesWritten / contentLength) * 100));
+
+        Call<ResponseBody> call = fileUploadInterface.podcastUpload(
+                "Bearer " + token.getValue(),
+                MultipartBody.Part.createFormData("podcastFile", image.getName(), fileBody));
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(getTag(), "onFailure: ", t);
+            }
+        });
+    }
+
+    private void sendPodcastImageUploadRequest(Intent data) {
+        File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), image);
+
+        Call<ResponseBody> call = fileUploadInterface.podcastImage(
+                "Bearer " + token.getValue(),
+                MultipartBody.Part.createFormData("imageFile", image.getName(), requestBody));
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                viewModel.setPodcastImage(image.getAbsolutePath());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(getTag(), "onFailure: ", t);
+            }
+        });
+    }
+
+    private String getRealPathFromURIPath(Uri contentURI, Context context) {
+        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            return contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
         }
     }
 

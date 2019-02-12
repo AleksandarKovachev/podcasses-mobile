@@ -39,13 +39,6 @@
                 app:layout_constraintEnd_toEndOf="@id/podcast_image"
                 app:layout_constraintTop_toBottomOf="@id/podcast_image" />
 
-            <com.daimajia.numberprogressbar.NumberProgressBar
-                android:id="@+id/number_progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/podcast_upload"
                 android:layout_width="match_parent"
@@ -57,6 +50,15 @@
                 app:icon="@drawable/ic_file_upload"
                 app:layout_constraintTop_toBottomOf="@id/podcast_image_upload" />
 
+            <com.daimajia.numberprogressbar.NumberProgressBar
+                android:id="@+id/number_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_upload"
+                app:progress_current="@{viewModel.podcastUploadProgress}" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/podcast_title_input"
                 android:layout_width="match_parent"
@@ -65,7 +67,7 @@
                 android:hint="@string/podcast_title"
                 android:padding="@dimen/medium_offset"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_upload"
+                app:layout_constraintTop_toBottomOf="@id/number_progress_bar"
                 app:layout_constraintVertical_bias="0">
 
                 <com.google.android.material.textfield.TextInputEditText
