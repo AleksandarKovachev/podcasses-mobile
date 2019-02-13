@@ -8,6 +8,7 @@ import com.google.android.gms.common.util.Strings;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.retrofit.util.ConnectivityUtil;
@@ -40,7 +41,7 @@ public class MainDataRepository {
     private LiveData<Account> accountLiveData;
 
     private MutableLiveData<List<Nomenclature>> categories;
-    private MutableLiveData<List<Nomenclature>> languages;
+    private MutableLiveData<List<Language>> languages;
     private MutableLiveData<List<Nomenclature>> privacies;
 
     @Inject
@@ -109,7 +110,7 @@ public class MainDataRepository {
         return categories;
     }
 
-    public MutableLiveData<List<Nomenclature>> getLanguages() {
+    public MutableLiveData<List<Language>> getLanguages() {
         networkDataSource.getLanguages(getNomenclaturesCallback(languages, "getLanguages"));
         return languages;
     }
@@ -215,10 +216,10 @@ public class MainDataRepository {
         }
     }
 
-    private IDataCallback<List<Nomenclature>> getNomenclaturesCallback(MutableLiveData<List<Nomenclature>> nomenclatures, String method) {
-        return new IDataCallback<List<Nomenclature>>() {
+    private <T> IDataCallback<List<T>> getNomenclaturesCallback(MutableLiveData<List<T>> nomenclatures, String method) {
+        return new IDataCallback<List<T>>() {
             @Override
-            public void onSuccess(List<Nomenclature> data) {
+            public void onSuccess(List<T> data) {
                 nomenclatures.setValue(data);
             }
 

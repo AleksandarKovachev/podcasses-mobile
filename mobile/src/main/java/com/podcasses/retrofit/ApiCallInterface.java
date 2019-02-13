@@ -5,6 +5,7 @@ import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.BaseResponse;
+import com.podcasses.model.response.Language;
 
 import java.util.List;
 
@@ -37,11 +38,11 @@ public interface ApiCallInterface {
     @GET("/nomenclature/categories")
     Call<List<Nomenclature>> categories();
 
-    @GET("/nomenclature/languages")
-    Call<List<Nomenclature>> languages();
-
     @GET("/nomenclature/privacies")
     Call<List<Nomenclature>> privacies();
+
+    @GET("/nomenclature/languages")
+    Call<List<Language>> languages();
 
     @POST("/podcast")
     Call<BaseResponse> podcast(@Field("podcast") Podcast podcast);

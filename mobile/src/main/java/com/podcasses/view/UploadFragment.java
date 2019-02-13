@@ -23,6 +23,7 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
 import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiFileUploadInterface;
 import com.podcasses.retrofit.util.ProgressRequestBody;
 import com.podcasses.view.base.BaseFragment;
@@ -111,6 +112,7 @@ public class UploadFragment extends BaseFragment {
         binder.podcastImageUpload.setOnClickListener(onPodcastImageUpload);
 
         setPrivacies();
+        setLanguages();
         setCategories();
 
         return binder.getRoot();
@@ -126,22 +128,6 @@ public class UploadFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         rtManager.onDestroy(true);
-    }
-
-    private void setCategories() {
-        LiveData<List<Nomenclature>> categories = viewModel.getCategoryNomenclatures();
-        categories.observe(lifecycleOwner, nomenclatures -> {
-            categories.removeObservers(lifecycleOwner);
-            viewModel.setCategories(nomenclatures);
-        });
-    }
-
-    private void setPrivacies() {
-        LiveData<List<Nomenclature>> privacies = viewModel.getPrivacyNomenclatures();
-        privacies.observe(lifecycleOwner, nomenclatures -> {
-            privacies.removeObservers(lifecycleOwner);
-            viewModel.setPrivacies(nomenclatures);
-        });
     }
 
     private View.OnClickListener onPodcastUpload = v -> {
@@ -261,6 +247,30 @@ public class UploadFragment extends BaseFragment {
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             return cursor.getString(idx);
         }
+    }
+
+    private void setCategories() {
+        LiveData<List<Nomenclature>> categories = viewModel.getCategoryNomenclatures();
+        categories.observe(lifecycleOwner, nomenclatures -> {
+            categories.removeObservers(lifecycleOwner);
+            viewModel.setCategories(nomenclatures);
+        });
+    }
+
+    private void setPrivacies() {
+        LiveData<List<Nomenclature>> privacies = viewModel.getPrivacyNomenclatures();
+        privacies.observe(lifecycleOwner, nomenclatures -> {
+            privacies.removeObservers(lifecycleOwner);
+            viewModel.setPrivacies(nomenclatures);
+        });
+    }
+
+    private void setLanguages() {
+        LiveData<List<Language>> languages = viewModel.getLanguageNomenclatures();
+        languages.observe(lifecycleOwner, language -> {
+            languages.removeObservers(lifecycleOwner);
+            viewModel.setLanguages(language);
+        });
     }
 
 }

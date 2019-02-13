@@ -6,10 +6,12 @@ import android.widget.AdapterView;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.podcasses.BR;
 import com.podcasses.R;
+import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.adapter.NomenclatureAdapter;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
@@ -40,7 +42,7 @@ public class UploadViewModel extends BaseViewModel implements Observable {
 
     private MutableLiveData<List<Nomenclature>> categories = new MutableLiveData<>();
     private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
-    private MutableLiveData<List<String>> languages = new MutableLiveData<>();
+    private MutableLiveData<List<Language>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
     private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
 
@@ -69,7 +71,7 @@ public class UploadViewModel extends BaseViewModel implements Observable {
         return repository.getPrivacies();
     }
 
-    public LiveData<List<Nomenclature>> getLanguageNomenclatures() {
+    public LiveData<List<Language>> getLanguageNomenclatures() {
         return repository.getLanguages();
     }
 
@@ -88,11 +90,11 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     }
 
     @Bindable
-    public List<String> getLanguages() {
+    public List<Language> getLanguages() {
         return languages.getValue();
     }
 
-    public void setLanguages(List<String> languages) {
+    public void setLanguages(List<Language> languages) {
         this.languages.setValue(languages);
         notifyPropertyChanged(BR.languages);
     }
@@ -142,12 +144,39 @@ public class UploadViewModel extends BaseViewModel implements Observable {
         }
     }
 
+    @BindingAdapter(value = {"languages", "selectedLanguage", "selectedLanguageAttrChanged"}, requireAll = false)
+    public static void setLanguages(AppCompatSpinner spinner, List<Language> languages, int selectedLanguage, InverseBindingListener listener) {
+        if (languages == null) {
+            return;
+        }
+        spinner.setAdapter(
+                new LanguageAdapter(spinner.getContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        languages,
+                        spinner.getContext().getString(R.string.podcast_language)));
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                listener.onChange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    @InverseBindingAdapter(attribute = "selectedLanguage", event = "selectedLanguageAttrChanged")
+    public static Integer getSelectedLanguage(AppCompatSpinner spinner) {
+        return ((Language) spinner.getSelectedItem()).getId();
+    }
+
     @BindingAdapter(value = {"privacies", "selectedPrivacy", "selectedPrivacyAttrChanged"}, requireAll = false)
     public static void setPrivacies(AppCompatSpinner spinner, List<Nomenclature> privacies, Integer selectedPrivacy, InverseBindingListener listener) {
         if (privacies == null) {
             return;
         }
-        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, privacies, spinner.getContext().getString(R.string.podcast_category)));
+        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, privacies, spinner.getContext().getString(R.string.podcast_privacy)));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

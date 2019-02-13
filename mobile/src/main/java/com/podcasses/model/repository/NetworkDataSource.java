@@ -3,6 +3,7 @@ package com.podcasses.model.repository;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 
 import java.util.List;
@@ -72,8 +73,8 @@ class NetworkDataSource {
         call.enqueue(nomenclatureCallback(callback));
     }
 
-    void getLanguages(IDataCallback<List<Nomenclature>> callback) {
-        Call<List<Nomenclature>> call = apiCallInterface.languages();
+    void getLanguages(IDataCallback<List<Language>> callback) {
+        Call<List<Language>> call = apiCallInterface.languages();
         call.enqueue(nomenclatureCallback(callback));
     }
 
@@ -82,15 +83,15 @@ class NetworkDataSource {
         call.enqueue(nomenclatureCallback(callback));
     }
 
-    private Callback<List<Nomenclature>> nomenclatureCallback(IDataCallback<List<Nomenclature>> callback) {
-        return new Callback<List<Nomenclature>>() {
+    private <T> Callback<List<T>> nomenclatureCallback(IDataCallback<List<T>> callback) {
+        return new Callback<List<T>>() {
             @Override
-            public void onResponse(Call<List<Nomenclature>> call, Response<List<Nomenclature>> response) {
+            public void onResponse(Call<List<T>> call, Response<List<T>> response) {
                 callback.onSuccess(response.body());
             }
 
             @Override
-            public void onFailure(Call<List<Nomenclature>> call, Throwable t) {
+            public void onFailure(Call<List<T>> call, Throwable t) {
                 callback.onFailure(t);
             }
         };
