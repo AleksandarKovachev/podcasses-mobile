@@ -1,9 +1,13 @@
 package com.podcasses.viewmodel;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.onegravity.rteditor.RTEditText;
+import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.LanguageAdapter;
@@ -45,6 +49,8 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<List<Language>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
     private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
+
+    private ObservableField<String> htmlDescription = new ObservableField<>();
 
     private Podcast podcast = new Podcast();
 
@@ -215,6 +221,31 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     @InverseBindingAdapter(attribute = "selectedCategory", event = "selectedCategoryAttrChanged")
     public static Integer getSelectedCategory(AppCompatSpinner spinner) {
         return ((Nomenclature) spinner.getSelectedItem()).getId();
+    }
+
+    @BindingAdapter(value = {"htmlText", "htmlTextAttrChanged"}, requireAll = false)
+    public static void setHtmlText(RTEditText editText, String value, InverseBindingListener listener) {
+        editText.setText(value);
+        editText.setSelection(editText.getText().length());
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                listener.onChange();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    @InverseBindingAdapter(attribute = "htmlText")
+    public static String getHtmlText(RTEditText editText) {
+        return editText.getText(RTFormat.HTML);
     }
 
     private void notifyPropertyChanged(int fieldId) {
