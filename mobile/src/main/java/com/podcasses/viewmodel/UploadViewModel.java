@@ -16,7 +16,6 @@ import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.Language;
-import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import java.util.List;
@@ -32,6 +31,7 @@ import androidx.databinding.ObservableField;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import retrofit2.Response;
 
 import static android.graphics.Color.GREEN;
 
@@ -39,8 +39,6 @@ import static android.graphics.Color.GREEN;
  * Created by aleksandar.kovachev.
  */
 public class UploadViewModel extends BaseViewModel implements Observable {
-
-    private ApiCallInterface apiCallInterface;
 
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
 
@@ -50,13 +48,10 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private ObservableField<String> podcastImage = new ObservableField<>();
     private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
 
-    private ObservableField<String> htmlDescription = new ObservableField<>();
-
     private Podcast podcast = new Podcast();
 
-    UploadViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
+    UploadViewModel(MainDataRepository repository) {
         super(repository);
-        this.apiCallInterface = apiCallInterface;
     }
 
     @Override
@@ -248,12 +243,18 @@ public class UploadViewModel extends BaseViewModel implements Observable {
         return editText.getText(RTFormat.HTML);
     }
 
-    private void notifyPropertyChanged(int fieldId) {
-        callbacks.notifyCallbacks(this, fieldId, null);
+    public void savePodcast(Response<Podcast> response) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                repository.savePodcast(response.body());
+            }
+        };
+        thread.start();
     }
 
-    public void sendPodcastRequest() {
-        //apiCallInterface.podcast(podcast);
+    private void notifyPropertyChanged(int fieldId) {
+        callbacks.notifyCallbacks(this, fieldId, null);
     }
 
 }

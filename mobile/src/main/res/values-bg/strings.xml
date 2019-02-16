@@ -37,6 +37,8 @@
     <string name="podcast_ageRestriction">Възрастово ограничение</string>
     <string name="podcast_add">Добави подкаст</string>
 
+    <string name="podcast_successfully_added">Подкаста е успешно добавен.</string>
+
     <string name="no_internet_connection">Няма интернет достъп!</string>
     <string name="could_not_fetch_data">Неуспешно извличане на данни!</string>
 

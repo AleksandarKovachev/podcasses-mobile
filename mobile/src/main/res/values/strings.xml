@@ -37,6 +37,8 @@
     <string name="podcast_ageRestriction">Age restriction</string>
     <string name="podcast_add">Add podcast</string>
 
+    <string name="podcast_successfully_added">Successfully added podcast</string>
+
     <string name="no_internet_connection">No internet connection!</string>
     <string name="could_not_fetch_data">Could not fetch data!</string>
 

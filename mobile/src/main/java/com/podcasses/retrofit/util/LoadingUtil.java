@@ -9,9 +9,8 @@ import android.content.Context;
  */
 public class LoadingUtil {
 
-    public static ProgressDialog getProgressDialog(Context context, String msg) {
+    public static ProgressDialog getProgressDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(msg);
         progressDialog.setCancelable(false);
         return progressDialog;
     }

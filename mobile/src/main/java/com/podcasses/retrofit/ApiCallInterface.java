@@ -4,14 +4,14 @@ import com.podcasses.BuildConfig;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.response.BaseResponse;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.http.Field;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -45,6 +45,6 @@ public interface ApiCallInterface {
     Call<List<Language>> languages();
 
     @POST("/podcast")
-    Call<BaseResponse> podcast(@Field("podcast") Podcast podcast);
+    Call<Podcast> podcast(@Header("Authorization") String token, @Body Podcast podcast);
 
 }

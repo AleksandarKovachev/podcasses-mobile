@@ -2,6 +2,7 @@ package com.podcasses.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
@@ -23,8 +25,12 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
 import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.response.ErrorResponse;
 import com.podcasses.model.response.Language;
+import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.ApiFileUploadInterface;
+import com.podcasses.retrofit.util.LoadingUtil;
 import com.podcasses.retrofit.util.ProgressRequestBody;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
@@ -33,6 +39,7 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,6 +51,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -66,6 +74,12 @@ public class UploadFragment extends BaseFragment {
 
     @Inject
     ApiFileUploadInterface fileUploadInterface;
+
+    @Inject
+    ApiCallInterface apiCallInterface;
+
+    @Inject
+    Gson gson;
 
     private UploadViewModel viewModel;
 
@@ -110,6 +124,7 @@ public class UploadFragment extends BaseFragment {
         binder.podcastUpload.setOnClickListener(onPodcastUpload);
         binder.podcastUploadFab.setOnClickListener(onPodcastUpload);
         binder.podcastImageUpload.setOnClickListener(onPodcastImageUpload);
+        binder.podcastAdd.setOnClickListener(onPodcastAdd);
 
         setPrivacies();
         setLanguages();
@@ -221,6 +236,8 @@ public class UploadFragment extends BaseFragment {
         File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), image);
 
+        viewModel.getPodcast().setImageFileName(image.getName());
+
         Call<ResponseBody> call = fileUploadInterface.podcastImage(
                 "Bearer " + token.getValue(),
                 MultipartBody.Part.createFormData("imageFile", image.getName(), requestBody));
@@ -272,5 +289,34 @@ public class UploadFragment extends BaseFragment {
             viewModel.setLanguages(language);
         });
     }
+
+    private View.OnClickListener onPodcastAdd = v -> {
+        ProgressDialog progressDialog = LoadingUtil.getProgressDialog(v.getContext());
+        progressDialog.show();
+        Call<Podcast> call = apiCallInterface.podcast("Bearer " + token.getValue(), viewModel.getPodcast());
+        call.enqueue(new Callback<Podcast>() {
+            @Override
+            public void onResponse(Call<Podcast> call, Response<Podcast> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    Toasty.success(getContext(), getString(R.string.podcast_successfully_added), Toast.LENGTH_SHORT, true).show();
+                    viewModel.savePodcast(response);
+                } else {
+                    try {
+                        ErrorResponse errorResponse = gson.fromJson(response.errorBody().string(), ErrorResponse.class);
+                        Toasty.error(getContext(), errorResponse.getMessage(), Toast.LENGTH_SHORT, true).show();
+                    } catch (IOException e) {
+                        Log.e(getTag(), "onResponse: ", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Podcast> call, Throwable t) {
+                progressDialog.dismiss();
+                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+            }
+        });
+    };
 
 }

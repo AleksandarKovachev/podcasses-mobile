@@ -57,6 +57,10 @@ public class MainDataRepository {
         privacies = new MutableLiveData<>();
     }
 
+    public void savePodcast(Podcast podcast) {
+        localDataSource.insertPodcasts(podcast);
+    }
+
     public LiveData<ApiResponse> getAccount(LifecycleOwner lifecycleOwner, String username, boolean isSwipedToRefresh) {
         accountResponse.setValue(ApiResponse.loading());
 

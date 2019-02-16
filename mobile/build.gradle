@@ -108,6 +108,9 @@ dependencies {
     // Rich Text Editor
     implementation 'com.1gravity:android-rteditor:1.6.7'
 
+    // Toasty
+    implementation 'com.github.GrenderG:Toasty:1.4.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
