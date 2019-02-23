@@ -71,7 +71,6 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?android:selectableItemBackground"
-                    android:onClick="@{(view) -> viewModel.onPlayPauseButtonClick(view)}"
                     app:fill_color="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

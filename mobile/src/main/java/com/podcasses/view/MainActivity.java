@@ -2,8 +2,13 @@ package com.podcasses.view;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.UniqueTabHistoryStrategy;
+import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
@@ -47,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private static final int INDEX_SEARCH = FragNavController.TAB5;
     private static final int INDEX_ACCOUNT = FragNavController.TAB6;
     public static final int FRAGMENTS_COUNT = 6;
+
+    public static final String SERVICE_STATUS = "serviceStatus";
+    private boolean serviceBound;
 
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
@@ -92,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
         binder.bottomNavigation.setOnNavigationItemSelectedListener(this);
+
+        initChannels(this);
     }
 
     @Override
@@ -222,6 +233,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putBoolean(SERVICE_STATUS, serviceBound);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        serviceBound = savedInstanceState.getBoolean(SERVICE_STATUS);
+    }
+
     private void handleLogout() {
         AccountManager accountManager = AccountManager.get(this);
         Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
@@ -248,6 +271,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 Toast.makeText(MainActivity.this, getString(R.string.error_response), Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    public void initChannels(Context context) {
+        if (Build.VERSION.SDK_INT < 26) {
+            return;
+        }
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel(BuildConfig.APPLICATION_ID, "Podcasses", NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(channel);
     }
 
 }

@@ -55,10 +55,6 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         return podcastImage.get();
     }
 
-    public void onPlayPauseButtonClick(View view) {
-        ((PlayPauseView) view).toggle();
-    }
-
     public void setPodcast(Podcast podcast) {
         this.podcast.setValue(podcast);
         notifyPropertyChanged(BR.podcast);
