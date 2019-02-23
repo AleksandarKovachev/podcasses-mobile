@@ -5,7 +5,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.onegravity.rteditor.RTEditText;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.BR;
@@ -33,7 +32,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import retrofit2.Response;
 
-import static android.graphics.Color.GREEN;
 
 /**
  * Created by aleksandar.kovachev.
@@ -46,7 +44,6 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
     private MutableLiveData<List<Language>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
-    private ObservableField<Integer> podcastUploadProgress = new ObservableField<>();
 
     private Podcast podcast = new Podcast();
 
@@ -118,31 +115,6 @@ public class UploadViewModel extends BaseViewModel implements Observable {
     public void setPodcastImage(String podcastImage) {
         this.podcastImage.set(podcastImage);
         notifyPropertyChanged(BR.podcastImage);
-    }
-
-    @Bindable
-    public Integer getPodcastUploadProgress() {
-        return podcastUploadProgress.get();
-    }
-
-    public void setPodcastUploadProgress(Double progress) {
-        this.podcastUploadProgress.set(progress.intValue());
-        notifyPropertyChanged(BR.podcastUploadProgress);
-    }
-
-    @BindingAdapter(value = {"progress_current"}, requireAll = false)
-    public static void setCurrentProgress(NumberProgressBar progressBar, Integer progress) {
-        if (progress != null) {
-            progressBar.setVisibility(View.VISIBLE);
-            progressBar.setProgress(progress);
-            if (progress == 100) {
-                progressBar.setReachedBarColor(GREEN);
-                progressBar.setProgressTextColor(GREEN);
-            } else {
-                progressBar.setReachedBarColor(ContextCompat.getColor(progressBar.getContext(), R.color.colorAccent));
-                progressBar.setProgressTextColor(ContextCompat.getColor(progressBar.getContext(), R.color.colorAccent));
-            }
-        }
     }
 
     @BindingAdapter(value = {"languages", "selectedLanguage", "selectedLanguageAttrChanged"}, requireAll = false)

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.podcasses.BuildConfig;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.view.AuthenticatorActivity;
 
@@ -24,7 +25,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     public static final String AUTH_TOKEN_TYPE = "AUTH_TOKEN_TYPE";
 
-    public static final String ACCOUNT_TYPE = "com.podcasses";
+    public static final String ACCOUNT_TYPE = BuildConfig.APPLICATION_ID;
 
     public static final String REFRESH_TOKEN = "refreshToken";
 

@@ -3,6 +3,7 @@ package com.podcasses.view;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,26 +22,32 @@ import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
+import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.response.ErrorResponse;
+import com.podcasses.model.response.ErrorResultResponse;
+import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.ApiFileUploadInterface;
 import com.podcasses.retrofit.util.LoadingUtil;
-import com.podcasses.retrofit.util.ProgressRequestBody;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
+
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadService;
+import net.gotev.uploadservice.okhttp.OkHttpStack;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -52,10 +59,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import es.dmoral.toasty.Toasty;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,10 +77,10 @@ public class UploadFragment extends BaseFragment {
     ViewModelFactory viewModelFactory;
 
     @Inject
-    ApiFileUploadInterface fileUploadInterface;
+    ApiCallInterface apiCallInterface;
 
     @Inject
-    ApiCallInterface apiCallInterface;
+    OkHttpClient okHttpClient;
 
     @Inject
     Gson gson;
@@ -108,6 +112,7 @@ public class UploadFragment extends BaseFragment {
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
         token = isAuthenticated();
+        UploadService.HTTP_STACK = new OkHttpStack(okHttpClient);
 
         lifecycleOwner = this;
 
@@ -205,54 +210,38 @@ public class UploadFragment extends BaseFragment {
     }
 
     private void sendPodcastUploadRequest(Intent data) {
-        File podcast = new File(getRealPathFromURIPath(data.getData(), getContext()));
-        RequestBody requestBody = RequestBody.create(MediaType.parse("audio/*"), podcast);
-
-        binder.podcastUpload.setVisibility(GONE);
+        binder.podcastUpload.setVisibility(View.INVISIBLE);
         binder.podcastUploadFab.setVisibility(VISIBLE);
         binder.podcastFileName.setVisibility(VISIBLE);
 
+        File podcast = new File(getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setPodcastFileName(podcast.getName());
 
-        ProgressRequestBody fileBody = new ProgressRequestBody(requestBody,
-                (bytesWritten, contentLength) -> viewModel.setPodcastUploadProgress(((double) bytesWritten / contentLength) * 100));
-
-        Call<ResponseBody> call = fileUploadInterface.podcastUpload(
-                "Bearer " + token.getValue(),
-                MultipartBody.Part.createFormData("podcastFile", podcast.getName(), fileBody));
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(getTag(), "onFailure: ", t);
-            }
-        });
+        uploadFileToServer(podcast, "/podcast/upload", "podcastFile");
     }
 
     private void sendPodcastImageUploadRequest(Intent data) {
         File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
-        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), image);
-
         viewModel.getPodcast().setImageFileName(image.getName());
 
-        Call<ResponseBody> call = fileUploadInterface.podcastImage(
-                "Bearer " + token.getValue(),
-                MultipartBody.Part.createFormData("imageFile", image.getName(), requestBody));
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                viewModel.setPodcastImage(image.getAbsolutePath());
-                viewModel.getPodcast().setImageFileName(image.getName());
-            }
+        uploadFileToServer(image, "/podcast/image", "imageFile");
+    }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(getTag(), "onFailure: ", t);
-            }
-        });
+    private void uploadFileToServer(File file, String url, String multipartName) {
+        try {
+            MultipartUploadRequest request = new MultipartUploadRequest(
+                    getContext(),
+                    UUID.randomUUID().toString(),
+                    BuildConfig.API_GATEWAY_URL.concat(url));
+
+            request.addHeader("Authorization", "Bearer " + token.getValue());
+            request.addFileToUpload(file.getPath(), multipartName);
+            request.setNotificationConfig(new UploadNotificationConfig());
+            request.setMaxRetries(2);
+            request.startUpload();
+        } catch (Exception e) {
+            Log.e(getTag(), "onFailure: ", e);
+        }
     }
 
     private String getRealPathFromURIPath(Uri contentURI, Context context) {
@@ -303,8 +292,13 @@ public class UploadFragment extends BaseFragment {
                     viewModel.savePodcast(response);
                 } else {
                     try {
-                        ErrorResponse errorResponse = gson.fromJson(response.errorBody().string(), ErrorResponse.class);
-                        Toasty.error(getContext(), errorResponse.getMessage(), Toast.LENGTH_SHORT, true).show();
+                        ErrorResultResponse errorResponse = gson.fromJson(response.errorBody().string(), ErrorResultResponse.class);
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (FieldErrorResponse fieldError : errorResponse.getError().getFieldErrors()) {
+                            stringBuilder.append(fieldError.getError());
+                        }
+                        Toasty.error(getContext(), stringBuilder.toString(), Toast.LENGTH_SHORT, true).show();
                     } catch (IOException e) {
                         Log.e(getTag(), "onResponse: ", e);
                     }

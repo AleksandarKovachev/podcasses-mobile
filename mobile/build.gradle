@@ -1,3 +1,4 @@
+//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 
 android {
@@ -64,7 +65,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha03'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha04'
 
     // Android Jetpack
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha02'
@@ -102,14 +103,15 @@ dependencies {
     // SmartRefreshLayout
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-3'
 
-    // NumberProgressBar
-    implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
-
     // Rich Text Editor
     implementation 'com.1gravity:android-rteditor:1.6.7'
 
     // Toasty
     implementation 'com.github.GrenderG:Toasty:1.4.0'
+
+    // Upload service
+    implementation "net.gotev:uploadservice:3.5.1"
+    implementation "net.gotev:uploadservice-okhttp:3.5.1"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
