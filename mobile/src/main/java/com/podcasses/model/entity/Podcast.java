@@ -7,6 +7,8 @@ import android.text.Spanned;
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 
+import org.parceler.Parcel;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +24,7 @@ import androidx.room.TypeConverters;
  * Created by aleksandar.kovachev.
  */
 @Entity
+@Parcel(Parcel.Serialization.BEAN)
 public class Podcast extends BaseObservable {
 
     @NonNull

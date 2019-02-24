@@ -2,33 +2,36 @@ package com.podcasses.view;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.UniqueTabHistoryStrategy;
-import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.MainActivityBinding;
 import com.podcasses.manager.SharedPreferencesManager;
+import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.AuthenticationCallInterface;
+import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseFragment;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 
@@ -44,7 +47,11 @@ import retrofit2.Response;
 import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 import static com.podcasses.authentication.AccountAuthenticator.REFRESH_TOKEN;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, BaseFragment.FragmentNavigation, FragNavController.RootFragmentListener, FragNavController.TransactionListener {
+public class MainActivity extends AppCompatActivity implements
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        BaseFragment.FragmentNavigation,
+        FragNavController.RootFragmentListener,
+        FragNavController.TransactionListener {
 
     private static final int INDEX_HOME = FragNavController.TAB1;
     private static final int INDEX_TRENDING = FragNavController.TAB2;
@@ -54,9 +61,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private static final int INDEX_ACCOUNT = FragNavController.TAB6;
     public static final int FRAGMENTS_COUNT = 6;
 
-    public static final String SERVICE_STATUS = "serviceStatus";
-    private boolean serviceBound;
-
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
 
@@ -64,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     AuthenticationCallInterface authenticationCall;
 
     private FragNavController fragNavController;
+
+    private Intent intent;
+    private AudioPlayerService service;
+    private boolean bound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +110,25 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         binder.bottomNavigation.setOnNavigationItemSelectedListener(this);
 
-        initChannels(this);
+        Bundle bundle = getIntent().getBundleExtra("player");
+        if (bundle != null) {
+            Podcast podcast = Parcels.unwrap(bundle.getParcelable("podcast"));
+            intent = new Intent(this, AudioPlayerService.class);
+            Bundle serviceBundle = new Bundle();
+            serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
+            intent.putExtra("player", serviceBundle);
+            Util.startForegroundService(this, intent);
+        } else {
+            Podcast podcast = new Podcast();
+            podcast.setId("Y0K362cBXYN9Tzr96DJl");
+            podcast.setQuote("Цитат");
+            podcast.setTitle("Заглавие");
+            intent = new Intent(this, AudioPlayerService.class);
+            Bundle serviceBundle = new Bundle();
+            serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
+            intent.putExtra("player", serviceBundle);
+            Util.startForegroundService(this, intent);
+        }
     }
 
     @Override
@@ -233,18 +259,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putBoolean(SERVICE_STATUS, serviceBound);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        serviceBound = savedInstanceState.getBoolean(SERVICE_STATUS);
-    }
-
     private void handleLogout() {
         AccountManager accountManager = AccountManager.get(this);
         Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
@@ -273,14 +287,39 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         };
     }
 
-    public void initChannels(Context context) {
-        if (Build.VERSION.SDK_INT < 26) {
-            return;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) iBinder;
+            service = binder.getService();
+            bound = true;
+            initializePlayer();
         }
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel(BuildConfig.APPLICATION_ID, "Podcasses", NotificationManager.IMPORTANCE_DEFAULT);
-        notificationManager.createNotificationChannel(channel);
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            bound = false;
+        }
+    };
+
+    private void initializePlayer() {
+        if (bound) {
+            service.initPlayerInstance();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        initializePlayer();
+    }
+
+    @Override
+    protected void onStop() {
+        unbindService(serviceConnection);
+        bound = false;
+        super.onStop();
     }
 
 }

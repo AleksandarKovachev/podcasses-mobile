@@ -50,7 +50,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <service android:name=".service.MediaPlayerService" />
+        <service android:name=".service.AudioPlayerService" />
     </application>
 
 </manifest>
