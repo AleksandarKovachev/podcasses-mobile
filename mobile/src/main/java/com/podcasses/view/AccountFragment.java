@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.auth0.android.jwt.JWT;
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
@@ -71,14 +72,16 @@ public class AccountFragment extends BaseFragment {
 
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
-            JWT jwt = new JWT(s);
-            username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
-            accountId = jwt.getSubject();
+            if(!Strings.isEmptyOrWhitespace(s)) {
+                JWT jwt = new JWT(s);
+                username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
+                accountId = jwt.getSubject();
 
-            accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-            accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+                accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+                accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
-            getAccountData(null);
+                getAccountData(null);
+            }
         });
 
         setListClick();

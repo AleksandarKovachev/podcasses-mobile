@@ -1,13 +1,20 @@
 package com.podcasses.viewmodel;
 
+import android.net.Uri;
 import android.view.View;
 
+import com.google.android.exoplayer2.offline.DownloadService;
+import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
+import com.podcasses.BuildConfig;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.service.AudioDownloadService;
 import com.podcasses.viewmodel.base.BaseViewModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
@@ -53,6 +60,18 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @Bindable
     public String getPodcastImage() {
         return podcastImage.get();
+    }
+
+    public void onPlayPauseButtonClick(View view) {
+        ((PlayPauseView) view).toggle();
+        EventBus.getDefault().post(podcast.getValue());
+    }
+
+    public void onDownloadButtonClick(View view) {
+        ProgressiveDownloadAction progressiveDownloadAction = ProgressiveDownloadAction.createDownloadAction(
+                Uri.parse(BuildConfig.API_GATEWAY_URL.concat("/podcast/download/").concat(podcast.getValue().getId())),
+                null, null);
+        DownloadService.startWithAction(view.getContext(), AudioDownloadService.class, progressiveDownloadAction, false);
     }
 
     public void setPodcast(Podcast podcast) {

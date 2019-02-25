@@ -12,8 +12,10 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ncapdevi.fragnav.FragNavController;
@@ -29,6 +31,9 @@ import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseFragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.parceler.Parcels;
@@ -73,10 +78,12 @@ public class MainActivity extends AppCompatActivity implements
     private AudioPlayerService service;
     private boolean bound = false;
 
+    private MainActivityBinding binder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainActivityBinding binder = DataBindingUtil.setContentView(this, R.layout.main_activity);
+        binder = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         ((BaseApplication) getApplication()).getAppComponent().inject(this);
 
@@ -113,21 +120,7 @@ public class MainActivity extends AppCompatActivity implements
         Bundle bundle = getIntent().getBundleExtra("player");
         if (bundle != null) {
             Podcast podcast = Parcels.unwrap(bundle.getParcelable("podcast"));
-            intent = new Intent(this, AudioPlayerService.class);
-            Bundle serviceBundle = new Bundle();
-            serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
-            intent.putExtra("player", serviceBundle);
-            Util.startForegroundService(this, intent);
-        } else {
-            Podcast podcast = new Podcast();
-            podcast.setId("Y0K362cBXYN9Tzr96DJl");
-            podcast.setQuote("Цитат");
-            podcast.setTitle("Заглавие");
-            intent = new Intent(this, AudioPlayerService.class);
-            Bundle serviceBundle = new Bundle();
-            serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
-            intent.putExtra("player", serviceBundle);
-            Util.startForegroundService(this, intent);
+            startBackgroundService(podcast);
         }
     }
 
@@ -304,22 +297,44 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializePlayer() {
         if (bound) {
-            service.initPlayerInstance();
+            SimpleExoPlayer player = service.getPlayerInstance();
+            binder.exoplayerView.setUseController(true);
+            binder.exoplayerView.requestFocus();
+            binder.exoplayerView.setPlayer(player);
+            binder.exoplayerView.showController();
+            binder.exoplayerView.setControllerAutoShow(true);
+            binder.exoplayerView.setControllerHideOnTouch(false);
+            binder.exoplayerView.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        initializePlayer();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
+        super.onStop();
         unbindService(serviceConnection);
         bound = false;
-        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPodcast(Podcast podcast) {
+        startBackgroundService(podcast);
+    }
+
+    private void startBackgroundService(Podcast podcast) {
+        intent = new Intent(this, AudioPlayerService.class);
+        Bundle serviceBundle = new Bundle();
+        serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
+        intent.putExtra("player", serviceBundle);
+        Util.startForegroundService(this, intent);
+
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
 }
