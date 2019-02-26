@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private Intent intent;
     private AudioPlayerService service;
-    private boolean bound = false;
+    private SimpleExoPlayer player;
 
     private MainActivityBinding binder;
 
@@ -117,11 +117,7 @@ public class MainActivity extends AppCompatActivity implements
 
         binder.bottomNavigation.setOnNavigationItemSelectedListener(this);
 
-        Bundle bundle = getIntent().getBundleExtra("player");
-        if (bundle != null) {
-            Podcast podcast = Parcels.unwrap(bundle.getParcelable("podcast"));
-            startBackgroundService(podcast);
-        }
+        intent = new Intent(this, AudioPlayerService.class);
     }
 
     @Override
@@ -285,41 +281,27 @@ public class MainActivity extends AppCompatActivity implements
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) iBinder;
             service = binder.getService();
-            bound = true;
-            initializePlayer();
+            initializePlayer(false);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            bound = false;
+
         }
     };
-
-    private void initializePlayer() {
-        if (bound) {
-            SimpleExoPlayer player = service.getPlayerInstance();
-            binder.exoplayerView.setUseController(true);
-            binder.exoplayerView.requestFocus();
-            binder.exoplayerView.setPlayer(player);
-            binder.exoplayerView.showController();
-            binder.exoplayerView.setControllerAutoShow(true);
-            binder.exoplayerView.setControllerHideOnTouch(false);
-            binder.exoplayerView.setVisibility(View.VISIBLE);
-        }
-    }
 
     @Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
         unbindService(serviceConnection);
-        bound = false;
         EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -328,13 +310,22 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void startBackgroundService(Podcast podcast) {
-        intent = new Intent(this, AudioPlayerService.class);
         Bundle serviceBundle = new Bundle();
         serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
         intent.putExtra("player", serviceBundle);
         Util.startForegroundService(this, intent);
+        initializePlayer(true);
+    }
 
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    private void initializePlayer(boolean forceStart) {
+        player = service.getPlayerInstance();
+        if (player != null && (player.getPlayWhenReady() || forceStart)) {
+            binder.exoplayerView.setPlayer(player);
+            binder.exoplayerView.showController();
+            binder.exoplayerView.setControllerAutoShow(true);
+            binder.exoplayerView.setControllerHideOnTouch(false);
+            binder.exoplayerView.setVisibility(View.VISIBLE);
+        }
     }
 
 }

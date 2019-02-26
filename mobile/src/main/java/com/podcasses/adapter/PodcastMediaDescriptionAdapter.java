@@ -4,14 +4,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.view.MainActivity;
-
-import org.parceler.Parcels;
 
 import androidx.annotation.Nullable;
 
@@ -49,9 +46,6 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Override
     public PendingIntent createCurrentContentIntent(Player player) {
         Intent intent = new Intent(context, MainActivity.class);
-        Bundle serviceBundle = new Bundle();
-        serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
-        intent.putExtra("player", serviceBundle);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

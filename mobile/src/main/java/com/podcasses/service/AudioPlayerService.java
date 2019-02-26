@@ -104,6 +104,7 @@ public class AudioPlayerService extends Service {
                 @Override
                 public void onNotificationCancelled(int notificationId) {
                     stopSelf();
+                    stopForeground(true);
                 }
             });
             playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
