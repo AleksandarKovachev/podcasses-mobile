@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
         BaseFragment.FragmentNavigation,
         FragNavController.RootFragmentListener,
-        FragNavController.TransactionListener {
+        FragNavController.TransactionListener,
+        PodcastFragment.Callback {
 
     private static final int INDEX_HOME = FragNavController.TAB1;
     private static final int INDEX_TRENDING = FragNavController.TAB2;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements
     private SimpleExoPlayer player;
 
     private MainActivityBinding binder;
+    private Podcast podcast;
+    private AudioPlayerService.LocalBinder localBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,8 +282,9 @@ public class MainActivity extends AppCompatActivity implements
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            AudioPlayerService.LocalBinder binder = (AudioPlayerService.LocalBinder) iBinder;
-            service = binder.getService();
+            localBinder = (AudioPlayerService.LocalBinder) iBinder;
+            service = localBinder.getService();
+            podcast = service.getPodcast();
             initializePlayer(false);
         }
 
@@ -306,7 +310,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPodcast(Podcast podcast) {
-        startBackgroundService(podcast);
+        if (this.podcast != null && this.podcast.getId().equals(podcast.getId())) {
+            player.setPlayWhenReady(!player.getPlayWhenReady());
+        } else {
+            this.podcast = podcast;
+            startBackgroundService(podcast);
+        }
     }
 
     private void startBackgroundService(Podcast podcast) {
@@ -328,4 +337,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public IBinder getBinder() {
+        return localBinder;
+    }
 }

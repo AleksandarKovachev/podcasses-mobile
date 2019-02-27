@@ -134,6 +134,10 @@ public class AudioPlayerService extends Service {
         return player;
     }
 
+    public Podcast getPodcast() {
+        return podcast;
+    }
+
     public class LocalBinder extends Binder {
         public AudioPlayerService getService() {
             return AudioPlayerService.this;
