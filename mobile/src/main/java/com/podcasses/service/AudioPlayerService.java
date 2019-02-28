@@ -156,8 +156,6 @@ public class AudioPlayerService extends Service {
                 .setDescription(podcast.getQuote())
                 .setExtras(extras)
                 .build();
-
-
     }
 
 }

@@ -5,11 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
+import com.podcasses.BuildConfig;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.view.MainActivity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -39,6 +44,15 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Nullable
     @Override
     public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
+        Glide.with(context)
+                .asBitmap()
+                .load(BuildConfig.API_GATEWAY_URL.concat("/podcast/image/").concat(podcast.getId()))
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        callback.onBitmap(resource);
+                    }
+                });
         return null;
     }
 
@@ -47,6 +61,12 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     public PendingIntent createCurrentContentIntent(Player player) {
         Intent intent = new Intent(context, MainActivity.class);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @Nullable
+    @Override
+    public String getCurrentSubText(Player player) {
+        return podcast.getDuration();
     }
 
 }
