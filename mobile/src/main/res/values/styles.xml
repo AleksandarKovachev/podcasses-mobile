@@ -1,13 +1,12 @@
 <resources>
 
-    <style name="DarkAppTheme" parent="Theme.MaterialComponents">
+    <style name="DarkAppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorPrimaryInverse">@android:color/black</item>
-        <item name="actionBarTheme">@style/AppBarTheme</item>
 
         <item name="rte_ToolbarButton">@style/RTE_ToolbarButton</item>
         <item name="rte_ToolbarSpinner">@style/RTE_ToolbarSpinnerDark</item>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data></data>
@@ -9,6 +8,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.ferfalk.simplesearchview.SimpleSearchView
+                    android:id="@+id/searchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:hint="@string/title_search"
+                    app:type="card"
+                    app:voiceSearch="true" />
+            </FrameLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="0dp"
@@ -16,13 +44,13 @@
             app:layout_constraintBottom_toTopOf="@id/exoplayer_view"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/appbar" />
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/exoplayer_view"
             android:layout_width="match_parent"
-            android:visibility="gone"
             android:layout_height="100dp"
+            android:visibility="gone"
             app:controller_layout_id="@layout/exo_playback_control_view"
             app:hide_on_touch="false"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"

@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ferfalk.simplesearchview.SimpleOnQueryTextListener;
+import com.ferfalk.simplesearchview.SimpleSearchView;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int INDEX_UPLOAD = FragNavController.TAB4;
     private static final int INDEX_SEARCH = FragNavController.TAB5;
     private static final int INDEX_ACCOUNT = FragNavController.TAB6;
-    public static final int FRAGMENTS_COUNT = 6;
+    public static final int FRAGMENTS_COUNT = 5;
 
     @Inject
     SharedPreferencesManager sharedPreferencesManager;
@@ -89,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements
         binder = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         ((BaseApplication) getApplication()).getAppComponent().inject(this);
+
+        setSupportActionBar(binder.toolbar);
 
         fragNavController = new FragNavController(getSupportFragmentManager(), R.id.container);
 
@@ -118,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements
             binder.bottomNavigation.setSelectedItemId(R.id.navigation_home);
         }
 
+        binder.searchView.setOnQueryTextListener(searchQueryTextListener);
         binder.bottomNavigation.setOnNavigationItemSelectedListener(this);
 
         intent = new Intent(this, AudioPlayerService.class);
@@ -134,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.app_navigation, menu);
+
+        binder.searchView.setMenuItem(menu.findItem(R.id.navigation_search));
         return true;
     }
 
@@ -168,9 +175,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.navigation_upload:
                 fragNavController.switchTab(INDEX_UPLOAD);
-                break;
-            case R.id.navigation_search:
-                fragNavController.switchTab(INDEX_SEARCH);
                 break;
             case R.id.navigation_dark_theme:
                 if (!item.isChecked()) {
@@ -246,6 +250,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        if (binder.searchView.onBackPressed()) {
+            return;
+        }
         if (!fragNavController.popFragment()) {
             super.onBackPressed();
         }
@@ -307,6 +314,20 @@ public class MainActivity extends AppCompatActivity implements
         super.onStop();
     }
 
+    @Override
+    public IBinder getBinder() {
+        return localBinder;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (binder.searchView.onActivityResult(requestCode, resultCode, data)) {
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPodcast(Podcast podcast) {
         if (this.podcast != null && this.podcast.getId().equals(podcast.getId())) {
@@ -336,8 +357,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public IBinder getBinder() {
-        return localBinder;
-    }
+    private SimpleSearchView.OnQueryTextListener searchQueryTextListener = new SimpleOnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return super.onQueryTextSubmit(query);
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            return super.onQueryTextChange(newText);
+        }
+    };
+
 }
