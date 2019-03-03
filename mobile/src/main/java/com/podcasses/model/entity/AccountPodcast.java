@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class AccountPodcast {
 
-    public static final int DUSLIKED = 2;
+    public static final int DISLIKED = 2;
     public static final int LIKED = 1;
     public static final int DEFAULT = 0;
 

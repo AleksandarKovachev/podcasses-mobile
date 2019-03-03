@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:background="?selectableItemBackgroundBorderless"
                     android:padding="@dimen/medium_offset"
-                    android:src="@drawable/ic_thumb_up"
+                    android:src="@drawable/like_button"
                     app:layout_constraintBottom_toBottomOf="@id/play_button"
                     app:layout_constraintEnd_toStartOf="@id/play_button"
                     app:layout_constraintTop_toBottomOf="@id/podcast_date" />
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:background="?selectableItemBackgroundBorderless"
                     android:padding="@dimen/medium_offset"
-                    android:src="@drawable/ic_thumb_down"
+                    android:src="@drawable/dislike_button"
                     app:layout_constraintBottom_toBottomOf="@id/play_button"
                     app:layout_constraintStart_toEndOf="@id/play_button"
                     app:layout_constraintTop_toBottomOf="@id/podcast_date" />

@@ -42,6 +42,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         return repository.getPodcasts(lifecycleOwner, null, podcastId, null, isSwipedToRefresh);
     }
 
+    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, String accountId, @NonNull String podcastId, boolean isSwipedToRefresh) {
+        return repository.getAccountPodcasts(lifecycleOwner, token, accountId, podcastId, isSwipedToRefresh);
+    }
+
     @Override
     public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
         callbacks.add(callback);

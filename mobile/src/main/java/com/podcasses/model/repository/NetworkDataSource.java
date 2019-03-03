@@ -1,6 +1,7 @@
 package com.podcasses.model.repository;
 
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.Language;
@@ -63,6 +64,21 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void getAccountPodcast(String token, String podcastId, IDataCallback<AccountPodcast> callback){
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, podcastId);
+        call.enqueue(new Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
                 callback.onFailure(t);
             }
         });

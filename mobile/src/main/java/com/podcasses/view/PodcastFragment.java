@@ -1,20 +1,29 @@
 package com.podcasses.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.auth0.android.jwt.JWT;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
@@ -30,9 +39,14 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by aleksandar.kovachev.
@@ -46,17 +60,27 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    ApiCallInterface apiCallInterface;
+
     private FragmentPodcastBinding binding;
 
     private PodcastViewModel viewModel;
 
     private static String id;
 
-    private LiveData<ApiResponse> response;
+    private LiveData<ApiResponse> podcastResponse;
+    private LiveData<ApiResponse> accountPodcastResponse;
+    private LiveData<String> token;
+    private Podcast podcast;
+    private AccountPodcast accountPodcast;
 
     private Podcast playingPodcast;
     private IBinder binder;
     private AudioPlayerService service;
+
+    private PopupMenu popupOptions;
+    private MenuPopupHelper menuHelper;
 
     static PodcastFragment newInstance(int instance, String podcastId) {
         id = podcastId;
@@ -67,6 +91,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         return fragment;
     }
 
+    @SuppressLint("RestrictedApi")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -75,6 +100,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         binding.setLifecycleOwner(this);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
+        token = isAuthenticated();
 
         binding.refreshLayout.setOnRefreshListener(refreshListener);
 
@@ -83,8 +109,24 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
         viewModel.setPodcastImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PODCAST_IMAGE + id);
 
-        response = viewModel.podcast(this, id, false);
-        response.observe(this, apiResponse -> consumeResponse(apiResponse, null));
+        podcastResponse = viewModel.podcast(this, id, false);
+        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, null));
+
+        token.observe(this, s -> {
+            if (!Strings.isEmptyOrWhitespace(s)) {
+                JWT jwt = new JWT(s);
+                accountPodcastResponse = viewModel.accountPodcasts(this, s, jwt.getSubject(), id, false);
+                accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, null));
+            }
+        });
+
+        popupOptions = new PopupMenu(getContext(), binding.optionsButton);
+        popupOptions.getMenuInflater()
+                .inflate(R.menu.podcast_options_menu, popupOptions.getMenu());
+        menuHelper = new MenuPopupHelper(getContext(), (MenuBuilder) popupOptions.getMenu(), binding.optionsButton);
+        menuHelper.setForceShowIcon(true);
+        menuHelper.setGravity(Gravity.END);
+        binding.optionsButton.setOnClickListener(onOptionsClickListener);
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         SimpleExoPlayer player = service.getPlayerInstance();
@@ -111,27 +153,42 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     }
 
     private OnRefreshListener refreshListener = refreshLayout -> {
-        response = viewModel.podcast(this, id, true);
-        response.observe(this, apiResponse -> consumeResponse(apiResponse, refreshLayout));
+        podcastResponse = viewModel.podcast(this, id, true);
+        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
+
+        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
+            JWT jwt = new JWT(token.getValue());
+            accountPodcastResponse = viewModel.accountPodcasts(this, token.getValue(), jwt.getSubject(), id, true);
+            accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
+        }
     };
 
-    private void consumeResponse(@NonNull ApiResponse apiResponse, RefreshLayout refreshLayout) {
+    private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
         switch (apiResponse.status) {
             case LOADING:
                 break;
             case SUCCESS:
-                response.removeObservers(this);
+                liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
                 if (apiResponse.data instanceof Podcast) {
-                    viewModel.setPodcast((Podcast) apiResponse.data);
+                    podcast = (Podcast) apiResponse.data;
+                    viewModel.setPodcast(podcast);
+                } else if (apiResponse.data instanceof AccountPodcast) {
+                    accountPodcast = (AccountPodcast) apiResponse.data;
+                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.LIKED);
+                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.DISLIKED);
+                    popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
                 } else {
-                    viewModel.setPodcast(((List<Podcast>) apiResponse.data).get(0));
+                    if (!CollectionUtils.isEmpty((List<Podcast>) apiResponse.data)) {
+                        podcast = ((List<Podcast>) apiResponse.data).get(0);
+                        viewModel.setPodcast(podcast);
+                    }
                 }
                 break;
             case ERROR:
-                response.removeObservers(this);
+                liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
@@ -152,6 +209,48 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         if (playingPodcast != null && playingPodcast.getId().equals(id)) {
             binding.playButton.change(!playingStatus);
         }
+    }
+
+    @SuppressLint("RestrictedApi")
+    private View.OnClickListener onOptionsClickListener = view -> {
+        popupOptions.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.markAsPlayed:
+                    if (accountPodcast != null) {
+                        sendMarkAsPlayedRequest(item);
+                    }
+                    break;
+                case R.id.report:
+                    break;
+            }
+            return true;
+        });
+        menuHelper.show();
+    };
+
+    private void sendMarkAsPlayedRequest(MenuItem item) {
+        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setPodcastId(podcast.getId());
+        if (accountPodcast.getMarkAsPlayed() == 1) {
+            accountPodcastRequest.setMarkAsPlayed(0);
+        } else {
+            accountPodcastRequest.setMarkAsPlayed(1);
+        }
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token.getValue(), accountPodcastRequest);
+        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    accountPodcast = response.body();
+                    item.setChecked(accountPodcast.getMarkAsPlayed() == 1);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                Log.e(getTag(), "onFailure: ", t);
+            }
+        });
     }
 
 }

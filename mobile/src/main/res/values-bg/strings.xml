@@ -48,4 +48,7 @@
     <string name="storage_permission_image">Трябва да дадеш достъп за четене на хранилището, за да избереш изображение!</string>
     <string name="storage_permission_audio">Трябва да дадеш достъп за четене на хранилището, за да избереш аудио!</string>
 
+    <string name="mark_as_played">Маркирай като изслушан</string>
+    <string name="report">Подай сигнал</string>
+
 </resources>
