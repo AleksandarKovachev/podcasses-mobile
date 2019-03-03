@@ -1,9 +1,9 @@
 package com.podcasses.view;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -65,7 +65,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 /**
@@ -209,6 +208,7 @@ public class UploadFragment extends BaseFragment {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private void sendPodcastUploadRequest(Intent data) {
         binder.podcastUpload.setVisibility(View.INVISIBLE);
         binder.podcastUploadFab.setVisibility(VISIBLE);

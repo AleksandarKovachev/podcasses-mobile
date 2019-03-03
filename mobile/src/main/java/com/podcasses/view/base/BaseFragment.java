@@ -71,7 +71,7 @@ public class BaseFragment extends Fragment {
                 try {
                     token.setValue(invalidateToken.execute(authToken).get());
                 } catch (Exception e) {
-                    Log.e(this.getClass().getName(), "isAuthenticated: ", e);
+                    Log.e(getTag(), "isAuthenticated: ", e);
                 }
             }
         }

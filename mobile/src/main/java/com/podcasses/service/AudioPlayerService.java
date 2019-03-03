@@ -116,7 +116,9 @@ public class AudioPlayerService extends Service {
     @Override
     public void onDestroy() {
         if (player != null) {
-            playerNotificationManager.setPlayer(null);
+            if (playerNotificationManager != null) {
+                playerNotificationManager.setPlayer(null);
+            }
             mediaSessionConnector.setPlayer(null, null);
             player.release();
             player = null;

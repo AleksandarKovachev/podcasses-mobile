@@ -1,8 +1,10 @@
 package com.podcasses.model.repository;
 
 import com.podcasses.database.dao.AccountDao;
+import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 
 import java.util.List;
@@ -20,10 +22,13 @@ public class LocalDataSource {
 
     private AccountDao accountDao;
 
+    private AccountPodcastDao accountPodcastDao;
+
     @Inject
-    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao) {
+    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao) {
         this.podcastDao = podcastDao;
         this.accountDao = accountDao;
+        this.accountPodcastDao = accountPodcastDao;
     }
 
     LiveData<List<Podcast>> getUserPodcasts(String userId) {
@@ -52,6 +57,18 @@ public class LocalDataSource {
 
     void updateAccountSubscribes(int subscribes, String accountId) {
         accountDao.update(subscribes, accountId);
+    }
+
+    LiveData<AccountPodcast> getAccountPodcast(String accountId, String podcastId) {
+        return accountPodcastDao.getAccountPodcast(accountId, podcastId);
+    }
+
+    LiveData<List<AccountPodcast>> getAccountPodcasts(String accountId) {
+        return accountPodcastDao.getAccountPodcasts(accountId);
+    }
+
+    void insertAccountPodcasts(AccountPodcast... accountPodcasts){
+        accountPodcastDao.insertAll(accountPodcasts);
     }
 
 }

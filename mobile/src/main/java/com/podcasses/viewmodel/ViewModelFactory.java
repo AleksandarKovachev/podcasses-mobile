@@ -1,7 +1,6 @@
 package com.podcasses.viewmodel;
 
 import com.podcasses.model.repository.MainDataRepository;
-import com.podcasses.retrofit.ApiCallInterface;
 
 import javax.inject.Inject;
 
