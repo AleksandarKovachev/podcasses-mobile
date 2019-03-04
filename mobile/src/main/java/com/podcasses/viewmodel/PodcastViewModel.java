@@ -39,7 +39,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     }
 
     public LiveData<ApiResponse> podcast(@NonNull LifecycleOwner lifecycleOwner, @NonNull String podcastId, boolean isSwipedToRefresh) {
-        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, isSwipedToRefresh);
+        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, isSwipedToRefresh, false);
     }
 
     public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, String accountId, @NonNull String podcastId, boolean isSwipedToRefresh) {

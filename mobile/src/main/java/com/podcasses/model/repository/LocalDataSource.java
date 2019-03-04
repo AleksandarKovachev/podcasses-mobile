@@ -43,6 +43,10 @@ public class LocalDataSource {
         podcastDao.insertAll(podcasts);
     }
 
+    void deleteAllPodcasts() {
+        podcastDao.deleteAll();
+    }
+
     LiveData<Account> getAccountById(String accountId) {
         return accountDao.getAccountById(accountId);
     }
@@ -67,7 +71,7 @@ public class LocalDataSource {
         return accountPodcastDao.getAccountPodcasts(accountId);
     }
 
-    void insertAccountPodcasts(AccountPodcast... accountPodcasts){
+    void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
         accountPodcastDao.insertAll(accountPodcasts);
     }
 

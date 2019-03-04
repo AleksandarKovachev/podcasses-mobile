@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
@@ -152,6 +153,11 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         }
     }
 
+    void updateTitle() {
+        if (podcast != null && getActivity() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast.getTitle());
+    }
+
     private OnRefreshListener refreshListener = refreshLayout -> {
         podcastResponse = viewModel.podcast(this, id, true);
         podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
@@ -174,6 +180,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 }
                 if (apiResponse.data instanceof Podcast) {
                     podcast = (Podcast) apiResponse.data;
+                    updateTitle();
                     viewModel.setPodcast(podcast);
                 } else if (apiResponse.data instanceof AccountPodcast) {
                     accountPodcast = (AccountPodcast) apiResponse.data;
@@ -182,6 +189,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
                 } else {
                     if (!CollectionUtils.isEmpty((List<Podcast>) apiResponse.data)) {
+                        updateTitle();
                         podcast = ((List<Podcast>) apiResponse.data).get(0);
                         viewModel.setPodcast(podcast);
                     }

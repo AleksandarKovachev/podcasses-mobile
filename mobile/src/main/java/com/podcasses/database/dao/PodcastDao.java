@@ -6,7 +6,6 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -26,7 +25,7 @@ public interface PodcastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Podcast... podcasts);
 
-    @Delete
-    void remove(Podcast Podcast);
+    @Query("DELETE FROM podcast")
+    void deleteAll();
 
 }

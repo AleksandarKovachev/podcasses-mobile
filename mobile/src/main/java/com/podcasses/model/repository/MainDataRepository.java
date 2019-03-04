@@ -95,18 +95,18 @@ public class MainDataRepository {
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId, boolean isSwipedToRefresh, boolean saveData) {
         podcastResponse.setValue(ApiResponse.loading());
 
         if (isSwipedToRefresh) {
-            fetchPodcastsOnNetwork(podcast, podcastId, userId);
+            fetchPodcastsOnNetwork(podcast, podcastId, userId, saveData);
         } else {
             if (!Strings.isEmptyOrWhitespace(userId)) {
                 podcastsLiveData = localDataSource.getUserPodcasts(userId);
-                podcastsLiveData.observe(lifecycleOwner, podcasts -> onPodcastsFetched(lifecycleOwner, podcasts, podcast, podcastId, userId));
+                podcastsLiveData.observe(lifecycleOwner, podcasts -> onPodcastsFetched(lifecycleOwner, podcasts, podcast, podcastId, userId, saveData));
             } else if (!Strings.isEmptyOrWhitespace(podcastId)) {
                 podcastLiveData = localDataSource.getPodcastById(podcastId);
-                podcastLiveData.observe(lifecycleOwner, p -> onPodcastsFetched(lifecycleOwner, p, podcast, podcastId, userId));
+                podcastLiveData.observe(lifecycleOwner, p -> onPodcastsFetched(lifecycleOwner, p, podcast, podcastId, userId, saveData));
             }
         }
 
@@ -141,10 +141,10 @@ public class MainDataRepository {
         return privacies;
     }
 
-    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId) {
+    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId, boolean saveData) {
         podcastLiveData.removeObservers(lifecycleOwner);
         if (podcast == null) {
-            fetchPodcastsOnNetwork(podcastTitle, podcastId, userId);
+            fetchPodcastsOnNetwork(podcastTitle, podcastId, userId, saveData);
         } else {
             podcastResponse.setValue(ApiResponse.success(podcast));
         }
@@ -159,10 +159,10 @@ public class MainDataRepository {
         }
     }
 
-    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, List<Podcast> podcasts, String podcast, String podcastId, String userId) {
+    private void onPodcastsFetched(LifecycleOwner lifecycleOwner, List<Podcast> podcasts, String podcast, String podcastId, String userId, boolean saveData) {
         podcastsLiveData.removeObservers(lifecycleOwner);
         if (CollectionUtils.isEmpty(podcasts)) {
-            fetchPodcastsOnNetwork(podcast, podcastId, userId);
+            fetchPodcastsOnNetwork(podcast, podcastId, userId, saveData);
         } else {
             podcastResponse.setValue(ApiResponse.success(podcasts));
         }
@@ -206,14 +206,17 @@ public class MainDataRepository {
         }
     }
 
-    private void fetchPodcastsOnNetwork(String podcast, String podcastId, String userId) {
+    private void fetchPodcastsOnNetwork(String podcast, String podcastId, String userId, boolean saveData) {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getPodcasts(podcast, podcastId, userId, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));
 
-                    localDataSource.insertPodcasts(data.toArray(new Podcast[0]));
+                    if (saveData) {
+                        localDataSource.deleteAllPodcasts();
+                        localDataSource.insertPodcasts(data.toArray(new Podcast[0]));
+                    }
                 }
 
                 @Override

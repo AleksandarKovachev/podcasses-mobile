@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -45,6 +46,7 @@ public class AccountFragment extends BaseFragment {
     private LiveData<ApiResponse> accountSubscribesResponse;
     private LiveData<ApiResponse> podcasts;
 
+    private Account account;
     private String username;
     private String accountId;
 
@@ -72,7 +74,7 @@ public class AccountFragment extends BaseFragment {
 
         LiveData<String> token = isAuthenticated();
         token.observe(this, s -> {
-            if(!Strings.isEmptyOrWhitespace(s)) {
+            if (!Strings.isEmptyOrWhitespace(s)) {
                 JWT jwt = new JWT(s);
                 username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
                 accountId = jwt.getSubject();
@@ -89,10 +91,15 @@ public class AccountFragment extends BaseFragment {
         return binder.getRoot();
     }
 
+    void updateTitle() {
+        if (account != null && getActivity() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
+    }
+
     private void getAccountData(RefreshLayout refreshLayout) {
         accountResponse = accountViewModel.account(this, username, refreshLayout != null);
         accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
-        podcasts = accountViewModel.podcasts(this, null, null, accountId, refreshLayout != null);
+        podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
 
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
@@ -109,7 +116,9 @@ public class AccountFragment extends BaseFragment {
                     refreshLayout.finishRefresh();
                 }
                 if (apiResponse.data instanceof Account) {
-                    accountViewModel.setAccount((Account) apiResponse.data);
+                    account = (Account) apiResponse.data;
+                    updateTitle();
+                    accountViewModel.setAccount(account);
                 } else if (apiResponse.data instanceof Integer) {
                     accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
                 } else if (apiResponse.data instanceof List) {

@@ -65,8 +65,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int INDEX_TRENDING = FragNavController.TAB2;
     private static final int INDEX_NOTIFICATION = FragNavController.TAB3;
     private static final int INDEX_UPLOAD = FragNavController.TAB4;
-    private static final int INDEX_SEARCH = FragNavController.TAB5;
-    private static final int INDEX_ACCOUNT = FragNavController.TAB6;
+    private static final int INDEX_ACCOUNT = FragNavController.TAB5;
     public static final int FRAGMENTS_COUNT = 5;
 
     @Inject
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements
         ((BaseApplication) getApplication()).getAppComponent().inject(this);
 
         setSupportActionBar(binder.toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         fragNavController = new FragNavController(getSupportFragmentManager(), R.id.container);
 
@@ -225,8 +225,6 @@ public class MainActivity extends AppCompatActivity implements
                 return NotificationsFragment.newInstance(0);
             case INDEX_UPLOAD:
                 return UploadFragment.newInstance(0);
-            case INDEX_SEARCH:
-                return SearchFragment.newInstance(0);
             case INDEX_ACCOUNT:
                 return AccountFragment.newInstance(0);
         }
@@ -235,11 +233,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentTransaction(@Nullable Fragment fragment, @NotNull FragNavController.TransactionType transactionType) {
+        setTitle(fragment);
         getSupportActionBar().setDisplayHomeAsUpEnabled(!fragNavController.isRootFragment());
     }
 
     @Override
     public void onTabTransaction(@Nullable Fragment fragment, int i) {
+        setTitle(fragment);
         getSupportActionBar().setDisplayHomeAsUpEnabled(!fragNavController.isRootFragment());
     }
 
@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements
     private SimpleSearchView.OnQueryTextListener searchQueryTextListener = new SimpleOnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
+            fragNavController.pushFragment(SearchFragment.newInstance(1, query));
             return super.onQueryTextSubmit(query);
         }
 
@@ -368,5 +369,20 @@ public class MainActivity extends AppCompatActivity implements
             return super.onQueryTextChange(newText);
         }
     };
+
+    private void setTitle(@Nullable Fragment fragment) {
+        if (fragment instanceof SearchFragment || fragment instanceof PodcastFragment || fragment instanceof AccountFragment) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            if (fragment instanceof SearchFragment) {
+                ((SearchFragment) fragment).updateTitle();
+            } else if (fragment instanceof PodcastFragment) {
+                ((PodcastFragment) fragment).updateTitle();
+            } else {
+                ((AccountFragment) fragment).updateTitle();
+            }
+        } else {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
 
 }
