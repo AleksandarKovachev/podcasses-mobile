@@ -211,6 +211,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         playingPodcast = service.getPodcast();
         setPlayingStatus(playWhenReady);
+
+        if (playbackState == Player.STATE_IDLE) {
+            binding.playButton.change(true);
+        }
     }
 
     private void setPlayingStatus(boolean playingStatus) {

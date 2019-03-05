@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.ferfalk.simplesearchview.SimpleOnQueryTextListener;
 import com.ferfalk.simplesearchview.SimpleSearchView;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -59,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements
         BaseFragment.FragmentNavigation,
         FragNavController.RootFragmentListener,
         FragNavController.TransactionListener,
-        PodcastFragment.Callback {
+        PodcastFragment.Callback,
+        Player.EventListener {
 
     private static final int INDEX_HOME = FragNavController.TAB1;
     private static final int INDEX_TRENDING = FragNavController.TAB2;
@@ -330,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPodcast(Podcast podcast) {
-        if (this.podcast != null && this.podcast.getId().equals(podcast.getId())) {
+        if (this.podcast != null && this.podcast.getId().equals(podcast.getId()) && player.getPlaybackState() == Player.STATE_READY) {
             player.setPlayWhenReady(!player.getPlayWhenReady());
         } else {
             this.podcast = podcast;
@@ -348,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializePlayer(boolean forceStart) {
         player = service.getPlayerInstance();
+        player.addListener(this);
         if (player != null && (player.getPlayWhenReady() || forceStart)) {
             binder.exoplayerView.setPlayer(player);
             binder.exoplayerView.showController();
@@ -382,6 +385,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (playbackState == Player.STATE_IDLE) {
+            binder.exoplayerView.setVisibility(View.GONE);
         }
     }
 
