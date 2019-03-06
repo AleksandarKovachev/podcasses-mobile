@@ -33,6 +33,7 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseFragment;
+import com.podcasses.view.base.FragmentCallback;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements
         BaseFragment.FragmentNavigation,
         FragNavController.RootFragmentListener,
         FragNavController.TransactionListener,
-        PodcastFragment.Callback,
+        FragmentCallback,
         Player.EventListener {
 
     private static final int INDEX_HOME = FragNavController.TAB1;

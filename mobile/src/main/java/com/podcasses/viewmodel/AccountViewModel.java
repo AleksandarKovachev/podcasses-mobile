@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
-import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,9 +17,7 @@ import androidx.lifecycle.MutableLiveData;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountViewModel extends BasePodcastViewModel implements Observable {
-
-    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+public class AccountViewModel extends BasePodcastViewModel {
 
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
@@ -41,16 +38,6 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String userId, boolean isSwipedToRefresh, boolean saveData) {
         return repository.getPodcasts(lifecycleOwner, null, null, userId, isSwipedToRefresh, saveData);
-    }
-
-    @Override
-    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.add(callback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.remove(callback);
     }
 
     @Bindable
@@ -91,10 +78,6 @@ public class AccountViewModel extends BasePodcastViewModel implements Observable
     public void setAccountSubscribes(String accountSubscribes) {
         this.accountSubscribes.set(accountSubscribes);
         notifyPropertyChanged(BR.accountSubscribes);
-    }
-
-    private void notifyPropertyChanged(int fieldId) {
-        callbacks.notifyCallbacks(this, fieldId, null);
     }
 
 }

@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     dataBinding {
         enabled true
@@ -40,8 +41,8 @@ android {
 
         debug {
             debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.101:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.101:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.103:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.103:9090"'
         }
     }
     compileOptions {
@@ -127,6 +128,9 @@ dependencies {
 
     // SearchView
     implementation 'com.github.Ferfalk:SimpleSearchView:0.1.3'
+
+    // MultiDex
+    implementation 'com.android.support:multidex:1.0.3'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'

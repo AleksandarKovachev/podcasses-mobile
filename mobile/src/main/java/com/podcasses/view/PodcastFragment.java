@@ -28,6 +28,7 @@ import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
+import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -53,10 +54,6 @@ import retrofit2.Response;
  * Created by aleksandar.kovachev.
  */
 public class PodcastFragment extends BaseFragment implements Player.EventListener {
-
-    public interface Callback {
-        IBinder getBinder();
-    }
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -145,10 +142,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            Callback callback = (Callback) context;
-            binder = callback.getBinder();
+            FragmentCallback fragmentCallback = (FragmentCallback) context;
+            binder = fragmentCallback.getBinder();
         } catch (ClassCastException e) {
-            Log.e(getTag(), "Activity (Context) must implement Callback");
+            Log.e(getTag(), "Activity (Context) must implement FragmentCallback");
             throw new RuntimeException();
         }
     }

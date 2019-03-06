@@ -76,11 +76,14 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:selectableItemBackground"
+            android:onClick="@{() -> viewModel.onPlayButtonClick(position)}"
             app:fill_color="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:pause_bg="@android:color/transparent"
-            app:play_bg="@android:color/transparent" />
+            app:playPauseStatus='@{viewModel.playingIndex}'
+            app:play_bg="@android:color/transparent"
+            app:position='@{position}' />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/podcast_views"
