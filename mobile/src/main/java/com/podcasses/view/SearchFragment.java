@@ -1,16 +1,24 @@
 package com.podcasses.view;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseFragment;
+import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.SearchViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -29,13 +37,20 @@ import androidx.lifecycle.ViewModelProviders;
 /**
  * Created by aleksandar.kovachev.
  */
-public class SearchFragment extends BaseFragment {
+public class SearchFragment extends BaseFragment implements Player.EventListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
 
+    private FragmentSearchBinding binding;
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
+    private List<Podcast> podcasts;
+
+    private Podcast playingPodcast;
+    private IBinder binder;
+    private AudioPlayerService service;
+    private SimpleExoPlayer player;
 
     private static String podcast;
 
@@ -52,21 +67,42 @@ public class SearchFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentSearchBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
         updateTitle();
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchViewModel.class);
-        binder.setViewModel(viewModel);
+        binding.setViewModel(viewModel);
 
-        binder.refreshLayout.setOnRefreshListener(this::getPodcasts);
-        getPodcasts(binder.refreshLayout);
+        binding.refreshLayout.setOnRefreshListener(this::getPodcasts);
+        getPodcasts(binding.refreshLayout);
 
         setListClick();
 
-        return binder.getRoot();
+        service = ((AudioPlayerService.LocalBinder) binder).getService();
+        player = service.getPlayerInstance();
+
+        if (player != null) {
+            playingPodcast = service.getPodcast();
+            player.addListener(this);
+            setPlayingStatus(player.getPlayWhenReady());
+        }
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            FragmentCallback fragmentCallback = (FragmentCallback) context;
+            binder = fragmentCallback.getBinder();
+        } catch (ClassCastException e) {
+            Log.e(getTag(), "Activity (Context) must implement FragmentCallback");
+            throw new RuntimeException();
+        }
     }
 
     private void getPodcasts(RefreshLayout refreshLayout) {
@@ -90,7 +126,11 @@ public class SearchFragment extends BaseFragment {
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                podcasts = (List<Podcast>) apiResponse.data;
+                viewModel.setPodcastsInAdapter(podcasts);
+                if (player != null) {
+                    setPlayingStatus(player.getPlayWhenReady());
+                }
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -111,6 +151,32 @@ public class SearchFragment extends BaseFragment {
                 viewModel.getSelected().setValue(null);
             }
         });
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        playingPodcast = service.getPodcast();
+        setPlayingStatus(playWhenReady);
+
+        if (playbackState == Player.STATE_IDLE) {
+            viewModel.setPlayingIndex(-1);
+        }
+    }
+
+    private void setPlayingStatus(boolean playingStatus) {
+        if (!playingStatus) {
+            viewModel.setPlayingIndex(-1);
+            return;
+        }
+        if (playingPodcast != null && !CollectionUtils.isEmpty(viewModel.getPodcasts())) {
+            int i;
+            for (i = 0; i < viewModel.getPodcasts().size(); i++) {
+                if (playingPodcast.getId().equals(viewModel.getPodcasts().get(i).getId())) {
+                    break;
+                }
+            }
+            viewModel.setPlayingIndex(i);
+        }
     }
 
 }
