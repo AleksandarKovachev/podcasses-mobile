@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.exoplayer2.Player;
@@ -47,6 +48,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -125,6 +127,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         menuHelper.setForceShowIcon(true);
         menuHelper.setGravity(Gravity.END);
         binding.optionsButton.setOnClickListener(onOptionsClickListener);
+        binding.likeButton.setOnClickListener(onLikeClickListener);
+        binding.dislikeButton.setOnClickListener(onDislikeClickListener);
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         SimpleExoPlayer player = service.getPlayerInstance();
@@ -257,6 +261,53 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+            }
+        });
+    }
+
+    private View.OnClickListener onLikeClickListener = v ->
+            sendLikeDislikeRequest(AccountPodcast.LIKED, R.string.successfully_liked, R.string.successful_like_status_change);
+
+    private View.OnClickListener onDislikeClickListener = v ->
+            sendLikeDislikeRequest(AccountPodcast.DISLIKED, R.string.successful_dislike, R.string.successful_dislike_status_change);
+
+    private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage, int successfulDefaultMessage) {
+        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setPodcastId(podcast.getId());
+        if (accountPodcast.getLikeStatus() == likeStatus) {
+            accountPodcastRequest.setLikeStatus(AccountPodcast.DEFAULT);
+        } else {
+            accountPodcastRequest.setLikeStatus(likeStatus);
+        }
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token.getValue(), accountPodcastRequest);
+        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    accountPodcast = response.body();
+                    if (likeStatus == AccountPodcast.LIKED) {
+                        binding.likeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);
+                        binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() != likeStatus &&
+                                accountPodcast.getLikeStatus() != AccountPodcast.DEFAULT);
+                    } else {
+                        binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);
+                        binding.likeButton.setSelected(accountPodcast.getLikeStatus() != likeStatus &&
+                                accountPodcast.getLikeStatus() != AccountPodcast.DEFAULT);
+                    }
+                    if (accountPodcast.getLikeStatus() == likeStatus) {
+                        Toasty.success(getContext(), getString(successfulChangeMessage), Toast.LENGTH_SHORT, true).show();
+                    } else {
+                        Toasty.success(getContext(), getString(successfulDefaultMessage), Toast.LENGTH_SHORT, true).show();
+                    }
+                } else {
+                    Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
                 Log.e(getTag(), "onFailure: ", t);
             }
         });
