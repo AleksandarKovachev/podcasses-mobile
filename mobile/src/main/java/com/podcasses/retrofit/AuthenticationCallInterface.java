@@ -20,7 +20,7 @@ public interface AuthenticationCallInterface {
 
     String CLIENT_ID = "android-app";
 
-    String CLIENT_SECRET = "3d541700-0250-424f-8b19-53c883f841ab";
+    String CLIENT_SECRET = "28f75581-188f-4d46-a6e2-2f1f841e5f62";
 
     String TOKEN_TYPE = "Bearer ";
 

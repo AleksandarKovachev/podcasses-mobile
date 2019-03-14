@@ -4,6 +4,7 @@ import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 
@@ -69,7 +70,7 @@ class NetworkDataSource {
         });
     }
 
-    void getAccountPodcast(String token, String podcastId, IDataCallback<AccountPodcast> callback){
+    void getAccountPodcast(String token, String podcastId, IDataCallback<AccountPodcast> callback) {
         Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, podcastId);
         call.enqueue(new Callback<AccountPodcast>() {
             @Override
@@ -79,6 +80,25 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void getPodcastFiles(String token, IDataCallback<List<PodcastFile>> callback) {
+        Call<List<PodcastFile>> call = apiCallInterface.podcastFiles("Bearer " + token);
+        call.enqueue(new Callback<List<PodcastFile>>() {
+            @Override
+            public void onResponse(Call<List<PodcastFile>> call, Response<List<PodcastFile>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PodcastFile>> call, Throwable t) {
                 callback.onFailure(t);
             }
         });

@@ -9,6 +9,7 @@ import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
@@ -36,6 +37,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> accountResponse;
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
+    private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
 
     private LiveData<Podcast> podcastLiveData;
@@ -55,6 +57,7 @@ public class MainDataRepository {
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
+        podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
@@ -111,6 +114,24 @@ public class MainDataRepository {
         }
 
         return podcastResponse;
+    }
+
+    public LiveData<ApiResponse> getPodcastFiles(String token) {
+        podcastFilesResponse.setValue(ApiResponse.loading());
+
+        networkDataSource.getPodcastFiles(token, new IDataCallback<List<PodcastFile>>() {
+            @Override
+            public void onSuccess(List<PodcastFile> data) {
+                podcastFilesResponse.setValue(ApiResponse.success(data));
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                podcastFilesResponse.setValue(ApiResponse.error(error));
+            }
+        });
+
+        return podcastFilesResponse;
     }
 
     public LiveData<ApiResponse> getAccountPodcasts(LifecycleOwner lifecycleOwner, String token, String accountId, String podcastId, boolean isSwipedToRefresh) {
@@ -213,7 +234,7 @@ public class MainDataRepository {
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));
 
-                    if (saveData) {
+                    if (saveData && !CollectionUtils.isEmpty(data)) {
                         localDataSource.deleteAllPodcasts();
                         localDataSource.insertPodcasts(data.toArray(new Podcast[0]));
                     }

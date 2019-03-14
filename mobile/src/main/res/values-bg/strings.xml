@@ -23,6 +23,7 @@
     <string name="register">Регистрация</string>
 
     <string name="subscribe">Абониране %1$s</string>
+    <string name="podcast_files_title">Непубликувани качени подкаст файлове</string>
 
     <string name="podcast_upload">Качи подкаст</string>
     <string name="podcast_title">Заглавие</string>

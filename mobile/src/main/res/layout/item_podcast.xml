@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/medium_offset"
-        android:onClick="@{() -> viewModel.onItemClick(position)}">
+        android:onClick="@{() -> viewModel.onPodcastClick(position)}">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/podcast_image"

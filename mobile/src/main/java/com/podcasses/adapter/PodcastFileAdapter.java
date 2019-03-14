@@ -5,7 +5,8 @@ import android.view.ViewGroup;
 
 import com.podcasses.BR;
 import com.podcasses.R;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
@@ -19,13 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * Created by aleksandar.kovachev.
  */
-public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
+public class PodcastFileAdapter extends RecyclerView.Adapter<PodcastFileAdapter.ViewHolder> {
 
-    private List<Podcast> podcasts;
+    private List<PodcastFile> podcastFiles;
     private int layoutId;
-    private BasePodcastViewModel viewModel;
+    private AccountViewModel viewModel;
 
-    public PodcastAdapter(@LayoutRes int layoutId, BasePodcastViewModel viewModel) {
+    public PodcastFileAdapter(@LayoutRes int layoutId, AccountViewModel viewModel) {
         this.layoutId = layoutId;
         this.viewModel = viewModel;
     }
@@ -45,7 +46,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return podcasts == null ? 0 : podcasts.size();
+        return podcastFiles == null ? 0 : podcastFiles.size();
     }
 
     @Override
@@ -53,8 +54,8 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         return layoutId;
     }
 
-    public void setPodcasts(List<Podcast> podcasts) {
-        this.podcasts = podcasts;
+    public void setPodcasts(List<PodcastFile> podcasts) {
+        this.podcastFiles = podcasts;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -67,7 +68,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         }
 
         void bind(BasePodcastViewModel viewModel, Integer position) {
-            binding.getRoot().findViewById(R.id.podcast_title).setSelected(true);
+            binding.getRoot().findViewById(R.id.podcast_file_name).setSelected(true);
             binding.setVariable(BR.position, position);
             binding.setVariable(BR.viewModel, viewModel);
             binding.executePendingBindings();

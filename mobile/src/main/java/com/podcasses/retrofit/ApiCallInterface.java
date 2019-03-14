@@ -5,6 +5,7 @@ import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.response.Language;
 
@@ -54,5 +55,8 @@ public interface ApiCallInterface {
 
     @GET("/account/podcast/{podcastId}")
     Call<AccountPodcast> accountPodcast(@Header("Authorization") String token, @Path("podcastId") String podcastId);
+
+    @GET("/podcast/files")
+    Call<List<PodcastFile>> podcastFiles(@Header("Authorization") String token);
 
 }

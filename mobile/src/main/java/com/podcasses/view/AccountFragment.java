@@ -20,6 +20,7 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
@@ -29,6 +30,7 @@ import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,9 +52,12 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     private AccountViewModel accountViewModel;
 
+    private LiveData<String> token;
+
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> accountSubscribesResponse;
     private LiveData<ApiResponse> podcasts;
+    private LiveData<ApiResponse> podcastFiles;
 
     private Podcast playingPodcast;
     private IBinder binder;
@@ -83,9 +88,9 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(accountViewModel);
 
-        binding.refreshLayout.setOnRefreshListener(this::getAccountData);
+        binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, r));
 
-        LiveData<String> token = isAuthenticated();
+        token = isAuthenticated();
         token.observe(this, s -> {
             if (!Strings.isEmptyOrWhitespace(s)) {
                 JWT jwt = new JWT(s);
@@ -95,7 +100,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
                 accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
-                getAccountData(null);
+                getAccountData(s, null);
             }
         });
 
@@ -130,12 +135,14 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
-    private void getAccountData(RefreshLayout refreshLayout) {
+    private void getAccountData(String token, RefreshLayout refreshLayout) {
         accountResponse = accountViewModel.account(this, username, refreshLayout != null);
         accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
         podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
+        podcastFiles = accountViewModel.podcastFiles(token != null ? token : this.token.getValue());
 
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+        podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
         accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
     }
@@ -156,9 +163,16 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 } else if (apiResponse.data instanceof Integer) {
                     accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
                 } else if (apiResponse.data instanceof List) {
-                    accountViewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
-                    if (player != null) {
-                        setPlayingStatus(player.getPlayWhenReady());
+                    if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                        return;
+                    }
+                    if (((List) apiResponse.data).get(0) instanceof Podcast) {
+                        accountViewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                        if (player != null) {
+                            setPlayingStatus(player.getPlayWhenReady());
+                        }
+                    } else if (((List) apiResponse.data).get(0) instanceof PodcastFile) {
+                        accountViewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                     }
                 }
                 break;

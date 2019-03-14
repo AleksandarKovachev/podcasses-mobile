@@ -1,14 +1,18 @@
 package com.podcasses.viewmodel;
 
 import com.podcasses.BR;
+import com.podcasses.R;
+import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
-import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -24,6 +28,9 @@ public class AccountViewModel extends BasePodcastViewModel {
     private ObservableField<String> coverImage = new ObservableField<>();
     private ObservableField<String> accountSubscribes = new ObservableField<>();
 
+    private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
+    private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(R.layout.item_podcast_file, this);
+
     AccountViewModel(MainDataRepository repository) {
         super(repository);
     }
@@ -38,6 +45,10 @@ public class AccountViewModel extends BasePodcastViewModel {
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String userId, boolean isSwipedToRefresh, boolean saveData) {
         return repository.getPodcasts(lifecycleOwner, null, null, userId, isSwipedToRefresh, saveData);
+    }
+
+    public LiveData<ApiResponse> podcastFiles(String token) {
+        return repository.getPodcastFiles(token);
     }
 
     @Bindable
@@ -58,6 +69,23 @@ public class AccountViewModel extends BasePodcastViewModel {
     @Bindable
     public String getAccountSubscribes() {
         return accountSubscribes.get();
+    }
+
+    public PodcastFileAdapter getPodcastFileAdapter() {
+        return podcastFileAdapter;
+    }
+
+    public void setPodcastFilesInAdapter(List<PodcastFile> podcastFile) {
+        this.podcastFiles.setValue(podcastFile);
+        this.podcastFileAdapter.setPodcasts(podcastFile);
+        this.podcastFileAdapter.notifyDataSetChanged();
+    }
+
+    public PodcastFile getPodcastFileAt(Integer index) {
+        if (podcastFiles.getValue() != null && index != null && podcastFiles.getValue().size() > index) {
+            return podcastFiles.getValue().get(index);
+        }
+        return null;
     }
 
     public void setProfileImage(String url) {

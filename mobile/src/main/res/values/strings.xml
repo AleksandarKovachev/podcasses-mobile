@@ -23,6 +23,7 @@
     <string name="register">Register</string>
 
     <string name="subscribe">Subscribe %1$s</string>
+    <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
     <string name="podcast_upload">Upload podcast</string>
     <string name="podcast_title">Title</string>

@@ -62,7 +62,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         return selected;
     }
 
-    public void onItemClick(Integer index) {
+    public void onPodcastClick(Integer index) {
         Podcast podcast = podcasts.getValue().get(index);
         selected.setValue(podcast);
     }

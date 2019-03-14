@@ -39,7 +39,7 @@
         <item name="rte_icToolbarClear">@drawable/selector_ic_toolbar_clear_dark</item>
     </style>
 
-    <style name="LightAppTheme" parent="Theme.MaterialComponents.Light">
+    <style name="LightAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

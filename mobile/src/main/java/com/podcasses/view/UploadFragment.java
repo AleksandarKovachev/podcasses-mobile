@@ -213,6 +213,7 @@ public class UploadFragment extends BaseFragment {
         binder.podcastUpload.setVisibility(View.INVISIBLE);
         binder.podcastUploadFab.setVisibility(VISIBLE);
         binder.podcastFileName.setVisibility(VISIBLE);
+        binder.podcastFileName.setSelected(true);
 
         File podcast = new File(getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setPodcastFileName(podcast.getName());
