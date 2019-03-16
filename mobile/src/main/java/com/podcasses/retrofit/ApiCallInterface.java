@@ -13,6 +13,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -58,5 +59,8 @@ public interface ApiCallInterface {
 
     @GET("/podcast/files")
     Call<List<PodcastFile>> podcastFiles(@Header("Authorization") String token);
+
+    @DELETE("/podcast/file/{id}")
+    Call<Void> deletePodcastFile(@Header("Authorization") String token, @Path("id") String id);
 
 }

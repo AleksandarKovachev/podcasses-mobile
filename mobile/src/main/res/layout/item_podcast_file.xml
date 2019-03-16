@@ -52,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/extra_small_offset"
+            android:onClick="@{(v) -> viewModel.onDeletePodcastFile(v, position)}"
             android:src="@drawable/ic_delete"
             app:backgroundTint="@android:color/holo_red_dark"
             app:layout_constraintBottom_toTopOf="@id/podcast_file_name"

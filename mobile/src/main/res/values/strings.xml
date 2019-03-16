@@ -48,6 +48,7 @@
     <string name="successful_like_status_change">Successful like status change.</string>
     <string name="successful_dislike">The podcast was successfully disliked.</string>
     <string name="successful_dislike_status_change">Successful dislike status change.</string>
+    <string name="successfully_deleted_podcast_file">Successfully deleted podcast file.</string>
     <string name="error_response">Something went wrong. Please try again!</string>
 
     <string name="storage_permission_image">You need to give read storage permission to select image!</string>

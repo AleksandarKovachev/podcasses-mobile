@@ -51,6 +51,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     ViewModelFactory viewModelFactory;
 
     private AccountViewModel accountViewModel;
+    private FragmentAccountBinding binding;
 
     private LiveData<String> token;
 
@@ -80,7 +81,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentAccountBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
         binding.setLifecycleOwner(this);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
@@ -164,6 +165,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                        binding.podcastFilesCardView.setVisibility(View.GONE);
                         return;
                     }
                     if (((List) apiResponse.data).get(0) instanceof Podcast) {
@@ -171,8 +173,9 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                         if (player != null) {
                             setPlayingStatus(player.getPlayWhenReady());
                         }
-                    } else if (((List) apiResponse.data).get(0) instanceof PodcastFile) {
+                    } else {
                         accountViewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
+                        binding.podcastFilesCardView.setVisibility(View.VISIBLE);
                     }
                 }
                 break;

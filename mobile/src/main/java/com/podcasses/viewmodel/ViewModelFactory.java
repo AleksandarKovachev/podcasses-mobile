@@ -1,6 +1,7 @@
 package com.podcasses.viewmodel;
 
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.retrofit.ApiCallInterface;
 
 import javax.inject.Inject;
 
@@ -14,10 +15,12 @@ import androidx.lifecycle.ViewModelProvider;
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private MainDataRepository repository;
+    private ApiCallInterface apiCallInterface;
 
     @Inject
-    public ViewModelFactory(MainDataRepository repository) {
+    public ViewModelFactory(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         this.repository = repository;
+        this.apiCallInterface = apiCallInterface;
     }
 
     @NonNull
@@ -28,7 +31,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(SearchViewModel.class)) {
             return (T) new SearchViewModel(repository);
         } else if (modelClass.isAssignableFrom(AccountViewModel.class)) {
-            return (T) new AccountViewModel(repository);
+            return (T) new AccountViewModel(repository, apiCallInterface);
         } else if (modelClass.isAssignableFrom(TrendingViewModel.class)) {
             return (T) new TrendingViewModel(repository);
         } else if (modelClass.isAssignableFrom(NotificationsViewModel.class)) {

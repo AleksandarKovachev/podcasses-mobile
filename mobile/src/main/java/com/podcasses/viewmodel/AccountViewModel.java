@@ -1,11 +1,15 @@
 package com.podcasses.viewmodel;
 
+import android.view.View;
+import android.widget.Toast;
+
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
@@ -17,11 +21,17 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by aleksandar.kovachev.
  */
 public class AccountViewModel extends BasePodcastViewModel {
+
+    private ApiCallInterface apiCallInterface;
 
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
@@ -31,8 +41,11 @@ public class AccountViewModel extends BasePodcastViewModel {
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
     private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(R.layout.item_podcast_file, this);
 
-    AccountViewModel(MainDataRepository repository) {
+    private String token;
+
+    AccountViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository);
+        this.apiCallInterface = apiCallInterface;
     }
 
     public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, @NonNull String username, boolean isSwipedToRefresh) {
@@ -48,6 +61,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> podcastFiles(String token) {
+        this.token = token;
         return repository.getPodcastFiles(token);
     }
 
@@ -75,9 +89,9 @@ public class AccountViewModel extends BasePodcastViewModel {
         return podcastFileAdapter;
     }
 
-    public void setPodcastFilesInAdapter(List<PodcastFile> podcastFile) {
-        this.podcastFiles.setValue(podcastFile);
-        this.podcastFileAdapter.setPodcasts(podcastFile);
+    public void setPodcastFilesInAdapter(List<PodcastFile> podcastFiles) {
+        this.podcastFiles.setValue(podcastFiles);
+        this.podcastFileAdapter.setPodcasts(podcastFiles);
         this.podcastFileAdapter.notifyDataSetChanged();
     }
 
@@ -86,6 +100,29 @@ public class AccountViewModel extends BasePodcastViewModel {
             return podcastFiles.getValue().get(index);
         }
         return null;
+    }
+
+    public void onDeletePodcastFile(View view, Integer position) {
+        PodcastFile podcastFile = podcastFiles.getValue().get(position);
+        Call<Void> call = apiCallInterface.deletePodcastFile("Bearer " + token, podcastFile.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    List<PodcastFile> newPodcastFiles = podcastFiles.getValue();
+                    newPodcastFiles.remove(podcastFile);
+                    setPodcastFilesInAdapter(newPodcastFiles);
+                    Toasty.success(view.getContext(), view.getContext().getString(R.string.successfully_deleted_podcast_file), Toast.LENGTH_SHORT, true).show();
+                } else {
+                    Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+            }
+        });
     }
 
     public void setProfileImage(String url) {
