@@ -60,9 +60,9 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getPodcasts(lifecycleOwner, null, null, userId, isSwipedToRefresh, saveData);
     }
 
-    public LiveData<ApiResponse> podcastFiles(String token) {
+    public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
         this.token = token;
-        return repository.getPodcastFiles(token);
+        return repository.getPodcastFiles(lifecycleOwner, token, userId, isSwipedToRefresh);
     }
 
     @Bindable
@@ -112,6 +112,7 @@ public class AccountViewModel extends BasePodcastViewModel {
                     List<PodcastFile> newPodcastFiles = podcastFiles.getValue();
                     newPodcastFiles.remove(podcastFile);
                     setPodcastFilesInAdapter(newPodcastFiles);
+                    repository.deletePodcastFile(podcastFile.getId());
                     Toasty.success(view.getContext(), view.getContext().getString(R.string.successfully_deleted_podcast_file), Toast.LENGTH_SHORT, true).show();
                 } else {
                     Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();

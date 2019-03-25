@@ -4,11 +4,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 /**
  * Created by aleksandar.kovachev.
  */
+@Entity
 public class PodcastFile {
 
+    @NonNull
+    @PrimaryKey
     private String id;
 
     private String userId;

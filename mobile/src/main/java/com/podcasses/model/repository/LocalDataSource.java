@@ -3,9 +3,11 @@ package com.podcasses.model.repository;
 import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
+import com.podcasses.database.dao.PodcastFileDao;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
 
 import java.util.List;
 
@@ -24,11 +26,14 @@ public class LocalDataSource {
 
     private AccountPodcastDao accountPodcastDao;
 
+    private PodcastFileDao podcastFileDao;
+
     @Inject
-    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao) {
+    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao) {
         this.podcastDao = podcastDao;
         this.accountDao = accountDao;
         this.accountPodcastDao = accountPodcastDao;
+        this.podcastFileDao = podcastFileDao;
     }
 
     LiveData<List<Podcast>> getUserPodcasts(String userId) {
@@ -73,6 +78,22 @@ public class LocalDataSource {
 
     void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
         accountPodcastDao.insertAll(accountPodcasts);
+    }
+
+    LiveData<List<PodcastFile>> getUserPodcastFiles(String userId) {
+        return podcastFileDao.getUserPodcastFiles(userId);
+    }
+
+    void insertPodcastFiles(PodcastFile... podcastFiles) {
+        podcastFileDao.insertAll(podcastFiles);
+    }
+
+    void deletePodcastFile(String id) {
+        podcastFileDao.deletePodcastFile(id);
+    }
+
+    void deletePodcastFiles() {
+        podcastFileDao.deletePodcastFiles();
     }
 
 }

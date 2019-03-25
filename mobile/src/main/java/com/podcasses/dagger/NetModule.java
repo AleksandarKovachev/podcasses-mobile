@@ -10,6 +10,7 @@ import com.podcasses.database.AppDatabase;
 import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
+import com.podcasses.database.dao.PodcastFileDao;
 import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.repository.LocalDataSource;
 import com.podcasses.model.repository.MainDataRepository;
@@ -142,8 +143,8 @@ public class NetModule {
 
     @Singleton
     @Provides
-    LocalDataSource provideLocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao) {
-        return new LocalDataSource(podcastDao, accountDao, accountPodcastDao);
+    LocalDataSource provideLocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao) {
+        return new LocalDataSource(podcastDao, accountDao, accountPodcastDao, podcastFileDao);
     }
 
     @Singleton
@@ -162,6 +163,12 @@ public class NetModule {
     @Provides
     AccountPodcastDao provideAccountPodcastDao(AppDatabase appDatabase) {
         return appDatabase.accountPodcastDao();
+    }
+
+    @Singleton
+    @Provides
+    PodcastFileDao providePodcastFileDao(AppDatabase appDatabase) {
+        return appDatabase.podcastFileDao();
     }
 
 }

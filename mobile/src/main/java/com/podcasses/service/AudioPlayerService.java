@@ -90,9 +90,9 @@ public class AudioPlayerService extends Service {
             player.setPlayWhenReady(true);
 
             playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(context,
-                    BuildConfig.APPLICATION_ID,
+                    "playback_channel",
                     R.string.app_name,
-                    224,
+                    1,
                     new PodcastMediaDescriptionAdapter(context, podcast)
             );
             playerNotificationManager.setNotificationListener(new PlayerNotificationManager.NotificationListener() {

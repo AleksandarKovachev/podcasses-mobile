@@ -140,7 +140,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         accountResponse = accountViewModel.account(this, username, refreshLayout != null);
         accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
         podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
-        podcastFiles = accountViewModel.podcastFiles(token != null ? token : this.token.getValue());
+        podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
 
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
         podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
