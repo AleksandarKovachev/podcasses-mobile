@@ -24,6 +24,7 @@ import com.podcasses.databinding.FragmentPodcastBinding;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
@@ -35,6 +36,7 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -71,6 +73,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     private LiveData<ApiResponse> podcastResponse;
     private LiveData<ApiResponse> accountPodcastResponse;
+    private LiveData<ApiResponse> commentsResponse;
     private LiveData<String> token;
     private Podcast podcast;
     private AccountPodcast accountPodcast;
@@ -120,6 +123,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             }
         });
 
+        commentsResponse = viewModel.comments(id);
+        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, null));
+
         popupOptions = new PopupMenu(getContext(), binding.optionsButton);
         popupOptions.getMenuInflater()
                 .inflate(R.menu.podcast_options_menu, popupOptions.getMenu());
@@ -168,6 +174,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             accountPodcastResponse = viewModel.accountPodcasts(this, token.getValue(), jwt.getSubject(), id, true);
             accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
         }
+        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, refreshLayout));
     };
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -188,11 +195,16 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     binding.likeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.LIKED);
                     binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.DISLIKED);
                     popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
-                } else {
-                    if (!CollectionUtils.isEmpty((List<Podcast>) apiResponse.data)) {
+                } else if (apiResponse.data instanceof List) {
+                    if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                        return;
+                    }
+                    if (((List) apiResponse.data).get(0) instanceof Podcast) {
                         updateTitle();
                         podcast = ((List<Podcast>) apiResponse.data).get(0);
                         viewModel.setPodcast(podcast);
+                    } else {
+                        viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
                     }
                 }
                 break;

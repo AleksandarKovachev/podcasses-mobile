@@ -8,13 +8,18 @@ import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
 import com.podcasses.BuildConfig;
+import com.podcasses.R;
+import com.podcasses.adapter.PodcastCommentAdapter;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioDownloadService;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
@@ -33,6 +38,9 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
     private MutableLiveData<Podcast> podcast = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
+    private MutableLiveData<List<Comment>> comments = new MutableLiveData<>();
+
+    private PodcastCommentAdapter podcastCommentsAdapter = new PodcastCommentAdapter(R.layout.item_comment, this);
 
     PodcastViewModel(MainDataRepository repository) {
         super(repository);
@@ -44,6 +52,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
 
     public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, String accountId, @NonNull String podcastId, boolean isSwipedToRefresh) {
         return repository.getAccountPodcasts(lifecycleOwner, token, accountId, podcastId, isSwipedToRefresh);
+    }
+
+    public LiveData<ApiResponse> comments(@NonNull String podcastId) {
+        return repository.getComments(podcastId);
     }
 
     @Override
@@ -64,6 +76,23 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @Bindable
     public String getPodcastImage() {
         return podcastImage.get();
+    }
+
+    public PodcastCommentAdapter getPodcastCommentsAdapter() {
+        return podcastCommentsAdapter;
+    }
+
+    public void setPodcastCommentsInAdapter(List<Comment> comments) {
+        this.comments.setValue(comments);
+        this.podcastCommentsAdapter.setComments(comments);
+        this.podcastCommentsAdapter.notifyDataSetChanged();
+    }
+
+    public Comment getCommentAt(Integer index) {
+        if (comments.getValue() != null && index != null && comments.getValue().size() > index) {
+            return comments.getValue().get(index);
+        }
+        return null;
     }
 
     public void onPlayPauseButtonClick(View view) {

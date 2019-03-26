@@ -5,6 +5,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 
@@ -117,6 +118,21 @@ class NetworkDataSource {
     void getPrivacies(IDataCallback<List<Nomenclature>> callback) {
         Call<List<Nomenclature>> call = apiCallInterface.privacies();
         call.enqueue(nomenclatureCallback(callback));
+    }
+
+    void getComments(String podcastId, IDataCallback<List<Comment>> callback) {
+        Call<List<Comment>> call = apiCallInterface.getComments(podcastId);
+        call.enqueue(new Callback<List<Comment>>() {
+            @Override
+            public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Comment>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 
     private <T> Callback<List<T>> nomenclatureCallback(IDataCallback<List<T>> callback) {

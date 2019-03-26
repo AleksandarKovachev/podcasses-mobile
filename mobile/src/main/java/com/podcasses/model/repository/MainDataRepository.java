@@ -10,6 +10,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
@@ -39,6 +40,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> podcastResponse;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
+    private final MutableLiveData<ApiResponse> commentsResponse;
 
     private LiveData<Podcast> podcastLiveData;
     private LiveData<List<Podcast>> podcastsLiveData;
@@ -60,6 +62,7 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
+        commentsResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
         privacies = new MutableLiveData<>();
@@ -120,7 +123,7 @@ public class MainDataRepository {
     public LiveData<ApiResponse> getPodcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
         podcastFilesResponse.setValue(ApiResponse.loading());
 
-        if(isSwipedToRefresh) {
+        if (isSwipedToRefresh) {
             fetchPodcastFilesOnNetwork(token);
         } else {
             podcastFilesListLiveData = localDataSource.getUserPodcastFiles(userId);
@@ -160,6 +163,22 @@ public class MainDataRepository {
 
     public void deletePodcastFile(String id) {
         localDataSource.deletePodcastFile(id);
+    }
+
+    public LiveData<ApiResponse> getComments(String podcastId) {
+        commentsResponse.setValue(ApiResponse.loading());
+        networkDataSource.getComments(podcastId, new IDataCallback<List<Comment>>() {
+            @Override
+            public void onSuccess(List<Comment> data) {
+                commentsResponse.setValue(ApiResponse.success(data));
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                commentsResponse.setValue(ApiResponse.error(error));
+            }
+        });
+        return commentsResponse;
     }
 
     private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId, boolean saveData) {

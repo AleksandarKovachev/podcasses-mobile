@@ -7,6 +7,7 @@ import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
@@ -62,5 +63,8 @@ public interface ApiCallInterface {
 
     @DELETE("/podcast/file/{id}")
     Call<Void> deletePodcastFile(@Header("Authorization") String token, @Path("id") String id);
+
+    @GET("/podcast/comment/{podcastId}")
+    Call<List<Comment>> getComments(@Path("podcastId") String podcastId);
 
 }
