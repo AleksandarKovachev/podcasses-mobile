@@ -67,4 +67,7 @@ public interface ApiCallInterface {
     @GET("/podcast/comment/{podcastId}")
     Call<List<Comment>> getComments(@Path("podcastId") String podcastId);
 
+    @GET("/account/id")
+    Call<List<Account>> getAccounts(@Query("id") List<String> ids);
+
 }

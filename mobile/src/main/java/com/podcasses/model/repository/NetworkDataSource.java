@@ -135,6 +135,21 @@ class NetworkDataSource {
         });
     }
 
+    void getAccounts(List<String> ids, IDataCallback<List<Account>> iDataCallback) {
+        Call<List<Account>> call = apiCallInterface.getAccounts(ids);
+        call.enqueue(new Callback<List<Account>>() {
+            @Override
+            public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
+                iDataCallback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Account>> call, Throwable t) {
+                iDataCallback.onFailure(t);
+            }
+        });
+    }
+
     private <T> Callback<List<T>> nomenclatureCallback(IDataCallback<List<T>> callback) {
         return new Callback<List<T>>() {
             @Override

@@ -41,6 +41,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> commentsResponse;
+    private final MutableLiveData<ApiResponse> accountsResponse;
 
     private LiveData<Podcast> podcastLiveData;
     private LiveData<List<Podcast>> podcastsLiveData;
@@ -62,6 +63,7 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
+        accountsResponse = new MutableLiveData<>();
         commentsResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
@@ -179,6 +181,22 @@ public class MainDataRepository {
             }
         });
         return commentsResponse;
+    }
+
+    public LiveData<ApiResponse> getAccount(List<String> ids) {
+        accountsResponse.setValue(ApiResponse.loading());
+        networkDataSource.getAccounts(ids, new IDataCallback<List<Account>>() {
+            @Override
+            public void onSuccess(List<Account> data) {
+                accountsResponse.setValue(ApiResponse.success(data));
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                accountsResponse.setValue(ApiResponse.error(error));
+            }
+        });
+        return accountsResponse;
     }
 
     private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId, boolean saveData) {

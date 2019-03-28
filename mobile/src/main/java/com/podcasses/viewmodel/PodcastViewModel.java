@@ -5,11 +5,13 @@ import android.view.View;
 
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
+import com.google.android.gms.common.util.CollectionUtils;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastCommentAdapter;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.Comment;
@@ -29,6 +31,8 @@ import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import static com.podcasses.util.CustomViewBindings.PROFILE_IMAGE;
 
 /**
  * Created by aleksandar.kovachev.
@@ -56,6 +60,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
 
     public LiveData<ApiResponse> comments(@NonNull String podcastId) {
         return repository.getComments(podcastId);
+    }
+
+    public LiveData<ApiResponse> accounts(@NonNull List<String> ids) {
+        return repository.getAccount(ids);
     }
 
     @Override
@@ -88,9 +96,21 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         this.podcastCommentsAdapter.notifyDataSetChanged();
     }
 
+    public List<Comment> getComments() {
+        return comments.getValue();
+    }
+
     public Comment getCommentAt(Integer index) {
         if (comments.getValue() != null && index != null && comments.getValue().size() > index) {
             return comments.getValue().get(index);
+        }
+        return null;
+    }
+
+    public String accountImage(Integer position) {
+        if (!CollectionUtils.isEmpty(comments.getValue())) {
+            Comment comment = comments.getValue().get(position);
+            return BuildConfig.API_GATEWAY_URL.concat(PROFILE_IMAGE).concat(comment.getUserId());
         }
         return null;
     }

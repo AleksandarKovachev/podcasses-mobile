@@ -1,18 +1,25 @@
 package com.podcasses.model.response;
 
+import com.podcasses.BR;
+
 import java.util.Date;
 import java.util.List;
+
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class Comment {
+public class Comment extends BaseObservable {
 
     private String id;
 
     private String comment;
 
     private String userId;
+
+    private String username;
 
     private String podcastId;
 
@@ -44,6 +51,16 @@ public class Comment {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Bindable
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+        notifyPropertyChanged(BR.username);
     }
 
     public String getPodcastId() {
