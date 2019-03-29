@@ -2,6 +2,8 @@ package com.podcasses.model.response;
 
 import com.podcasses.BR;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -94,4 +96,10 @@ public class Comment extends BaseObservable {
     public void setUpdatedTimestamp(Date updatedTimestamp) {
         this.updatedTimestamp = updatedTimestamp;
     }
+
+    public String getDate() {
+        DateFormat formatter = SimpleDateFormat.getDateInstance();
+        return formatter.format(getCreatedTimestamp());
+    }
+
 }

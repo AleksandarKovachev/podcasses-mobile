@@ -18,14 +18,82 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/medium_offset">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/account_image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="@dimen/small_offset"
+            app:imageUrl="@{viewModel.accountImage(position)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/account_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/medium_offset"
+            android:paddingEnd="@dimen/medium_offset"
+            android:text="@{viewModel.getCommentAt(position).username}"
+            android:textSize="@dimen/extra_small_text_size"
+            app:layout_constraintEnd_toStartOf="@drawable/like_button"
+            app:layout_constraintStart_toEndOf="@id/account_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/podcast_comment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/medium_offset"
+            android:paddingEnd="@dimen/medium_offset"
+            android:text="@{viewModel.getCommentAt(position).date}"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@drawable/like_button"
+            app:layout_constraintStart_toEndOf="@id/account_image"
+            app:layout_constraintTop_toBottomOf="@id/account_username" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/like_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_offset"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/like_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/dislike_button"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/dislike_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_offset"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/dislike_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/options_button"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/options_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_offset"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_options"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/podcast_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/medium_offset"
+            android:paddingEnd="@dimen/medium_offset"
             android:text="@{viewModel.getCommentAt(position).comment}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/account_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_comment_date" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
