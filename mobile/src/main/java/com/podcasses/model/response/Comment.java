@@ -31,6 +31,10 @@ public class Comment extends BaseObservable {
 
     private Date updatedTimestamp;
 
+    private boolean isLiked;
+
+    private boolean isDisliked;
+
     public String getId() {
         return id;
     }
@@ -63,6 +67,26 @@ public class Comment extends BaseObservable {
     public void setUsername(String username) {
         this.username = username;
         notifyPropertyChanged(BR.username);
+    }
+
+    @Bindable
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+        notifyPropertyChanged(BR.liked);
+    }
+
+    @Bindable
+    public boolean isDisliked() {
+        return isDisliked;
+    }
+
+    public void setDisliked(boolean disliked) {
+        isDisliked = disliked;
+        notifyPropertyChanged(BR.disliked);
     }
 
     public String getPodcastId() {

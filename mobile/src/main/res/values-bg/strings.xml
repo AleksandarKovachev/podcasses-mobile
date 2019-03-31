@@ -49,6 +49,7 @@
     <string name="successful_dislike">Подкаста беше успешно не харесан.</string>
     <string name="successful_dislike_status_change">Успешна промяна на не харесан подкаст.</string>
     <string name="successfully_deleted_podcast_file">Успешно изтрит подкаст фйал.</string>
+    <string name="successful_response">Успешна заявка.</string>
     <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
 
     <string name="storage_permission_image">Трябва да дадеш достъп за четене на хранилището, за да избереш изображение!</string>

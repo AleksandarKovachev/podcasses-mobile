@@ -58,7 +58,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/small_offset"
             android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{v -> viewModel.likeComment(v, position)}"
             android:src="@drawable/like_button"
+            app:isLiked="@{viewModel.getCommentAt(position).liked}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/dislike_button"
             app:layout_constraintTop_toTopOf="parent" />
@@ -69,7 +71,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/small_offset"
             android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{v -> viewModel.dislikeComment(v, position)}"
             android:src="@drawable/dislike_button"
+            app:isDisliked="@{viewModel.getCommentAt(position).disliked}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/options_button"
             app:layout_constraintTop_toTopOf="parent" />

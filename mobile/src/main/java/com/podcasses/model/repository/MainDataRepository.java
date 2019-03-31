@@ -10,6 +10,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -42,6 +43,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> commentsResponse;
     private final MutableLiveData<ApiResponse> accountsResponse;
+    private final MutableLiveData<ApiResponse> accountCommentsResponse;
 
     private LiveData<Podcast> podcastLiveData;
     private LiveData<List<Podcast>> podcastsLiveData;
@@ -65,6 +67,7 @@ public class MainDataRepository {
         accountPodcastResponse = new MutableLiveData<>();
         accountsResponse = new MutableLiveData<>();
         commentsResponse = new MutableLiveData<>();
+        accountCommentsResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
         privacies = new MutableLiveData<>();
@@ -197,6 +200,24 @@ public class MainDataRepository {
             }
         });
         return accountsResponse;
+    }
+
+    public LiveData<ApiResponse> getAccountComments(String token, List<String> commentIds) {
+        accountCommentsResponse.setValue(ApiResponse.loading());
+
+        networkDataSource.getAccountComments(token, commentIds, new IDataCallback<List<AccountComment>>() {
+            @Override
+            public void onSuccess(List<AccountComment> data) {
+                accountCommentsResponse.setValue(ApiResponse.success(data));
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                accountCommentsResponse.setValue(ApiResponse.error(error));
+            }
+        });
+
+        return accountCommentsResponse;
     }
 
     private void onPodcastsFetched(LifecycleOwner lifecycleOwner, Podcast podcast, String podcastTitle, String podcastId, String userId, boolean saveData) {

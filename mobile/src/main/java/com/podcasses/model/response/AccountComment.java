@@ -1,30 +1,19 @@
-package com.podcasses.model.entity;
+package com.podcasses.model.response;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 /**
  * Created by aleksandar.kovachev.
  */
-@Entity
-public class AccountPodcast {
+public class AccountComment {
 
-    @NonNull
-    @PrimaryKey
     private Long id;
+
+    private String commentId;
 
     private String accountId;
 
-    private String podcastId;
-
     private int likeStatus;
-
-    private long timeIndex;
-
-    private int markAsPlayed;
 
     private Date createdTimestamp;
 
@@ -40,6 +29,14 @@ public class AccountPodcast {
         this.id = id;
     }
 
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
+    }
+
     public String getAccountId() {
         return accountId;
     }
@@ -48,36 +45,12 @@ public class AccountPodcast {
         this.accountId = accountId;
     }
 
-    public String getPodcastId() {
-        return podcastId;
-    }
-
-    public void setPodcastId(String podcastId) {
-        this.podcastId = podcastId;
-    }
-
     public int getLikeStatus() {
         return likeStatus;
     }
 
     public void setLikeStatus(int likeStatus) {
         this.likeStatus = likeStatus;
-    }
-
-    public long getTimeIndex() {
-        return timeIndex;
-    }
-
-    public void setTimeIndex(long timeIndex) {
-        this.timeIndex = timeIndex;
-    }
-
-    public int getMarkAsPlayed() {
-        return markAsPlayed;
-    }
-
-    public void setMarkAsPlayed(int markAsPlayed) {
-        this.markAsPlayed = markAsPlayed;
     }
 
     public Date getCreatedTimestamp() {

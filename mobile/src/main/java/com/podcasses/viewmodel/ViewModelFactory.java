@@ -39,7 +39,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(UploadViewModel.class)) {
             return (T) new UploadViewModel(repository);
         } else if (modelClass.isAssignableFrom(PodcastViewModel.class)) {
-            return (T) new PodcastViewModel(repository);
+            return (T) new PodcastViewModel(repository, apiCallInterface);
         }
         throw new IllegalArgumentException("Unknown class name");
     }

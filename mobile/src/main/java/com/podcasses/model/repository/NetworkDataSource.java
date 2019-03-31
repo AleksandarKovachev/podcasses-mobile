@@ -5,6 +5,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -146,6 +147,21 @@ class NetworkDataSource {
             @Override
             public void onFailure(Call<List<Account>> call, Throwable t) {
                 iDataCallback.onFailure(t);
+            }
+        });
+    }
+
+    void getAccountComments(String token, List<String> commentIds, IDataCallback<List<AccountComment>> callback) {
+        Call<List<AccountComment>> call = apiCallInterface.accountComments("Bearer " + token, commentIds);
+        call.enqueue(new Callback<List<AccountComment>>() {
+            @Override
+            public void onResponse(Call<List<AccountComment>> call, Response<List<AccountComment>> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<AccountComment>> call, Throwable t) {
+                callback.onFailure(t);
             }
         });
     }

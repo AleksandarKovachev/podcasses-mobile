@@ -25,11 +25,13 @@ import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.LikeStatus;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
@@ -76,6 +78,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private LiveData<ApiResponse> podcastResponse;
     private LiveData<ApiResponse> accountPodcastResponse;
     private LiveData<ApiResponse> commentsResponse;
+    private LiveData<ApiResponse> accountCommentsResponse;
     private LiveData<String> token;
     private Podcast podcast;
     private AccountPodcast accountPodcast;
@@ -194,8 +197,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     viewModel.setPodcast(podcast);
                 } else if (apiResponse.data instanceof AccountPodcast) {
                     accountPodcast = (AccountPodcast) apiResponse.data;
-                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.LIKED);
-                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == AccountPodcast.DISLIKED);
+                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKED.getValue());
+                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKED.getValue());
                     popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
@@ -208,6 +211,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     } else {
                         viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
                         setAccounts(apiResponse);
+                        setAccountComments((List<Comment>) apiResponse.data);
                     }
                 }
                 break;
@@ -252,7 +256,41 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 logError(apiResponse);
                 break;
         }
+    }
 
+    private void setAccountComments(List<Comment> comments) {
+        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
+            List<String> commentIds = new ArrayList<>();
+            for (Comment comment : comments) {
+                commentIds.add(comment.getId());
+            }
+
+            accountCommentsResponse = viewModel.accountComments(token.getValue(), commentIds);
+            accountCommentsResponse.observe(this, accountComments -> consumeAccountCommentsResponse(accountComments, accountCommentsResponse));
+        }
+    }
+
+    private void consumeAccountCommentsResponse(ApiResponse apiResponse, LiveData liveData) {
+        switch (apiResponse.status) {
+            case LOADING:
+                break;
+            case SUCCESS:
+                liveData.removeObservers(this);
+                for (Comment comment : viewModel.getComments()) {
+                    for (AccountComment accountComment : (List<AccountComment>) apiResponse.data) {
+                        if (comment.getId().equals(accountComment.getCommentId())) {
+                            comment.setLiked(accountComment.getLikeStatus() == LikeStatus.LIKED.getValue());
+                            comment.setDisliked(accountComment.getLikeStatus() == LikeStatus.DISLIKED.getValue());
+                            break;
+                        }
+                    }
+                }
+                break;
+            case ERROR:
+                liveData.removeObservers(this);
+                logError(apiResponse);
+                break;
+        }
     }
 
     @Override
@@ -314,16 +352,16 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     }
 
     private View.OnClickListener onLikeClickListener = v ->
-            sendLikeDislikeRequest(AccountPodcast.LIKED, R.string.successfully_liked, R.string.successful_like_status_change);
+            sendLikeDislikeRequest(LikeStatus.LIKED.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);
 
     private View.OnClickListener onDislikeClickListener = v ->
-            sendLikeDislikeRequest(AccountPodcast.DISLIKED, R.string.successful_dislike, R.string.successful_dislike_status_change);
+            sendLikeDislikeRequest(LikeStatus.DISLIKED.getValue(), R.string.successful_dislike, R.string.successful_dislike_status_change);
 
     private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage, int successfulDefaultMessage) {
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
         if (accountPodcast.getLikeStatus() == likeStatus) {
-            accountPodcastRequest.setLikeStatus(AccountPodcast.DEFAULT);
+            accountPodcastRequest.setLikeStatus(LikeStatus.DEFAULT.getValue());
         } else {
             accountPodcastRequest.setLikeStatus(likeStatus);
         }
@@ -333,14 +371,14 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     accountPodcast = response.body();
-                    if (likeStatus == AccountPodcast.LIKED) {
+                    if (likeStatus == LikeStatus.LIKED.getValue()) {
                         binding.likeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);
                         binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() != likeStatus &&
-                                accountPodcast.getLikeStatus() != AccountPodcast.DEFAULT);
+                                accountPodcast.getLikeStatus() != LikeStatus.DEFAULT.getValue());
                     } else {
                         binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);
                         binding.likeButton.setSelected(accountPodcast.getLikeStatus() != likeStatus &&
-                                accountPodcast.getLikeStatus() != AccountPodcast.DEFAULT);
+                                accountPodcast.getLikeStatus() != LikeStatus.DEFAULT.getValue());
                     }
                     if (accountPodcast.getLikeStatus() == likeStatus) {
                         Toasty.success(getContext(), getString(successfulChangeMessage), Toast.LENGTH_SHORT, true).show();
