@@ -25,7 +25,7 @@ import androidx.room.TypeConverters;
  */
 @Entity
 @Parcel(Parcel.Serialization.BEAN)
-public class Podcast extends BaseObservable {
+public class Podcast extends BaseLikeModel {
 
     @NonNull
     @PrimaryKey
@@ -56,10 +56,6 @@ public class Podcast extends BaseObservable {
     private int languageId;
 
     private int views;
-
-    private int likes;
-
-    private int dislikes;
 
     private int downloads;
 
@@ -185,22 +181,6 @@ public class Podcast extends BaseObservable {
 
     public void setViews(int views) {
         this.views = views;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-
-    public int getDislikes() {
-        return dislikes;
-    }
-
-    public void setDislikes(int dislikes) {
-        this.dislikes = dislikes;
     }
 
     public int getDownloads() {

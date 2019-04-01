@@ -5,8 +5,8 @@ package com.podcasses.util;
  */
 public enum LikeStatus {
 
-    DISLIKED(2),
-    LIKED(1),
+    DISLIKE(2),
+    LIKE(1),
     DEFAULT(0);
 
     private int value;

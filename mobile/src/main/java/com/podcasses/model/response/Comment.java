@@ -1,19 +1,19 @@
 package com.podcasses.model.response;
 
 import com.podcasses.BR;
+import com.podcasses.model.entity.BaseLikeModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class Comment extends BaseObservable {
+public class Comment extends BaseLikeModel {
 
     private String id;
 

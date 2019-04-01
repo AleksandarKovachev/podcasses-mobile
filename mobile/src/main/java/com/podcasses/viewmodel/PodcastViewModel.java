@@ -20,9 +20,10 @@ import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioDownloadService;
 import com.podcasses.util.LikeStatus;
+import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import org.greenrobot.eventbus.EventBus;
@@ -176,7 +177,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
             if (comment.isLiked()) {
                 accountCommentRequest.setLikeStatus(LikeStatus.DEFAULT.getValue());
             } else {
-                accountCommentRequest.setLikeStatus(LikeStatus.LIKED.getValue());
+                accountCommentRequest.setLikeStatus(LikeStatus.LIKE.getValue());
             }
             sendAccountCommentRequest(view, comment, accountCommentRequest);
         }
@@ -190,7 +191,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
             if (comment.isDisliked()) {
                 accountCommentRequest.setLikeStatus(LikeStatus.DEFAULT.getValue());
             } else {
-                accountCommentRequest.setLikeStatus(LikeStatus.DISLIKED.getValue());
+                accountCommentRequest.setLikeStatus(LikeStatus.DISLIKE.getValue());
             }
             sendAccountCommentRequest(view, comment, accountCommentRequest);
         }
@@ -201,10 +202,12 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         call.enqueue(new Callback<AccountComment>() {
             @Override
             public void onResponse(Call<AccountComment> call, Response<AccountComment> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_response), Toast.LENGTH_SHORT, true).show();
-                    comment.setLiked(response.body().getLikeStatus() == LikeStatus.LIKED.getValue());
-                    comment.setDisliked(response.body().getLikeStatus() == LikeStatus.DISLIKED.getValue());
+                    int previousLikeStatus = getPreviousLikeStatus(comment);
+                    LikeStatusUtil.updateLikeStatus(comment, response.body().getLikeStatus(), previousLikeStatus);
+                    comment.setLiked(response.body().getLikeStatus() == LikeStatus.LIKE.getValue());
+                    comment.setDisliked(response.body().getLikeStatus() == LikeStatus.DISLIKE.getValue());
                 } else {
                     Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
                 }
@@ -216,6 +219,16 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
                 Log.e("PodcastViewModel", "accountComment: ", t);
             }
         });
+    }
+
+    private int getPreviousLikeStatus(Comment comment) {
+        int previousLikeStatus = LikeStatus.DEFAULT.getValue();
+        if (comment.isLiked()) {
+            previousLikeStatus = LikeStatus.LIKE.getValue();
+        } else if (comment.isDisliked()) {
+            previousLikeStatus = LikeStatus.DISLIKE.getValue();
+        }
+        return previousLikeStatus;
     }
 
     private void notifyPropertyChanged(int fieldId) {

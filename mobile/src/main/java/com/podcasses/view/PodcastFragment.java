@@ -28,10 +28,11 @@ import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LikeStatus;
+import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
@@ -56,6 +57,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -197,8 +199,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     viewModel.setPodcast(podcast);
                 } else if (apiResponse.data instanceof AccountPodcast) {
                     accountPodcast = (AccountPodcast) apiResponse.data;
-                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKED.getValue());
-                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKED.getValue());
+                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
+                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKE.getValue());
                     popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
@@ -279,8 +281,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 for (Comment comment : viewModel.getComments()) {
                     for (AccountComment accountComment : (List<AccountComment>) apiResponse.data) {
                         if (comment.getId().equals(accountComment.getCommentId())) {
-                            comment.setLiked(accountComment.getLikeStatus() == LikeStatus.LIKED.getValue());
-                            comment.setDisliked(accountComment.getLikeStatus() == LikeStatus.DISLIKED.getValue());
+                            comment.setLiked(accountComment.getLikeStatus() == LikeStatus.LIKE.getValue());
+                            comment.setDisliked(accountComment.getLikeStatus() == LikeStatus.DISLIKE.getValue());
                             break;
                         }
                     }
@@ -352,10 +354,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     }
 
     private View.OnClickListener onLikeClickListener = v ->
-            sendLikeDislikeRequest(LikeStatus.LIKED.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);
+            sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);
 
     private View.OnClickListener onDislikeClickListener = v ->
-            sendLikeDislikeRequest(LikeStatus.DISLIKED.getValue(), R.string.successful_dislike, R.string.successful_dislike_status_change);
+            sendLikeDislikeRequest(LikeStatus.DISLIKE.getValue(), R.string.successful_dislike, R.string.successful_dislike_status_change);
 
     private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage, int successfulDefaultMessage) {
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
@@ -366,12 +368,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             accountPodcastRequest.setLikeStatus(likeStatus);
         }
         Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token.getValue(), accountPodcastRequest);
-        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
+        call.enqueue(new Callback<AccountPodcast>() {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    LikeStatusUtil.updateLikeStatus(viewModel.getPodcast(), likeStatus, accountPodcast.getLikeStatus());
                     accountPodcast = response.body();
-                    if (likeStatus == LikeStatus.LIKED.getValue()) {
+                    if (likeStatus == LikeStatus.LIKE.getValue()) {
                         binding.likeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);
                         binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() != likeStatus &&
                                 accountPodcast.getLikeStatus() != LikeStatus.DEFAULT.getValue());
