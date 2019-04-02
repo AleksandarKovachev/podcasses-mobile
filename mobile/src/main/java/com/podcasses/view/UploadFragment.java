@@ -32,7 +32,7 @@ import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.util.LoadingUtil;
+import com.podcasses.util.LoadingUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;

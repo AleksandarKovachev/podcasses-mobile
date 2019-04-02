@@ -3,22 +3,26 @@ package com.podcasses.view;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.AuthenticatorActivityBinding;
 import com.podcasses.retrofit.AuthenticationCallInterface;
+import com.podcasses.util.LoadingUtil;
 
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import androidx.databinding.DataBindingUtil;
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,6 +56,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private View.OnClickListener loginClickListener = v -> {
+        ProgressDialog progressDialog = LoadingUtil.getProgressDialog(this);
+        progressDialog.show();
         final Intent intent = new Intent();
         Call<KeycloakToken> authToken = authenticationCall.grantNewAccessToken(
                 Objects.requireNonNull(binder.username.getText()).toString(),
@@ -61,6 +67,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         authToken.enqueue(new Callback<KeycloakToken>() {
             @Override
             public void onResponse(Call<KeycloakToken> call, Response<KeycloakToken> response) {
+                progressDialog.dismiss();
                 if (response.body() != null) {
                     Account account = addOrFindAccount(binder.username.getText().toString(), binder.password.getText().toString(), response.body().getRefreshToken());
                     accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, response.body().getAccessToken());
@@ -70,7 +77,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
             @Override
             public void onFailure(Call<KeycloakToken> call, Throwable t) {
+                progressDialog.dismiss();
                 Log.e(AuthenticatorActivity.class.getName(), "onFailure", t);
+                Toasty.error(AuthenticatorActivity.this, getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
             }
         });
     };

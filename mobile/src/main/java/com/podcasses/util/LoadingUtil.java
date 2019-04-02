@@ -1,4 +1,4 @@
-package com.podcasses.retrofit.util;
+package com.podcasses.util;
 
 
 import android.app.ProgressDialog;

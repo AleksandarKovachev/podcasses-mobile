@@ -15,7 +15,7 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;

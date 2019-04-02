@@ -1,7 +1,7 @@
 package com.podcasses.viewmodel;
 
 import com.podcasses.model.repository.MainDataRepository;
-import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import androidx.databinding.Observable;

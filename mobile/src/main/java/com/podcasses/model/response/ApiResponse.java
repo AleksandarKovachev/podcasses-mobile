@@ -1,11 +1,11 @@
-package com.podcasses.retrofit.util;
+package com.podcasses.model.response;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import static com.podcasses.retrofit.util.Status.ERROR;
-import static com.podcasses.retrofit.util.Status.LOADING;
-import static com.podcasses.retrofit.util.Status.SUCCESS;
+import static com.podcasses.model.response.ApiResponse.Status.ERROR;
+import static com.podcasses.model.response.ApiResponse.Status.LOADING;
+import static com.podcasses.model.response.ApiResponse.Status.SUCCESS;
 
 /**
  * Created by aleksandar.kovachev.
@@ -38,4 +38,11 @@ public class ApiResponse {
         return new ApiResponse(ERROR, null, error);
     }
 
+    public enum Status {
+
+        LOADING,
+        SUCCESS,
+        ERROR
+
+    }
 }

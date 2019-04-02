@@ -12,8 +12,8 @@ import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.authentication.InvalidateToken;
 import com.podcasses.authentication.KeycloakToken;
-import com.podcasses.retrofit.util.ApiResponse;
-import com.podcasses.retrofit.util.ConnectivityUtil;
+import com.podcasses.model.response.ApiResponse;
+import com.podcasses.util.ConnectivityUtil;
 import com.podcasses.view.AuthenticatorActivity;
 
 import java.net.ConnectException;
