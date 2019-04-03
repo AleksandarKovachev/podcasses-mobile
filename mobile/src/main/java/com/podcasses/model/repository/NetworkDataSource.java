@@ -57,6 +57,21 @@ class NetworkDataSource {
         });
     }
 
+    void checkAccountSubscribe(String token, String accountId, IDataCallback<Integer> callback) {
+        Call<Integer> call = apiCallInterface.checkAccountSubscribe("Bearer " + token, accountId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
     void getPodcasts(String podcast, String podcastId, String userId, IDataCallback<List<Podcast>> callback) {
         Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId);
         call.enqueue(new Callback<List<Podcast>>() {

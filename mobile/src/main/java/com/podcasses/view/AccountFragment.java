@@ -21,7 +21,7 @@ import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.retrofit.util.ApiResponse;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
@@ -57,6 +57,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> accountSubscribesResponse;
+    private LiveData<ApiResponse> checkAccountSubscribeResponse;
     private LiveData<ApiResponse> podcasts;
     private LiveData<ApiResponse> podcastFiles;
 
@@ -139,13 +140,15 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     private void getAccountData(String token, RefreshLayout refreshLayout) {
         accountResponse = accountViewModel.account(this, username, refreshLayout != null);
         accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
-        podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
+        checkAccountSubscribeResponse = accountViewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
         podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+        podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
 
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
         podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
         accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
+        checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -163,6 +166,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     accountViewModel.setAccount(account);
                 } else if (apiResponse.data instanceof Integer) {
                     accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
+                } else if (apiResponse.data instanceof Boolean) {
+                    accountViewModel.setIsSubscribed((Boolean) apiResponse.data);
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                         binding.podcastFilesCardView.setVisibility(View.GONE);

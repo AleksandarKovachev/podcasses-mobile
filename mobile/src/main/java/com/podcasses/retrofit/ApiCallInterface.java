@@ -36,6 +36,12 @@ public interface ApiCallInterface {
     @GET("/account/subscribes/{accountId}")
     Call<Integer> accountSubscribes(@Path("accountId") String accountId);
 
+    @GET("/account/subscribe/{accountId}")
+    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+
+    @POST("/account/subscribe/{accountId}")
+    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+
     @GET("/podcast")
     Call<List<Podcast>> podcast(
             @Query(value = "podcast", encoded = true) String podcast,

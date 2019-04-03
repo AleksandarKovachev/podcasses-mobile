@@ -1,6 +1,8 @@
 package com.podcasses.viewmodel;
 
+import android.graphics.PorterDuff;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.podcasses.BR;
@@ -9,14 +11,17 @@ import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.util.ApiResponse;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -37,6 +42,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();
     private ObservableField<String> accountSubscribes = new ObservableField<>();
+    private ObservableBoolean isSubscribed = new ObservableBoolean();
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
     private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(R.layout.item_podcast_file, this);
@@ -53,7 +59,11 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> accountSubscribes(LifecycleOwner lifecycleOwner, @NonNull String accountId, boolean isSwipedToRefresh) {
-        return repository.getAccountSubscribes(lifecycleOwner, accountId, isSwipedToRefresh);
+        return repository.checkAccountSubscribe(lifecycleOwner, accountId, isSwipedToRefresh);
+    }
+
+    public LiveData<ApiResponse> checkAccountSubscribe(@NonNull String token, @NonNull String accountId) {
+        return repository.checkAccountSubscribe(token, accountId);
     }
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String userId, boolean isSwipedToRefresh, boolean saveData) {
@@ -83,6 +93,11 @@ public class AccountViewModel extends BasePodcastViewModel {
     @Bindable
     public String getAccountSubscribes() {
         return accountSubscribes.get();
+    }
+
+    @Bindable
+    public Boolean getIsSubscribed() {
+        return isSubscribed.get();
     }
 
     public PodcastFileAdapter getPodcastFileAdapter() {
@@ -141,9 +156,21 @@ public class AccountViewModel extends BasePodcastViewModel {
         notifyPropertyChanged(BR.account);
     }
 
+    public void setIsSubscribed(Boolean isSubscribed) {
+        this.isSubscribed.set(isSubscribed);
+        notifyPropertyChanged(BR.isSubscribed);
+    }
+
     public void setAccountSubscribes(String accountSubscribes) {
         this.accountSubscribes.set(accountSubscribes);
         notifyPropertyChanged(BR.accountSubscribes);
+    }
+
+    @BindingAdapter(value = {"isSubscribed"})
+    public static void isSubscribed(View view, boolean isSubscribed) {
+        int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);
+        int defaultColor = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
+        view.getBackground().setColorFilter(isSubscribed ? selectedColor : defaultColor, PorterDuff.Mode.MULTIPLY);
     }
 
 }

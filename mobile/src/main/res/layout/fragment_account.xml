@@ -67,6 +67,7 @@
                     android:layout_marginBottom="@dimen/medium_offset"
                     android:text="@{viewModel.accountSubscribes}"
                     app:icon="@drawable/ic_record_voice_over"
+                    app:isSubscribed="@{viewModel.isSubscribed}"
                     app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
                     app:layout_constraintRight_toRightOf="parent" />
 

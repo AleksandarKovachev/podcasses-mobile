@@ -11,11 +11,11 @@ import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.retrofit.util.ApiResponse;
-import com.podcasses.retrofit.util.ConnectivityUtil;
+import com.podcasses.util.ConnectivityUtil;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -38,6 +38,7 @@ public class MainDataRepository {
 
     private final MutableLiveData<ApiResponse> accountResponse;
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
+    private final MutableLiveData<ApiResponse> checkAccountSubscribeResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
@@ -62,6 +63,7 @@ public class MainDataRepository {
         networkDataSource = new NetworkDataSource(apiCallInterface);
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
+        checkAccountSubscribeResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
@@ -92,7 +94,7 @@ public class MainDataRepository {
         return accountResponse;
     }
 
-    public LiveData<ApiResponse> getAccountSubscribes(LifecycleOwner lifecycleOwner, String accountId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> checkAccountSubscribe(LifecycleOwner lifecycleOwner, String accountId, boolean isSwipedToRefresh) {
         accountSubscribesResponse.setValue(ApiResponse.loading());
 
         if (isSwipedToRefresh) {
@@ -105,6 +107,24 @@ public class MainDataRepository {
         }
 
         return accountSubscribesResponse;
+    }
+
+    public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
+        checkAccountSubscribeResponse.setValue(ApiResponse.loading());
+
+        networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer data) {
+                checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1));
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                checkAccountSubscribeResponse.setValue(ApiResponse.error(error));
+            }
+        });
+
+        return checkAccountSubscribeResponse;
     }
 
     public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId, boolean isSwipedToRefresh, boolean saveData) {
@@ -281,7 +301,9 @@ public class MainDataRepository {
                 public void onSuccess(Account data) {
                     accountResponse.setValue(ApiResponse.success(data));
 
-                    localDataSource.insertAccount(data);
+                    if (data != null) {
+                        localDataSource.insertAccount(data);
+                    }
                 }
 
                 @Override
@@ -361,7 +383,9 @@ public class MainDataRepository {
                 public void onSuccess(Integer data) {
                     accountSubscribesResponse.setValue(ApiResponse.success(data));
 
-                    localDataSource.updateAccountSubscribes(data, accountId);
+                    if (data != null) {
+                        localDataSource.updateAccountSubscribes(data, accountId);
+                    }
                 }
 
                 @Override
