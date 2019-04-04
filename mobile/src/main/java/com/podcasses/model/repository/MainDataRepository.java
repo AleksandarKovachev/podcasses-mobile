@@ -60,7 +60,7 @@ public class MainDataRepository {
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
         this.localDataSource = localDataSource;
-        networkDataSource = new NetworkDataSource(apiCallInterface);
+        networkDataSource = new NetworkDataSource(apiCallInterface, context);
         accountResponse = new MutableLiveData<>();
         accountSubscribesResponse = new MutableLiveData<>();
         checkAccountSubscribeResponse = new MutableLiveData<>();
@@ -94,35 +94,44 @@ public class MainDataRepository {
         return accountResponse;
     }
 
-    public LiveData<ApiResponse> checkAccountSubscribe(LifecycleOwner lifecycleOwner, String accountId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> checkAccountSubscribe(String accountId) {
         accountSubscribesResponse.setValue(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    accountSubscribesResponse.setValue(ApiResponse.success(data));
+                }
 
-        if (isSwipedToRefresh) {
-            fetchAccountSubscribesOnNetwork(accountId);
-        } else if (accountLiveData != null && accountLiveData.getValue() != null && accountLiveData.getValue().getSubscribes() != null) {
-            accountSubscribesResponse.setValue(ApiResponse.success(accountLiveData.getValue().getSubscribes()));
+                @Override
+                public void onFailure(Throwable error) {
+                    accountSubscribesResponse.setValue(ApiResponse.error(error));
+                }
+            });
         } else {
-            accountLiveData = localDataSource.getAccountById(accountId);
-            accountLiveData.observe(lifecycleOwner, account -> onAccountSubscribesFetched(lifecycleOwner, account, accountId));
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
-
         return accountSubscribesResponse;
     }
 
     public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
         checkAccountSubscribeResponse.setValue(ApiResponse.loading());
 
-        networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1));
-            }
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1));
+                }
 
-            @Override
-            public void onFailure(Throwable error) {
-                checkAccountSubscribeResponse.setValue(ApiResponse.error(error));
-            }
-        });
+                @Override
+                public void onFailure(Throwable error) {
+                    checkAccountSubscribeResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
 
         return checkAccountSubscribeResponse;
     }
@@ -192,51 +201,61 @@ public class MainDataRepository {
 
     public LiveData<ApiResponse> getComments(String podcastId) {
         commentsResponse.setValue(ApiResponse.loading());
-        networkDataSource.getComments(podcastId, new IDataCallback<List<Comment>>() {
-            @Override
-            public void onSuccess(List<Comment> data) {
-                commentsResponse.setValue(ApiResponse.success(data));
-            }
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getComments(podcastId, new IDataCallback<List<Comment>>() {
+                @Override
+                public void onSuccess(List<Comment> data) {
+                    commentsResponse.setValue(ApiResponse.success(data));
+                }
 
-            @Override
-            public void onFailure(Throwable error) {
-                commentsResponse.setValue(ApiResponse.error(error));
-            }
-        });
+                @Override
+                public void onFailure(Throwable error) {
+                    commentsResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
         return commentsResponse;
     }
 
     public LiveData<ApiResponse> getAccount(List<String> ids) {
         accountsResponse.setValue(ApiResponse.loading());
-        networkDataSource.getAccounts(ids, new IDataCallback<List<Account>>() {
-            @Override
-            public void onSuccess(List<Account> data) {
-                accountsResponse.setValue(ApiResponse.success(data));
-            }
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccounts(ids, new IDataCallback<List<Account>>() {
+                @Override
+                public void onSuccess(List<Account> data) {
+                    accountsResponse.setValue(ApiResponse.success(data));
+                }
 
-            @Override
-            public void onFailure(Throwable error) {
-                accountsResponse.setValue(ApiResponse.error(error));
-            }
-        });
+                @Override
+                public void onFailure(Throwable error) {
+                    accountsResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
         return accountsResponse;
     }
 
     public LiveData<ApiResponse> getAccountComments(String token, List<String> commentIds) {
         accountCommentsResponse.setValue(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountComments(token, commentIds, new IDataCallback<List<AccountComment>>() {
+                @Override
+                public void onSuccess(List<AccountComment> data) {
+                    accountCommentsResponse.setValue(ApiResponse.success(data));
+                }
 
-        networkDataSource.getAccountComments(token, commentIds, new IDataCallback<List<AccountComment>>() {
-            @Override
-            public void onSuccess(List<AccountComment> data) {
-                accountCommentsResponse.setValue(ApiResponse.success(data));
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                accountCommentsResponse.setValue(ApiResponse.error(error));
-            }
-        });
-
+                @Override
+                public void onFailure(Throwable error) {
+                    accountCommentsResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
         return accountCommentsResponse;
     }
 
@@ -282,15 +301,6 @@ public class MainDataRepository {
             accountResponse.setValue(ApiResponse.success(account));
         } else {
             fetchAccountOnNetwork(username);
-        }
-    }
-
-    private void onAccountSubscribesFetched(LifecycleOwner lifecycleOwner, Account account, String accountId) {
-        accountLiveData.removeObservers(lifecycleOwner);
-        if (account != null && account.getSubscribes() != null) {
-            accountResponse.setValue(ApiResponse.success(account.getSubscribes()));
-        } else {
-            fetchAccountSubscribesOnNetwork(accountId);
         }
     }
 
@@ -340,22 +350,26 @@ public class MainDataRepository {
     }
 
     private void fetchPodcastFilesOnNetwork(String token) {
-        networkDataSource.getPodcastFiles(token, new IDataCallback<List<PodcastFile>>() {
-            @Override
-            public void onSuccess(List<PodcastFile> data) {
-                podcastFilesResponse.setValue(ApiResponse.success(data));
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getPodcastFiles(token, new IDataCallback<List<PodcastFile>>() {
+                @Override
+                public void onSuccess(List<PodcastFile> data) {
+                    podcastFilesResponse.setValue(ApiResponse.success(data));
 
-                if (!CollectionUtils.isEmpty(data)) {
-                    localDataSource.deletePodcastFiles();
-                    localDataSource.insertPodcastFiles(data.toArray(new PodcastFile[0]));
+                    if (!CollectionUtils.isEmpty(data)) {
+                        localDataSource.deletePodcastFiles();
+                        localDataSource.insertPodcastFiles(data.toArray(new PodcastFile[0]));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable error) {
-                podcastFilesResponse.setValue(ApiResponse.error(error));
-            }
-        });
+                @Override
+                public void onFailure(Throwable error) {
+                    podcastFilesResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
     }
 
     private void fetchAccountPodcastOnNetwork(String token, String podcastId) {
@@ -373,28 +387,6 @@ public class MainDataRepository {
             });
         } else {
             podcastResponse.setValue(ApiResponse.error(new ConnectException()));
-        }
-    }
-
-    private void fetchAccountSubscribesOnNetwork(String accountId) {
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
-                @Override
-                public void onSuccess(Integer data) {
-                    accountSubscribesResponse.setValue(ApiResponse.success(data));
-
-                    if (data != null) {
-                        localDataSource.updateAccountSubscribes(data, accountId);
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable error) {
-                    accountSubscribesResponse.setValue(ApiResponse.error(error));
-                }
-            });
-        } else {
-            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
     }
 

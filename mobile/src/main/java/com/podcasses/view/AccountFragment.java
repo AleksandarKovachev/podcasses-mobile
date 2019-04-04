@@ -24,6 +24,7 @@ import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.AccountViewModel;
@@ -98,6 +99,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 JWT jwt = new JWT(s);
                 username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
                 accountId = jwt.getSubject();
+                binding.setAccountId(accountId);
+                binding.setToken(s);
 
                 accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
                 accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
@@ -139,7 +142,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     private void getAccountData(String token, RefreshLayout refreshLayout) {
         accountResponse = accountViewModel.account(this, username, refreshLayout != null);
-        accountSubscribesResponse = accountViewModel.accountSubscribes(this, accountId, refreshLayout != null);
+        accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
         checkAccountSubscribeResponse = accountViewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
         podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
         podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
@@ -189,7 +192,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                logError(apiResponse);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
             default:
                 break;

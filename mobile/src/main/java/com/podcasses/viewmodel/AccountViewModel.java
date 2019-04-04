@@ -2,7 +2,6 @@ package com.podcasses.viewmodel;
 
 import android.graphics.PorterDuff;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.podcasses.BR;
@@ -13,6 +12,7 @@ import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
@@ -58,8 +58,8 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getAccount(lifecycleOwner, username, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accountSubscribes(LifecycleOwner lifecycleOwner, @NonNull String accountId, boolean isSwipedToRefresh) {
-        return repository.checkAccountSubscribe(lifecycleOwner, accountId, isSwipedToRefresh);
+    public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
+        return repository.checkAccountSubscribe(accountId);
     }
 
     public LiveData<ApiResponse> checkAccountSubscribe(@NonNull String token, @NonNull String accountId) {
@@ -130,13 +130,13 @@ public class AccountViewModel extends BasePodcastViewModel {
                     repository.deletePodcastFile(podcastFile.getId());
                     Toasty.success(view.getContext(), view.getContext().getString(R.string.successfully_deleted_podcast_file), Toast.LENGTH_SHORT, true).show();
                 } else {
-                    Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
     }
@@ -164,6 +164,31 @@ public class AccountViewModel extends BasePodcastViewModel {
     public void setAccountSubscribes(String accountSubscribes) {
         this.accountSubscribes.set(accountSubscribes);
         notifyPropertyChanged(BR.accountSubscribes);
+    }
+
+    public void subscribeAccount(View view, String token, String accountId) {
+        Call<Integer> subscribeAccountCall = apiCallInterface.accountSubscribe("Bearer " + token, accountId);
+        subscribeAccountCall.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body() == 1) {
+                        setIsSubscribed(true);
+                        Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_subscribing), Toast.LENGTH_SHORT, true).show();
+                    } else {
+                        setIsSubscribed(false);
+                        Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_unsubscribing), Toast.LENGTH_SHORT, true).show();
+                    }
+                } else {
+                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                LogErrorResponseUtil.logFailure(t, view.getContext());
+            }
+        });
     }
 
     @BindingAdapter(value = {"isSubscribed"})

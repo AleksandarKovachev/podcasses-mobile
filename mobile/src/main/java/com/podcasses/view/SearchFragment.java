@@ -17,6 +17,7 @@ import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
+import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.SearchViewModel;
@@ -137,7 +138,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                logError(apiResponse);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
             default:
                 break;

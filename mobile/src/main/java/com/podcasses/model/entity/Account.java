@@ -28,8 +28,6 @@ public class Account {
 
     private int emailVerified;
 
-    private Integer subscribes;
-
     public String getUsername() {
         return username;
     }
@@ -92,14 +90,6 @@ public class Account {
 
     public void setEmailVerified(int emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public Integer getSubscribes() {
-        return subscribes;
-    }
-
-    public void setSubscribes(Integer subscribes) {
-        this.subscribes = subscribes;
     }
 
 }

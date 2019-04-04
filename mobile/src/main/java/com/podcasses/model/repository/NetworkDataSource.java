@@ -1,5 +1,7 @@
 package com.podcasses.model.repository;
 
+import android.content.Context;
+
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
@@ -9,6 +11,7 @@ import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.LogErrorResponseUtil;
 
 import java.util.List;
 
@@ -22,9 +25,11 @@ import retrofit2.Response;
 class NetworkDataSource {
 
     private ApiCallInterface apiCallInterface;
+    private Context context;
 
-    NetworkDataSource(ApiCallInterface apiCallInterface) {
+    NetworkDataSource(ApiCallInterface apiCallInterface, Context context) {
         this.apiCallInterface = apiCallInterface;
+        this.context = context;
     }
 
     void getUserAccount(String username, IDataCallback<Account> callback) {
@@ -32,7 +37,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<Account>() {
             @Override
             public void onResponse(Call<Account> call, Response<Account> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -47,7 +57,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -62,7 +77,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -77,7 +97,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -92,7 +117,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<AccountPodcast>() {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -110,7 +140,8 @@ class NetworkDataSource {
                 if (response.isSuccessful()) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onFailure(null);
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
@@ -141,7 +172,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<List<Comment>>() {
             @Override
             public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -151,17 +187,22 @@ class NetworkDataSource {
         });
     }
 
-    void getAccounts(List<String> ids, IDataCallback<List<Account>> iDataCallback) {
+    void getAccounts(List<String> ids, IDataCallback<List<Account>> callback) {
         Call<List<Account>> call = apiCallInterface.getAccounts(ids);
         call.enqueue(new Callback<List<Account>>() {
             @Override
             public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
-                iDataCallback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
             public void onFailure(Call<List<Account>> call, Throwable t) {
-                iDataCallback.onFailure(t);
+                callback.onFailure(t);
             }
         });
     }
@@ -171,7 +212,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<List<AccountComment>>() {
             @Override
             public void onResponse(Call<List<AccountComment>> call, Response<List<AccountComment>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override
@@ -185,7 +231,12 @@ class NetworkDataSource {
         return new Callback<List<T>>() {
             @Override
             public void onResponse(Call<List<T>> call, Response<List<T>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
             }
 
             @Override

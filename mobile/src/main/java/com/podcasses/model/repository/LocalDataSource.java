@@ -64,10 +64,6 @@ public class LocalDataSource {
         accountDao.insert(account);
     }
 
-    void updateAccountSubscribes(int subscribes, String accountId) {
-        accountDao.update(subscribes, accountId);
-    }
-
     LiveData<AccountPodcast> getAccountPodcast(String accountId, String podcastId) {
         return accountPodcastDao.getAccountPodcast(accountId, podcastId);
     }

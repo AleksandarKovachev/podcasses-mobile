@@ -26,13 +26,14 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
+import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
@@ -222,7 +223,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                logError(apiResponse);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
         }
     }
@@ -255,7 +256,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 break;
             case ERROR:
                 liveData.removeObservers(this);
-                logError(apiResponse);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
         }
     }
@@ -290,7 +291,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 break;
             case ERROR:
                 liveData.removeObservers(this);
-                logError(apiResponse);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
         }
     }

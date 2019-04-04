@@ -23,7 +23,4 @@ public interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Account account);
 
-    @Query("UPDATE account SET subscribes = (:subscribes) WHERE keycloakId = (:accountId)")
-    void update(int subscribes, String accountId);
-
 }

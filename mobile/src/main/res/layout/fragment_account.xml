@@ -6,6 +6,14 @@
     <data>
 
         <variable
+            name="accountId"
+            type="java.lang.String" />
+
+        <variable
+            name="token"
+            type="java.lang.String" />
+
+        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
@@ -65,6 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/medium_offset"
                     android:layout_marginBottom="@dimen/medium_offset"
+                    android:onClick="@{v -> viewModel.subscribeAccount(v, token, accountId)}"
                     android:text="@{viewModel.accountSubscribes}"
                     app:icon="@drawable/ic_record_voice_over"
                     app:isSubscribed="@{viewModel.isSubscribed}"
