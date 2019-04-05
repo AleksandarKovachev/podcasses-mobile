@@ -117,6 +117,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PodcastViewModel.class);
         binding.setViewModel(viewModel);
+        binding.setPodcastId(id);
 
         viewModel.setPodcastImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PODCAST_IMAGE + id);
 
@@ -126,6 +127,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         token.observe(this, s -> {
             if (!Strings.isEmptyOrWhitespace(s)) {
                 JWT jwt = new JWT(s);
+                viewModel.setAccountId(jwt.getSubject());
                 accountPodcastResponse = viewModel.accountPodcasts(this, s, jwt.getSubject(), id, false);
                 accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, null));
             }
@@ -279,12 +281,14 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 break;
             case SUCCESS:
                 liveData.removeObservers(this);
-                for (Comment comment : viewModel.getComments()) {
-                    for (AccountComment accountComment : (List<AccountComment>) apiResponse.data) {
-                        if (comment.getId().equals(accountComment.getCommentId())) {
-                            comment.setLiked(accountComment.getLikeStatus() == LikeStatus.LIKE.getValue());
-                            comment.setDisliked(accountComment.getLikeStatus() == LikeStatus.DISLIKE.getValue());
-                            break;
+                if (!CollectionUtils.isEmpty(viewModel.getComments()) && !CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                    for (Comment comment : viewModel.getComments()) {
+                        for (AccountComment accountComment : (List<AccountComment>) apiResponse.data) {
+                            if (comment.getId().equals(accountComment.getCommentId())) {
+                                comment.setLiked(accountComment.getLikeStatus() == LikeStatus.LIKE.getValue());
+                                comment.setDisliked(accountComment.getLikeStatus() == LikeStatus.DISLIKE.getValue());
+                                break;
+                            }
                         }
                     }
                 }

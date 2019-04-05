@@ -37,6 +37,7 @@
     <string name="podcast_canDownload">Can be downloaded</string>
     <string name="podcast_ageRestriction">Age restriction</string>
     <string name="podcast_add">Add podcast</string>
+    <string name="podcast_add_comment">Add a comment</string>
 
     <string name="podcast_successfully_added">Successfully added podcast</string>
 
@@ -51,6 +52,7 @@
     <string name="successfully_deleted_podcast_file">Successfully deleted podcast file.</string>
     <string name="successful_subscribing">Successful subscribing.</string>
     <string name="successful_unsubscribing">Successful unsubscribing.</string>
+    <string name="successfully_added_comment">Successfully added comment.</string>
     <string name="successful_response">Successful request.</string>
     <string name="error_response">Something went wrong. Please try again!</string>
 

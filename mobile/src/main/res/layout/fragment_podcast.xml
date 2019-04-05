@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="podcastId"
+            type="java.lang.String" />
+
+        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.PodcastViewModel" />
     </data>
@@ -168,6 +172,47 @@
                     android:text="@{viewModel.podcast.podcastDescription}"
                     app:layout_constraintTop_toBottomOf="@id/play_button" />
 
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/account_image"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginStart="15dp"
+                    app:imageUrl="@{viewModel.accountId}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/podcast_description" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/podcast_comment_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:hint="@string/podcast_add_comment"
+                    app:layout_constraintEnd_toStartOf="@id/podcast_add_comment_fab"
+                    app:layout_constraintStart_toEndOf="@id/account_image"
+                    app:layout_constraintTop_toBottomOf="@id/podcast_description">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/podcast_comment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone|flagNoEnterAction"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:singleLine="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/podcast_add_comment_fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:onClick="@{v -> viewModel.addComment(v, podcastId, podcastComment)}"
+                    android:src="@drawable/ic_send"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/podcast_comment_input"
+                    app:layout_constraintTop_toBottomOf="@id/podcast_description" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/podcast_comments_list"
                     android:layout_width="match_parent"
@@ -175,7 +220,7 @@
                     android:layout_marginTop="@dimen/medium_offset"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_description"
+                    app:layout_constraintTop_toBottomOf="@id/account_image"
                     app:setAdapter="@{viewModel.podcastCommentsAdapter}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

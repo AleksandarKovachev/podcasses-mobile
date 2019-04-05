@@ -37,6 +37,7 @@
     <string name="podcast_canDownload">Може да се сваля</string>
     <string name="podcast_ageRestriction">Възрастово ограничение</string>
     <string name="podcast_add">Добави подкаст</string>
+    <string name="podcast_add_comment">Добави коментар</string>
 
     <string name="podcast_successfully_added">Подкаста е успешно добавен.</string>
 
@@ -51,6 +52,7 @@
     <string name="successfully_deleted_podcast_file">Успешно изтрит подкаст фйал.</string>
     <string name="successful_subscribing">Успешно абониране.</string>
     <string name="successful_unsubscribing">Успешно премахване на абонамент.</string>
+    <string name="successfully_added_comment">Успешно добавен коментар.</string>
     <string name="successful_response">Успешна заявка.</string>
     <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
 

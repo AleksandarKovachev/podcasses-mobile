@@ -1,7 +1,6 @@
 package com.podcasses.viewmodel;
 
 import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -9,6 +8,7 @@ import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.google.android.material.textfield.TextInputEditText;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
 import com.podcasses.BuildConfig;
@@ -17,17 +17,20 @@ import com.podcasses.adapter.PodcastCommentAdapter;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.request.AccountCommentRequest;
+import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioDownloadService;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
+import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -55,6 +58,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     private MutableLiveData<Podcast> podcast = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
     private MutableLiveData<List<Comment>> comments = new MutableLiveData<>();
+    private ObservableField<String> accountId = new ObservableField<>();
 
     private PodcastCommentAdapter podcastCommentsAdapter = new PodcastCommentAdapter(R.layout.item_comment, this);
 
@@ -72,6 +76,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     }
 
     public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, String accountId, @NonNull String podcastId, boolean isSwipedToRefresh) {
+        this.token = token;
         return repository.getAccountPodcasts(lifecycleOwner, token, accountId, podcastId, isSwipedToRefresh);
     }
 
@@ -106,6 +111,14 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @Bindable
     public String getPodcastImage() {
         return podcastImage.get();
+    }
+
+    @Bindable
+    public String getAccountId() {
+        if (accountId.get() != null) {
+            return BuildConfig.API_GATEWAY_URL.concat(PROFILE_IMAGE).concat(accountId.get());
+        }
+        return null;
     }
 
     public PodcastCommentAdapter getPodcastCommentsAdapter() {
@@ -159,6 +172,11 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         notifyPropertyChanged(BR.podcastImage);
     }
 
+    public void setAccountId(String accountId) {
+        this.accountId.set(accountId);
+        notifyPropertyChanged(BR.accountId);
+    }
+
     @BindingAdapter(value = {"isLiked"})
     public static void isLiked(View view, boolean isLiked) {
         view.setSelected(isLiked);
@@ -167,6 +185,39 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @BindingAdapter(value = {"isDisliked"})
     public static void isDisliked(View view, boolean isDisliked) {
         view.setSelected(isDisliked);
+    }
+
+    public void addComment(View view, String podcastId, TextInputEditText comment) {
+        if (comment.getText() == null || Strings.isEmptyOrWhitespace(comment.getText().toString()) || token == null) {
+            return;
+        }
+
+        CommentRequest commentRequest = new CommentRequest();
+        commentRequest.setComment(comment.getText().toString());
+        commentRequest.setPodcastId(podcastId);
+        Call<Comment> commentCall = apiCallInterface.accountComment("Bearer " + token, commentRequest);
+        commentCall.enqueue(new Callback<Comment>() {
+            @Override
+            public void onResponse(Call<Comment> call, Response<Comment> response) {
+                if (response.isSuccessful()) {
+                    Toasty.success(view.getContext(), view.getContext().getString(R.string.successfully_added_comment), Toast.LENGTH_SHORT, true).show();
+                    comment.setText("");
+                    List<Comment> commentsList = comments.getValue();
+                    if (CollectionUtils.isEmpty(commentsList)) {
+                        commentsList = new ArrayList<>();
+                    }
+                    commentsList.add(0, response.body());
+                    setPodcastCommentsInAdapter(commentsList);
+                } else {
+                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Comment> call, Throwable t) {
+                LogErrorResponseUtil.logFailure(t, view.getContext());
+            }
+        });
     }
 
     public void likeComment(View view, int position) {
@@ -209,14 +260,13 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
                     comment.setLiked(response.body().getLikeStatus() == LikeStatus.LIKE.getValue());
                     comment.setDisliked(response.body().getLikeStatus() == LikeStatus.DISLIKE.getValue());
                 } else {
-                    Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
                 }
             }
 
             @Override
             public void onFailure(Call<AccountComment> call, Throwable t) {
-                Toasty.error(view.getContext(), view.getContext().getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
-                Log.e("PodcastViewModel", "accountComment: ", t);
+                LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
     }
