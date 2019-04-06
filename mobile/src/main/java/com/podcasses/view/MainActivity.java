@@ -6,10 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +26,6 @@ import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.MainActivityBinding;
-import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
@@ -70,9 +67,6 @@ public class MainActivity extends AppCompatActivity implements
     private static final int INDEX_UPLOAD = FragNavController.TAB4;
     private static final int INDEX_ACCOUNT = FragNavController.TAB5;
     public static final int FRAGMENTS_COUNT = 5;
-
-    @Inject
-    SharedPreferencesManager sharedPreferencesManager;
 
     @Inject
     AuthenticationCallInterface authenticationCall;
@@ -148,13 +142,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem checkable = menu.findItem(R.id.navigation_dark_theme);
-        checkable.setChecked(sharedPreferencesManager.isDarkTheme());
-        return true;
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.navigation_home:
@@ -179,15 +166,6 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.navigation_upload:
                 fragNavController.switchTab(INDEX_UPLOAD);
                 break;
-            case R.id.navigation_dark_theme:
-                if (!item.isChecked()) {
-                    item.setChecked(true);
-                } else {
-                    item.setChecked(false);
-                }
-                sharedPreferencesManager.setIsDarkTheme(item.isChecked());
-                this.recreate();
-                break;
             case R.id.navigation_logout:
                 handleLogout();
                 break;
@@ -195,20 +173,6 @@ public class MainActivity extends AppCompatActivity implements
                 return fragNavController.popFragment();
         }
         return true;
-    }
-
-    @Override
-    public Resources.Theme getTheme() {
-        Resources.Theme theme = super.getTheme();
-        boolean isDarkTheme = PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(SharedPreferencesManager.IS_DARK_THEME, true);
-
-        if (isDarkTheme) {
-            theme.applyStyle(R.style.DarkAppTheme, true);
-        } else {
-            theme.applyStyle(R.style.LightAppTheme, true);
-        }
-        return theme;
     }
 
     @Override
@@ -229,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements
             case INDEX_UPLOAD:
                 return UploadFragment.newInstance(0);
             case INDEX_ACCOUNT:
-                return AccountFragment.newInstance(0);
+                return AccountFragment.newInstance(0, null);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }
