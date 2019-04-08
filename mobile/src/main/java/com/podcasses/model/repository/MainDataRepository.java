@@ -94,6 +94,28 @@ public class MainDataRepository {
         return accountResponse;
     }
 
+    public LiveData<ApiResponse> getAccountById(String id) {
+        accountResponse.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getUserAccountById(id, new IDataCallback<Account>() {
+                @Override
+                public void onSuccess(Account data) {
+                    accountResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return accountResponse;
+    }
+
     public LiveData<ApiResponse> checkAccountSubscribe(String accountId) {
         accountSubscribesResponse.setValue(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {

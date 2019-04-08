@@ -69,9 +69,10 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     private Account account;
     private String username;
-    private String accountId;
+    private static String accountId;
 
-    static AccountFragment newInstance(int instance) {
+    static AccountFragment newInstance(int instance, String openedAccountId) {
+        accountId = openedAccountId;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         AccountFragment fragment = new AccountFragment();
@@ -91,23 +92,35 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(accountViewModel);
 
-        binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, r));
+        if (accountId != null) {
+            binding.setAccountId(accountId);
+            accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+            accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+            binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, false, r));
+            token = isAuthenticated();
+            token.observe(this, s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    binding.setToken(s);
+                    getAccountData(s, false, null);
+                }
+            });
+        } else {
+            binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, true, r));
+            token = isAuthenticated();
+            token.observe(this, s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    JWT jwt = new JWT(s);
+                    username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
+                    accountId = jwt.getSubject();
+                    binding.setToken(s);
 
-        token = isAuthenticated();
-        token.observe(this, s -> {
-            if (!Strings.isEmptyOrWhitespace(s)) {
-                JWT jwt = new JWT(s);
-                username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
-                accountId = jwt.getSubject();
-                binding.setAccountId(accountId);
-                binding.setToken(s);
+                    accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+                    accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
-                accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-                accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
-
-                getAccountData(s, null);
-            }
-        });
+                    getAccountData(s, true, null);
+                }
+            });
+        }
 
         setListClick();
 
@@ -140,18 +153,23 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
-    private void getAccountData(String token, RefreshLayout refreshLayout) {
-        accountResponse = accountViewModel.account(this, username, refreshLayout != null);
+    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
         accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
-        checkAccountSubscribeResponse = accountViewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
-        podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
         podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
 
+        if (isPrimaryAccount) {
+            accountResponse = accountViewModel.account(this, username, refreshLayout != null);
+            podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
+        } else {
+            accountResponse = accountViewModel.account(accountId);
+            checkAccountSubscribeResponse = accountViewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
+            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+        }
+
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
-        podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
         accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
-        checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {

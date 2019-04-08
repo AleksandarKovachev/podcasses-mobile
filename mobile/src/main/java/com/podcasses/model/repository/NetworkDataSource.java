@@ -34,6 +34,15 @@ class NetworkDataSource {
 
     void getUserAccount(String username, IDataCallback<Account> callback) {
         Call<Account> call = apiCallInterface.account(username);
+        setAccountCallback(callback, call);
+    }
+
+    void getUserAccountById(String id, IDataCallback<Account> callback) {
+        Call<Account> call = apiCallInterface.accountById(id);
+        setAccountCallback(callback, call);
+    }
+
+    private void setAccountCallback(IDataCallback<Account> callback, Call<Account> call) {
         call.enqueue(new Callback<Account>() {
             @Override
             public void onResponse(Call<Account> call, Response<Account> response) {

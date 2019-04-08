@@ -34,14 +34,20 @@ public interface ApiCallInterface {
     @GET("/account/{username}")
     Call<Account> account(@Path("username") String username);
 
-    @GET("/account/subscribes/{accountId}")
-    Call<Integer> accountSubscribes(@Path("accountId") String accountId);
+    @GET("/account/id/{id}")
+    Call<Account> accountById(@Path("id") String id);
 
-    @GET("/account/subscribe/{accountId}")
-    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+    @GET("/account/id")
+    Call<List<Account>> getAccounts(@Query("id") List<String> ids);
 
-    @POST("/account/subscribe/{accountId}")
-    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+    @GET("/account/subscribes/{accountById}")
+    Call<Integer> accountSubscribes(@Path("accountById") String accountId);
+
+    @GET("/account/subscribe/{accountById}")
+    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountById") String accountId);
+
+    @POST("/account/subscribe/{accountById}")
+    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountById") String accountId);
 
     @GET("/podcast")
     Call<List<Podcast>> podcast(
@@ -75,9 +81,6 @@ public interface ApiCallInterface {
 
     @GET("/podcast/comment/{podcastId}")
     Call<List<Comment>> getComments(@Path("podcastId") String podcastId);
-
-    @GET("/account/id")
-    Call<List<Account>> getAccounts(@Query("id") List<String> ids);
 
     @POST("/account/comment")
     Call<AccountComment> accountComment(@Header("Authorization") String token, @Body AccountCommentRequest accountCommentRequest);

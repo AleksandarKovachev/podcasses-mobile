@@ -54,6 +54,7 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import es.dmoral.toasty.Toasty;
@@ -154,6 +155,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             player.addListener(this);
             setPlayingStatus(player.getPlayWhenReady());
         }
+
+        setAccountClickListener();
 
         return binding.getRoot();
     }
@@ -402,6 +405,15 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
                 Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
                 Log.e(getTag(), "onFailure: ", t);
+            }
+        });
+    }
+
+    private void setAccountClickListener() {
+        viewModel.getSelectedAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get()));
             }
         });
     }

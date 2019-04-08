@@ -59,6 +59,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     private ObservableField<String> podcastImage = new ObservableField<>();
     private MutableLiveData<List<Comment>> comments = new MutableLiveData<>();
     private ObservableField<String> accountId = new ObservableField<>();
+    private ObservableField<String> selectedAccountId = new ObservableField<>();
 
     private PodcastCommentAdapter podcastCommentsAdapter = new PodcastCommentAdapter(R.layout.item_comment, this);
 
@@ -111,6 +112,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     @Bindable
     public String getPodcastImage() {
         return podcastImage.get();
+    }
+
+    public ObservableField<String> getSelectedAccountId() {
+        return selectedAccountId;
     }
 
     @Bindable
@@ -269,6 +274,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
                 LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
+    }
+
+    public void openAccount(Integer position) {
+        selectedAccountId.set(comments.getValue().get(position).getUserId());
     }
 
     private int getPreviousLikeStatus(Comment comment) {

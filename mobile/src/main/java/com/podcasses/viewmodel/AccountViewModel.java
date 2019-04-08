@@ -58,6 +58,10 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getAccount(lifecycleOwner, username, isSwipedToRefresh);
     }
 
+    public LiveData<ApiResponse> account(@NonNull String id) {
+        return repository.getAccountById(id);
+    }
+
     public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
         return repository.checkAccountSubscribe(accountId);
     }
