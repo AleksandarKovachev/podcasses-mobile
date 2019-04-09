@@ -60,12 +60,24 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/podcast_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/small_offset"
+            android:paddingEnd="@dimen/small_offset"
+            android:text="@{viewModel.getPodcastAt(position).username}"
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/podcast_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/small_offset"
+            android:paddingStart="@dimen/small_offset"
+            android:paddingEnd="@dimen/small_offset"
             android:text="@{viewModel.getPodcastAt(position).podcastDate}"
-            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintEnd_toStartOf="@id/play_button"
+            app:layout_constraintStart_toEndOf="@id/podcast_username"
             app:layout_constraintTop_toBottomOf="@id/podcast_title" />
 
         <com.ohoussein.playpause.PlayPauseView

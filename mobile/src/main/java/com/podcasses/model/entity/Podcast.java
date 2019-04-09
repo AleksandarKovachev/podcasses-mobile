@@ -6,6 +6,8 @@ import android.text.Spanned;
 
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
+import com.podcasses.model.base.BaseLikeModel;
+import com.podcasses.model.base.BaseUserModel;
 
 import org.parceler.Parcel;
 
@@ -14,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -40,8 +41,6 @@ public class Podcast extends BaseLikeModel {
     private String description;
 
     private int isActive;
-
-    private String userId;
 
     private int categoryId;
 
@@ -117,14 +116,6 @@ public class Podcast extends BaseLikeModel {
 
     public void setIsActive(int isActive) {
         this.isActive = isActive;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public int getCategoryId() {

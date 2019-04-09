@@ -21,7 +21,6 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
@@ -218,7 +217,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                         viewModel.setPodcast(podcast);
                     } else {
                         viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
-                        setAccounts(apiResponse);
+                        setAccounts(viewModel, viewModel.getComments());
                         setAccountComments((List<Comment>) apiResponse.data);
                     }
                 }
@@ -228,39 +227,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
-                break;
-        }
-    }
-
-    private void setAccounts(@NonNull ApiResponse apiResponse) {
-        List<String> accountIds = new ArrayList<>();
-        for (Comment comment : (List<Comment>) apiResponse.data) {
-            if (!accountIds.contains(comment.getUserId())) {
-                accountIds.add(comment.getUserId());
-            }
-        }
-        LiveData<ApiResponse> accounts = viewModel.accounts(accountIds);
-        accounts.observe(this, response -> consumeAccountsData(response, accounts));
-    }
-
-    private void consumeAccountsData(ApiResponse apiResponse, LiveData liveData) {
-        switch (apiResponse.status) {
-            case LOADING:
-                break;
-            case SUCCESS:
-                liveData.removeObservers(this);
-                for (Comment comment : viewModel.getComments()) {
-                    for (Account account : (List<Account>) apiResponse.data) {
-                        if (comment.getUserId().equals(account.getKeycloakId())) {
-                            comment.setUsername(account.getUsername());
-                            break;
-                        }
-                    }
-                }
-                break;
-            case ERROR:
-                liveData.removeObservers(this);
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
         }

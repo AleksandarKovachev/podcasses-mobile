@@ -1,4 +1,4 @@
-package com.podcasses.model.entity;
+package com.podcasses.model.base;
 
 import com.podcasses.BR;
 
@@ -8,7 +8,7 @@ import androidx.databinding.Bindable;
 /**
  * Created by aleksandar.kovachev.
  */
-public class BaseLikeModel extends BaseObservable {
+public class BaseLikeModel extends BaseUserModel {
 
     private int likes;
 

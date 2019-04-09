@@ -1,6 +1,6 @@
 package com.podcasses.util;
 
-import com.podcasses.model.entity.BaseLikeModel;
+import com.podcasses.model.base.BaseLikeModel;
 
 /**
  * Created by aleksandar.kovachev.

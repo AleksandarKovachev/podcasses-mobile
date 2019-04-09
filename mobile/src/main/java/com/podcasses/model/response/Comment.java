@@ -1,7 +1,8 @@
 package com.podcasses.model.response;
 
 import com.podcasses.BR;
-import com.podcasses.model.entity.BaseLikeModel;
+import com.podcasses.model.base.BaseLikeModel;
+import com.podcasses.model.base.BaseUserModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,10 +19,6 @@ public class Comment extends BaseLikeModel {
     private String id;
 
     private String comment;
-
-    private String userId;
-
-    private String username;
 
     private String podcastId;
 
@@ -49,24 +46,6 @@ public class Comment extends BaseLikeModel {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    @Bindable
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-        notifyPropertyChanged(BR.username);
     }
 
     @Bindable

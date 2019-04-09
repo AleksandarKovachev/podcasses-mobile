@@ -85,10 +85,6 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         return repository.getComments(podcastId);
     }
 
-    public LiveData<ApiResponse> accounts(@NonNull List<String> ids) {
-        return repository.getAccount(ids);
-    }
-
     public LiveData<ApiResponse> accountComments(@NonNull String token, @NonNull List<String> commentIds) {
         this.token = token;
         return repository.getAccountComments(token, commentIds);

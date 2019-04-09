@@ -51,7 +51,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private AccountViewModel accountViewModel;
+    private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
 
     private LiveData<String> token;
@@ -89,13 +89,13 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
-        accountViewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
-        binding.setViewModel(accountViewModel);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
+        binding.setViewModel(viewModel);
 
         if (accountId != null) {
             binding.setAccountId(accountId);
-            accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-            accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+            viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+            viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
             binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, false, r));
             token = isAuthenticated();
             token.observe(this, s -> {
@@ -114,8 +114,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     accountId = jwt.getSubject();
                     binding.setToken(s);
 
-                    accountViewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-                    accountViewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+                    viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+                    viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
                     getAccountData(s, true, null);
                 }
@@ -154,16 +154,16 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     }
 
     private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
-        accountSubscribesResponse = accountViewModel.accountSubscribes(accountId);
-        podcasts = accountViewModel.podcasts(this, accountId, refreshLayout != null, true);
+        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
+        podcasts = viewModel.podcasts(this, accountId, refreshLayout != null, true);
 
         if (isPrimaryAccount) {
-            accountResponse = accountViewModel.account(this, username, refreshLayout != null);
-            podcastFiles = accountViewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+            accountResponse = viewModel.account(this, username, refreshLayout != null);
+            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else {
-            accountResponse = accountViewModel.account(accountId);
-            checkAccountSubscribeResponse = accountViewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
+            accountResponse = viewModel.account(accountId);
+            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
             checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
         }
 
@@ -184,23 +184,24 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 if (apiResponse.data instanceof Account) {
                     account = (Account) apiResponse.data;
                     updateTitle();
-                    accountViewModel.setAccount(account);
+                    viewModel.setAccount(account);
                 } else if (apiResponse.data instanceof Integer) {
-                    accountViewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
+                    viewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
                 } else if (apiResponse.data instanceof Boolean) {
-                    accountViewModel.setIsSubscribed((Boolean) apiResponse.data);
+                    viewModel.setIsSubscribed((Boolean) apiResponse.data);
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                         binding.podcastFilesCardView.setVisibility(View.GONE);
                         return;
                     }
                     if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                        accountViewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                        viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
                         if (player != null) {
                             setPlayingStatus(player.getPlayWhenReady());
                         }
+                        setAccounts(viewModel, viewModel.getPodcasts());
                     } else {
-                        accountViewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
+                        viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                         binding.podcastFilesCardView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -218,10 +219,10 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     }
 
     private void setListClick() {
-        accountViewModel.getSelected().observe(this, podcast -> {
+        viewModel.getSelected().observe(this, podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId()));
-                accountViewModel.getSelected().setValue(null);
+                viewModel.getSelected().setValue(null);
             }
         });
     }
@@ -232,23 +233,23 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         setPlayingStatus(playWhenReady);
 
         if (playbackState == Player.STATE_IDLE) {
-            accountViewModel.setPlayingIndex(-1);
+            viewModel.setPlayingIndex(-1);
         }
     }
 
     private void setPlayingStatus(boolean playingStatus) {
         if (!playingStatus) {
-            accountViewModel.setPlayingIndex(-1);
+            viewModel.setPlayingIndex(-1);
             return;
         }
-        if (playingPodcast != null && !CollectionUtils.isEmpty(accountViewModel.getPodcasts())) {
+        if (playingPodcast != null && !CollectionUtils.isEmpty(viewModel.getPodcasts())) {
             int i;
-            for (i = 0; i < accountViewModel.getPodcasts().size(); i++) {
-                if (playingPodcast.getId().equals(accountViewModel.getPodcasts().get(i).getId())) {
+            for (i = 0; i < viewModel.getPodcasts().size(); i++) {
+                if (playingPodcast.getId().equals(viewModel.getPodcasts().get(i).getId())) {
                     break;
                 }
             }
-            accountViewModel.setPlayingIndex(i);
+            viewModel.setPlayingIndex(i);
         }
     }
 
