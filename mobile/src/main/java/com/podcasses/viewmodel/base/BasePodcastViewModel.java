@@ -16,6 +16,7 @@ import java.util.List;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.MutableLiveData;
@@ -31,7 +32,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
 
     private ObservableInt playingIndex = new ObservableInt(-1);
     private MutableLiveData<List<Podcast>> podcasts = new MutableLiveData<>();
-    private MutableLiveData<Podcast> selected = new MutableLiveData<>();
+    private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
+    private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
 
     public BasePodcastViewModel(MainDataRepository repository) {
@@ -58,13 +60,21 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         this.podcastAdapter.notifyDataSetChanged();
     }
 
-    public MutableLiveData<Podcast> getSelected() {
-        return selected;
+    public MutableLiveData<Podcast> getSelectedPodcast() {
+        return selectedPodcast;
     }
 
     public void onPodcastClick(Integer index) {
         Podcast podcast = podcasts.getValue().get(index);
-        selected.setValue(podcast);
+        selectedPodcast.setValue(podcast);
+    }
+
+    public ObservableField<String> getSelectedAccount() {
+        return selectedAccount;
+    }
+
+    public void onAccountClick(Integer index) {
+        selectedAccount.set(podcasts.getValue().get(index).getUserId());
     }
 
     public void onPlayButtonClick(Integer index) {

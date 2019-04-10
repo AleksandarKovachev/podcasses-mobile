@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -123,6 +124,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         }
 
         setListClick();
+        setAccountClick();
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         player = service.getPlayerInstance();
@@ -219,10 +221,22 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     }
 
     private void setListClick() {
-        viewModel.getSelected().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(this, podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId()));
-                viewModel.getSelected().setValue(null);
+                viewModel.getSelectedPodcast().setValue(null);
+            }
+        });
+    }
+
+    private void setAccountClick() {
+        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getSelectedAccount() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
+                    viewModel.getSelectedAccount().set(null);
+                }
             }
         });
     }

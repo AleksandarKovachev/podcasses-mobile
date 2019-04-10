@@ -379,7 +379,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         viewModel.getSelectedAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get()));
+                if (viewModel.getSelectedAccountId() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get()));
+                    viewModel.getSelectedAccountId().set(null);
+                }
             }
         });
     }

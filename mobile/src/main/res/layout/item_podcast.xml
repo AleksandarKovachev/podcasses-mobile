@@ -21,8 +21,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/podcast_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             android:scaleType="fitCenter"
             app:imageUrl='@{viewModel.podcastImage(position)}'
             app:layout_constraintBottom_toBottomOf="parent"
@@ -33,7 +33,7 @@
             android:id="@+id/podcast_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="60dp"
             android:background="#99000000"
             android:text="@{viewModel.getPodcastAt(position).duration}"
             android:textColor="@color/colorPrimaryText"
@@ -50,11 +50,11 @@
             android:focusableInTouchMode="true"
             android:freezesText="true"
             android:marqueeRepeatLimit="marquee_forever"
-            android:padding="@dimen/small_offset"
+            android:padding="15dp"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="@{viewModel.getPodcastAt(position).title}"
-            android:textSize="@dimen/small_text_size"
+            android:textSize="22sp"
             app:layout_constraintEnd_toStartOf="@id/play_button"
             app:layout_constraintStart_toEndOf="@id/podcast_image"
             app:layout_constraintTop_toTopOf="parent" />
@@ -63,8 +63,10 @@
             android:id="@+id/podcast_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.onAccountClick(position)}"
             android:paddingStart="@dimen/small_offset"
             android:paddingEnd="@dimen/small_offset"
+            android:paddingBottom="5dp"
             android:text="@{viewModel.getPodcastAt(position).username}"
             app:layout_constraintStart_toEndOf="@id/podcast_image"
             app:layout_constraintTop_toBottomOf="@id/podcast_title" />
@@ -76,9 +78,8 @@
             android:paddingStart="@dimen/small_offset"
             android:paddingEnd="@dimen/small_offset"
             android:text="@{viewModel.getPodcastAt(position).podcastDate}"
-            app:layout_constraintEnd_toStartOf="@id/play_button"
-            app:layout_constraintStart_toEndOf="@id/podcast_username"
-            app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_username" />
 
         <com.ohoussein.playpause.PlayPauseView
             android:id="@+id/play_button"

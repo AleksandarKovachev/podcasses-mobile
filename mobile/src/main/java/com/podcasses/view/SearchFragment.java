@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -81,6 +82,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
         getPodcasts(binding.refreshLayout);
 
         setListClick();
+        setAccountClick();
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         player = service.getPlayerInstance();
@@ -129,6 +131,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
                 }
                 podcasts = (List<Podcast>) apiResponse.data;
                 viewModel.setPodcastsInAdapter(podcasts);
+                setAccounts(viewModel, viewModel.getPodcasts());
                 if (player != null) {
                     setPlayingStatus(player.getPlayWhenReady());
                 }
@@ -146,10 +149,10 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     }
 
     private void setListClick() {
-        viewModel.getSelected().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(this, podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId()));
-                viewModel.getSelected().setValue(null);
+                viewModel.getSelectedPodcast().setValue(null);
             }
         });
     }
@@ -178,6 +181,18 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
             }
             viewModel.setPlayingIndex(i);
         }
+    }
+
+    private void setAccountClick() {
+        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getSelectedAccount() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
+                    viewModel.getSelectedAccount().set(null);
+                }
+            }
+        });
     }
 
 }
