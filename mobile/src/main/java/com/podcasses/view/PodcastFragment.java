@@ -363,14 +363,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                         Toasty.success(getContext(), getString(successfulDefaultMessage), Toast.LENGTH_SHORT, true).show();
                     }
                 } else {
-                    Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                    LogErrorResponseUtil.logErrorResponse(response, getContext());
                 }
             }
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
-                Log.e(getTag(), "onFailure: ", t);
+                LogErrorResponseUtil.logFailure(t, getContext());
             }
         });
     }
@@ -379,7 +378,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         viewModel.getSelectedAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccountId() != null) {
+                if (viewModel.getSelectedAccountId().get() != null) {
                     fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get()));
                     viewModel.getSelectedAccountId().set(null);
                 }

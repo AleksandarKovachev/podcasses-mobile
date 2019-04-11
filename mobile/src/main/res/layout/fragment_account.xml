@@ -126,7 +126,7 @@
                     android:layout_marginBottom="@dimen/medium_offset"
                     android:clickable="true"
                     android:focusable="true"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:cardCornerRadius="10dp"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintLeft_toLeftOf="parent"

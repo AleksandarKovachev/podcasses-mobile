@@ -233,7 +233,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount() != null) {
+                if (viewModel.getSelectedAccount().get() != null) {
                     fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
                     viewModel.getSelectedAccount().set(null);
                 }
