@@ -31,14 +31,11 @@ public interface ApiCallInterface {
 
     String API_GATEWAY_URL = BuildConfig.API_GATEWAY_URL;
 
-    @GET("/account/{username}")
+    @GET("/keycloak/{username}")
     Call<Account> account(@Path("username") String username);
 
-    @GET("/account/id/{id}")
+    @GET("/keycloak/id/{id}")
     Call<Account> accountById(@Path("id") String id);
-
-    @GET("/account/id")
-    Call<List<Account>> getAccounts(@Query("id") List<String> ids);
 
     @GET("/account/subscribes/{accountById}")
     Call<Integer> accountSubscribes(@Path("accountById") String accountId);

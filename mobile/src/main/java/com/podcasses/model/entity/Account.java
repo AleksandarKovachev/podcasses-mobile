@@ -12,7 +12,7 @@ public class Account {
 
     @NonNull
     @PrimaryKey
-    private String keycloakId;
+    private String id;
 
     private String username;
 
@@ -28,6 +28,15 @@ public class Account {
 
     private int emailVerified;
 
+    @NonNull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(@NonNull String id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -42,14 +51,6 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getKeycloakId() {
-        return keycloakId;
-    }
-
-    public void setKeycloakId(String keycloakId) {
-        this.keycloakId = keycloakId;
     }
 
     public String getEmail() {

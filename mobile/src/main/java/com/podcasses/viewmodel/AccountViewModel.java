@@ -79,10 +79,6 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getPodcastFiles(lifecycleOwner, token, userId, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accounts(@NonNull List<String> ids) {
-        return repository.getAccount(ids);
-    }
-
     @Bindable
     public Account getAccount() {
         return account.getValue();

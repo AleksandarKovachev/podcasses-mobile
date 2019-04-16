@@ -196,26 +196,6 @@ class NetworkDataSource {
         });
     }
 
-    void getAccounts(List<String> ids, IDataCallback<List<Account>> callback) {
-        Call<List<Account>> call = apiCallInterface.getAccounts(ids);
-        call.enqueue(new Callback<List<Account>>() {
-            @Override
-            public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
-                } else {
-                    callback.onSuccess(null);
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Account>> call, Throwable t) {
-                callback.onFailure(t);
-            }
-        });
-    }
-
     void getAccountComments(String token, List<String> commentIds, IDataCallback<List<AccountComment>> callback) {
         Call<List<AccountComment>> call = apiCallInterface.accountComments("Bearer " + token, commentIds);
         call.enqueue(new Callback<List<AccountComment>>() {

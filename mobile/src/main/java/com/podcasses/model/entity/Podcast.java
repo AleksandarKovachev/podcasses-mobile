@@ -7,7 +7,6 @@ import android.text.Spanned;
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 import com.podcasses.model.base.BaseLikeModel;
-import com.podcasses.model.base.BaseUserModel;
 
 import org.parceler.Parcel;
 
@@ -63,6 +62,10 @@ public class Podcast extends BaseLikeModel {
     private String podcastFileName;
 
     private String imageFileName;
+
+    private String userId;
+
+    private String username;
 
     @TypeConverters({DateConverter.class})
     private Date createdTimestamp;
@@ -208,6 +211,22 @@ public class Podcast extends BaseLikeModel {
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
         notifyPropertyChanged(BR.imageFileName);
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Date getCreatedTimestamp() {

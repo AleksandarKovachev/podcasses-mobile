@@ -2,7 +2,6 @@ package com.podcasses.model.response;
 
 import com.podcasses.BR;
 import com.podcasses.model.base.BaseLikeModel;
-import com.podcasses.model.base.BaseUserModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,10 @@ public class Comment extends BaseLikeModel {
     private String podcastId;
 
     private List<Comment> comments;
+
+    private String username;
+
+    private String userId;
 
     private Date createdTimestamp;
 
@@ -82,6 +85,22 @@ public class Comment extends BaseLikeModel {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Date getCreatedTimestamp() {

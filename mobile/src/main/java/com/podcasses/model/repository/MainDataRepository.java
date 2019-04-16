@@ -43,7 +43,6 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> commentsResponse;
-    private final MutableLiveData<ApiResponse> accountsResponse;
     private final MutableLiveData<ApiResponse> accountCommentsResponse;
 
     private LiveData<Podcast> podcastLiveData;
@@ -67,7 +66,6 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
-        accountsResponse = new MutableLiveData<>();
         commentsResponse = new MutableLiveData<>();
         accountCommentsResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
@@ -239,26 +237,6 @@ public class MainDataRepository {
             accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
         }
         return commentsResponse;
-    }
-
-    public LiveData<ApiResponse> getAccount(List<String> ids) {
-        accountsResponse.setValue(ApiResponse.loading());
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccounts(ids, new IDataCallback<List<Account>>() {
-                @Override
-                public void onSuccess(List<Account> data) {
-                    accountsResponse.setValue(ApiResponse.success(data));
-                }
-
-                @Override
-                public void onFailure(Throwable error) {
-                    accountsResponse.setValue(ApiResponse.error(error));
-                }
-            });
-        } else {
-            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
-        }
-        return accountsResponse;
     }
 
     public LiveData<ApiResponse> getAccountComments(String token, List<String> commentIds) {

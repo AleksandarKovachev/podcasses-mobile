@@ -20,8 +20,4 @@ public class BaseViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public LiveData<ApiResponse> accounts(@NonNull List<String> ids) {
-        return repository.getAccount(ids);
-    }
-
 }

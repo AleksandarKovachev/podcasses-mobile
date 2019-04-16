@@ -8,7 +8,7 @@ import androidx.databinding.Bindable;
 /**
  * Created by aleksandar.kovachev.
  */
-public class BaseLikeModel extends BaseUserModel {
+public class BaseLikeModel extends BaseObservable {
 
     private int likes;
 

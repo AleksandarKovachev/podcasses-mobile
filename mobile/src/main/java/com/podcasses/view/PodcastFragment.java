@@ -217,7 +217,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                         viewModel.setPodcast(podcast);
                     } else {
                         viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
-                        setAccounts(viewModel, viewModel.getComments());
                         setAccountComments((List<Comment>) apiResponse.data);
                     }
                 }

@@ -131,7 +131,6 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
                 }
                 podcasts = (List<Podcast>) apiResponse.data;
                 viewModel.setPodcastsInAdapter(podcasts);
-                setAccounts(viewModel, viewModel.getPodcasts());
                 if (player != null) {
                     setPlayingStatus(player.getPlayWhenReady());
                 }

@@ -14,7 +14,7 @@ import androidx.room.Query;
 @Dao
 public interface AccountDao {
 
-    @Query("SELECT * FROM account WHERE keycloakId = (:accountId)")
+    @Query("SELECT * FROM account WHERE id = (:accountId)")
     LiveData<Account> getAccountById(String accountId);
 
     @Query("SELECT * FROM account WHERE username = (:username)")

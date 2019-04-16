@@ -10,15 +10,8 @@ import android.util.Log;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.authentication.InvalidateToken;
 import com.podcasses.authentication.KeycloakToken;
-import com.podcasses.model.base.BaseUserModel;
-import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.ConnectivityUtil;
-import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.AuthenticatorActivity;
-import com.podcasses.viewmodel.base.BaseViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,39 +91,6 @@ public class BaseFragment extends Fragment {
 
     public interface FragmentNavigation {
         void pushFragment(Fragment fragment);
-    }
-
-    protected void setAccounts(BaseViewModel viewModel, List<? extends BaseUserModel> baseUserModels) {
-        List<String> accountIds = new ArrayList<>();
-        for (BaseUserModel userModel : baseUserModels) {
-            if (!accountIds.contains(userModel.getUserId())) {
-                accountIds.add(userModel.getUserId());
-            }
-        }
-        LiveData<ApiResponse> accounts = viewModel.accounts(accountIds);
-        accounts.observe(this, response -> consumeAccountsData(response, accounts, baseUserModels));
-    }
-
-    private void consumeAccountsData(ApiResponse apiResponse, LiveData liveData, List<? extends BaseUserModel> baseUserModels) {
-        switch (apiResponse.status) {
-            case LOADING:
-                break;
-            case SUCCESS:
-                liveData.removeObservers(this);
-                for (BaseUserModel userModel : baseUserModels) {
-                    for (com.podcasses.model.entity.Account account : (List<com.podcasses.model.entity.Account>) apiResponse.data) {
-                        if (userModel.getUserId().equals(account.getKeycloakId())) {
-                            userModel.setUsername(account.getUsername());
-                            break;
-                        }
-                    }
-                }
-                break;
-            case ERROR:
-                liveData.removeObservers(this);
-                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
-                break;
-        }
     }
 
 }

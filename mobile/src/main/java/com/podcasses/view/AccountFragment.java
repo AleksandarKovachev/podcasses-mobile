@@ -201,7 +201,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                         if (player != null) {
                             setPlayingStatus(player.getPlayWhenReady());
                         }
-                        setAccounts(viewModel, viewModel.getPodcasts());
                     } else {
                         viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                         binding.podcastFilesCardView.setVisibility(View.VISIBLE);
