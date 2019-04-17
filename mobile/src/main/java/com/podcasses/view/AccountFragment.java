@@ -23,6 +23,7 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.service.AudioPlayerService;
+import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
@@ -98,7 +99,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
             viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
             binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, false, r));
-            token = isAuthenticated();
+            token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binding.setToken(s);
@@ -107,7 +108,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             });
         } else {
             binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, true, r));
-            token = isAuthenticated();
+            token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     JWT jwt = new JWT(s);

@@ -29,6 +29,7 @@ import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
+import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
@@ -111,7 +112,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         binding.setLifecycleOwner(this);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-        token = isAuthenticated();
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
 
         binding.refreshLayout.setOnRefreshListener(refreshListener);
 

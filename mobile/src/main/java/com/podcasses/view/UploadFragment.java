@@ -32,6 +32,7 @@ import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LoadingUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
@@ -110,7 +111,7 @@ public class UploadFragment extends BaseFragment {
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
-        token = isAuthenticated();
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
         UploadService.HTTP_STACK = new OkHttpStack(okHttpClient);
 
         lifecycleOwner = this;

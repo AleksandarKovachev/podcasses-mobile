@@ -13,8 +13,10 @@ import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.view.base.AuthenticationTokenTask;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,6 +39,8 @@ import retrofit2.Response;
 public class AccountViewModel extends BasePodcastViewModel {
 
     private ApiCallInterface apiCallInterface;
+
+    private WeakReference<AuthenticationTokenTask> weakReference;
 
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();

@@ -1,22 +1,16 @@
 package com.podcasses.view.base;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.podcasses.authentication.AccountAuthenticator;
-import com.podcasses.authentication.InvalidateToken;
-import com.podcasses.authentication.KeycloakToken;
-import com.podcasses.util.ConnectivityUtil;
 import com.podcasses.view.AuthenticatorActivity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import static android.app.Activity.RESULT_OK;
@@ -25,14 +19,14 @@ import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 /**
  * Created by aleksandar.kovachev.
  */
-public class BaseFragment extends Fragment {
+public class BaseFragment extends Fragment implements AuthenticationTokenTask {
 
     public static final String ARGS_INSTANCE = "com.podcasses.argsInstance";
 
     protected FragmentNavigation fragmentNavigation;
     protected int fragmentCount;
 
-    private MutableLiveData<String> token = new MutableLiveData<>();
+    private MutableLiveData<String> token;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,28 +45,6 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    protected LiveData<String> isAuthenticated() {
-        AccountManager accountManager = AccountManager.get(getContext());
-        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
-
-        if (accounts.length == 0) {
-            startAuthenticatorActivity();
-        } else {
-            String authToken = accountManager.peekAuthToken(accounts[0], AUTH_TOKEN_TYPE);
-            if (KeycloakToken.isValidToken(authToken)) {
-                token.setValue(authToken);
-            } else if (ConnectivityUtil.checkInternetConnection(getContext())) {
-                InvalidateToken invalidateToken = new InvalidateToken(accountManager, accounts[0]);
-                try {
-                    token.setValue(invalidateToken.execute(authToken).get());
-                } catch (Exception e) {
-                    Log.e(getTag(), "isAuthenticated: ", e);
-                }
-            }
-        }
-        return token;
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == 22) {
@@ -82,7 +54,9 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    private void startAuthenticatorActivity() {
+    @Override
+    public void startAuthenticationActivity(MutableLiveData<String> token) {
+        this.token = token;
         Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
         intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
