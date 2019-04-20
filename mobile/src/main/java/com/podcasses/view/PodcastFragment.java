@@ -84,7 +84,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private LiveData<ApiResponse> commentsResponse;
     private LiveData<ApiResponse> accountCommentsResponse;
     private LiveData<String> token;
-    private Podcast podcast;
+    private static Podcast podcast;
     private AccountPodcast accountPodcast;
 
     private Podcast playingPodcast;
@@ -94,8 +94,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private PopupMenu popupOptions;
     private MenuPopupHelper menuHelper;
 
-    static PodcastFragment newInstance(int instance, String podcastId) {
+    static PodcastFragment newInstance(int instance, String podcastId, Podcast openedPodcast) {
         id = podcastId;
+        podcast = openedPodcast;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         PodcastFragment fragment = new PodcastFragment();
@@ -122,8 +123,12 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
         viewModel.setPodcastImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PODCAST_IMAGE + id);
 
-        podcastResponse = viewModel.podcast(this, id, false);
-        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, null));
+        if (podcast != null) {
+            setPodcastData();
+        } else {
+            podcastResponse = viewModel.podcast(this, id, false);
+            podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, null));
+        }
 
         token.observe(this, s -> {
             if (!Strings.isEmptyOrWhitespace(s)) {
@@ -201,8 +206,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 }
                 if (apiResponse.data instanceof Podcast) {
                     podcast = (Podcast) apiResponse.data;
-                    updateTitle();
-                    viewModel.setPodcast(podcast);
+                    setPodcastData();
                 } else if (apiResponse.data instanceof AccountPodcast) {
                     accountPodcast = (AccountPodcast) apiResponse.data;
                     binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
@@ -213,9 +217,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                         return;
                     }
                     if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                        updateTitle();
                         podcast = ((List<Podcast>) apiResponse.data).get(0);
-                        viewModel.setPodcast(podcast);
+                        setPodcastData();
                     } else {
                         viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
                         setAccountComments((List<Comment>) apiResponse.data);
@@ -384,6 +387,11 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 }
             }
         });
+    }
+
+    private void setPodcastData() {
+        updateTitle();
+        viewModel.setPodcast(podcast);
     }
 
 }

@@ -150,7 +150,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     private void setListClick() {
         viewModel.getSelectedPodcast().observe(this, podcast -> {
             if (podcast != null) {
-                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId()));
+                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);
             }
         });
