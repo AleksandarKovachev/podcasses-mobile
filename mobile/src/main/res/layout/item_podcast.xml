@@ -85,18 +85,31 @@
             android:id="@+id/play_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="@dimen/medium_offset"
+            android:layout_marginStart="@dimen/medium_offset"
+            android:layout_marginTop="@dimen/medium_offset"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:selectableItemBackground"
             android:onClick="@{() -> viewModel.onPlayButtonClick(position)}"
             app:fill_color="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/options_button"
             app:layout_constraintTop_toTopOf="parent"
             app:pause_bg="@android:color/transparent"
             app:playPauseStatus='@{viewModel.playingIndex}'
             app:play_bg="@android:color/transparent"
             app:position='@{position}' />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/options_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{v -> viewModel.onOptionsButtonClick(v, position)}"
+            android:src="@drawable/ic_more_options"
+            app:layout_constraintBottom_toBottomOf="@id/play_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/play_button" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/podcast_views"

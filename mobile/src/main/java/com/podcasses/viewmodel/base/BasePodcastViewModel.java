@@ -1,5 +1,7 @@
 package com.podcasses.viewmodel.base;
 
+import android.view.View;
+
 import com.google.android.gms.common.util.CollectionUtils;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
@@ -35,6 +37,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
+    private ObservableField<View> selectedViewOptions = new ObservableField<>();
+    private String selectedPodcastOptions;
 
     public BasePodcastViewModel(MainDataRepository repository) {
         super(repository);
@@ -117,6 +121,19 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         } else {
             view.change(!position.equals(playingIndex));
         }
+    }
+
+    public String getSelectedPodcastOptions() {
+        return selectedPodcastOptions;
+    }
+
+    public ObservableField<View> getSelectedViewOptions() {
+        return selectedViewOptions;
+    }
+
+    public void onOptionsButtonClick(View view, Integer position) {
+        selectedPodcastOptions = podcasts.getValue().get(position).getId();
+        selectedViewOptions.set(view);
     }
 
     protected void notifyPropertyChanged(int fieldId) {
