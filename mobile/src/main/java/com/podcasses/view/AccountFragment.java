@@ -9,35 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.auth0.android.jwt.JWT;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.gms.common.util.CollectionUtils;
-import com.google.android.gms.common.util.Strings;
-import com.podcasses.BuildConfig;
-import com.podcasses.R;
-import com.podcasses.authentication.KeycloakToken;
-import com.podcasses.dagger.BaseApplication;
-import com.podcasses.databinding.FragmentAccountBinding;
-import com.podcasses.model.entity.Account;
-import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.response.ApiResponse;
-import com.podcasses.service.AudioPlayerService;
-import com.podcasses.util.AuthenticationUtil;
-import com.podcasses.util.CustomViewBindings;
-import com.podcasses.util.LogErrorResponseUtil;
-import com.podcasses.view.base.BaseFragment;
-import com.podcasses.view.base.FragmentCallback;
-import com.podcasses.viewmodel.AccountViewModel;
-import com.podcasses.viewmodel.ViewModelFactory;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +20,38 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.auth0.android.jwt.JWT;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.common.util.Strings;
+import com.podcasses.BuildConfig;
+import com.podcasses.R;
+import com.podcasses.authentication.KeycloakToken;
+import com.podcasses.dagger.BaseApplication;
+import com.podcasses.databinding.FragmentAccountBinding;
+import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.service.AudioPlayerService;
+import com.podcasses.util.AuthenticationUtil;
+import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.view.base.BaseFragment;
+import com.podcasses.view.base.FragmentCallback;
+import com.podcasses.viewmodel.AccountViewModel;
+import com.podcasses.viewmodel.ViewModelFactory;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.inject.Inject;
+
 /**
  * Created by aleksandar.kovachev.
  */
@@ -56,6 +59,9 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    ApiCallInterface apiCallInterface;
 
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
@@ -164,23 +170,14 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
-    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
-        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-        podcasts = viewModel.podcasts(this, accountId, refreshLayout != null, true);
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        playingPodcast = service.getPodcast();
+        setPlayingStatus(playWhenReady);
 
-        if (isPrimaryAccount) {
-            accountResponse = viewModel.account(this, username, refreshLayout != null);
-            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
-            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
-        } else {
-            accountResponse = viewModel.account(accountId);
-            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
-            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+        if (playbackState == Player.STATE_IDLE) {
+            viewModel.setPlayingIndex(-1);
         }
-
-        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
-        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
-        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -210,6 +207,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                         if (player != null) {
                             setPlayingStatus(player.getPlayWhenReady());
                         }
+                        getAccountPodcasts((List<Podcast>) apiResponse.data);
                     } else {
                         viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                         binding.podcastFilesCardView.setVisibility(View.VISIBLE);
@@ -223,9 +221,26 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
-            default:
-                break;
         }
+    }
+
+    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
+        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
+        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, true);
+
+        if (isPrimaryAccount) {
+            accountResponse = viewModel.account(this, username, refreshLayout != null);
+            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
+        } else {
+            accountResponse = viewModel.account(accountId);
+            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
+            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+        }
+
+        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
+        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
     }
 
     private void setListClick() {
@@ -249,13 +264,38 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         });
     }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcast = service.getPodcast();
-        setPlayingStatus(playWhenReady);
+    private void getAccountPodcasts(List<Podcast> podcasts) {
+        List<String> podcastIds = new ArrayList<>();
+        for (Podcast podcast : podcasts) {
+            podcastIds.add(podcast.getId());
+        }
 
-        if (playbackState == Player.STATE_IDLE) {
-            viewModel.setPlayingIndex(-1);
+        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(token.getValue(), podcastIds);
+        accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+    }
+
+    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
+        switch (accountPodcastsResponse.status) {
+            case LOADING:
+                break;
+            case SUCCESS: {
+                liveData.removeObservers(this);
+                if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
+                    for (Podcast podcast : viewModel.getPodcasts()) {
+                        for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
+                            if (accountPodcast.getPodcastId().equals(podcast.getId())) {
+                                podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            case ERROR: {
+                liveData.removeObservers(this);
+                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
+                break;
+            }
         }
     }
 
@@ -289,6 +329,10 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     popupOptions.setOnMenuItemClickListener(item -> {
                         switch (item.getItemId()) {
                             case R.id.markAsPlayed:
+                                sendMarkAsPlayedRequest(
+                                        item, apiCallInterface,
+                                        viewModel.getPodcastAt(viewModel.getSelectedPodcastOptionsIndex()),
+                                        token.getValue());
                                 break;
                             case R.id.report:
                                 break;
@@ -296,6 +340,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                         return true;
                     });
                     menuHelper.show();
+                    popupOptions.getMenu().getItem(0)
+                            .setChecked(viewModel.getPodcasts().get(viewModel.getSelectedPodcastOptionsIndex()).isMarkAsPlayed());
                     viewModel.getSelectedViewOptions().set(null);
                 }
             }

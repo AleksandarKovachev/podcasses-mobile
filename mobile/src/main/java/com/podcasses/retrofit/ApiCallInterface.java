@@ -70,6 +70,9 @@ public interface ApiCallInterface {
     @GET("/account/podcast/{podcastId}")
     Call<AccountPodcast> accountPodcast(@Header("Authorization") String token, @Path("podcastId") String podcastId);
 
+    @GET("/account/podcasts")
+    Call<List<AccountPodcast>> accountPodcasts(@Header("Authorization") String token, @Query("id") List<String> ids);
+
     @GET("/podcast/files")
     Call<List<PodcastFile>> podcastFiles(@Header("Authorization") String token);
 

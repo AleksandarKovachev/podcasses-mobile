@@ -7,10 +7,20 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.exoplayer2.Player;
@@ -47,16 +57,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -212,6 +212,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
                     binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKE.getValue());
                     popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
+                    if (podcast != null) {
+                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                    }
                 } else if (apiResponse.data instanceof List) {
                     if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                         return;
@@ -294,7 +297,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             switch (item.getItemId()) {
                 case R.id.markAsPlayed:
                     if (accountPodcast != null) {
-                        sendMarkAsPlayedRequest(item);
+                        sendMarkAsPlayedRequest(item, apiCallInterface, podcast, token.getValue());
                     }
                     break;
                 case R.id.report:
@@ -304,31 +307,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         });
         menuHelper.show();
     };
-
-    private void sendMarkAsPlayedRequest(MenuItem item) {
-        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
-        accountPodcastRequest.setPodcastId(podcast.getId());
-        if (accountPodcast.getMarkAsPlayed() == 1) {
-            accountPodcastRequest.setMarkAsPlayed(0);
-        } else {
-            accountPodcastRequest.setMarkAsPlayed(1);
-        }
-        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token.getValue(), accountPodcastRequest);
-        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
-            @Override
-            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    accountPodcast = response.body();
-                    item.setChecked(accountPodcast.getMarkAsPlayed() == 1);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
-            }
-        });
-    }
 
     private View.OnClickListener onLikeClickListener = v ->
             sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);

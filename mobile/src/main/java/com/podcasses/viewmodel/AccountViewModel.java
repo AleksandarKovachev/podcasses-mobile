@@ -74,10 +74,6 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.checkAccountSubscribe(token, accountId);
     }
 
-    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String userId, boolean isSwipedToRefresh, boolean saveData) {
-        return repository.getPodcasts(lifecycleOwner, null, null, userId, isSwipedToRefresh, saveData);
-    }
-
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
         this.token = token;
         return repository.getPodcastFiles(lifecycleOwner, token, userId, isSwipedToRefresh);

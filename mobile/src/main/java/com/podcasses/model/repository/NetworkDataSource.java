@@ -141,6 +141,26 @@ class NetworkDataSource {
         });
     }
 
+    void getAccountPodcasts(String token, List<String> podcastIds, IDataCallback<List<AccountPodcast>> callback) {
+        Call<List<AccountPodcast>> call = apiCallInterface.accountPodcasts("Bearer " + token, podcastIds);
+        call.enqueue(new Callback<List<AccountPodcast>>() {
+            @Override
+            public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AccountPodcast>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
     void getPodcastFiles(String token, IDataCallback<List<PodcastFile>> callback) {
         Call<List<PodcastFile>> call = apiCallInterface.podcastFiles("Bearer " + token);
         call.enqueue(new Callback<List<PodcastFile>>() {

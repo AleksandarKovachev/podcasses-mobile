@@ -8,6 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.gms.common.util.CollectionUtils;
@@ -27,14 +35,6 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 
 /**
  * Created by aleksandar.kovachev.
@@ -109,7 +109,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     }
 
     private void getPodcasts(RefreshLayout refreshLayout) {
-        podcastsResponse = viewModel.podcasts(this, podcast, true, false);
+        podcastsResponse = viewModel.podcasts(this, podcast, null, null, true, false);
         podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
     }
 

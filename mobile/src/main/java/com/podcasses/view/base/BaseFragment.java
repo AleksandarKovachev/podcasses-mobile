@@ -4,14 +4,25 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.podcasses.authentication.AccountAuthenticator;
-import com.podcasses.view.AuthenticatorActivity;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+
+import com.podcasses.R;
+import com.podcasses.authentication.AccountAuthenticator;
+import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.view.AuthenticatorActivity;
+
+import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
@@ -61,6 +72,27 @@ public class BaseFragment extends Fragment implements AuthenticationTokenTask {
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
         intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
         startActivityForResult(intent, 22);
+    }
+
+    protected void sendMarkAsPlayedRequest(MenuItem item, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
+        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setPodcastId(podcast.getId());
+        accountPodcastRequest.setMarkAsPlayed(podcast.isMarkAsPlayed() ? 0 : 1);
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
+        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    item.setChecked(response.body().getMarkAsPlayed() == 1);
+                    podcast.setMarkAsPlayed(response.body().getMarkAsPlayed() == 1);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+            }
+        });
     }
 
     public interface FragmentNavigation {

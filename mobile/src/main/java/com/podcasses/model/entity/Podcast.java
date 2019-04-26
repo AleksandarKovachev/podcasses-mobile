@@ -4,6 +4,12 @@ import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.Bindable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 import com.podcasses.model.base.BaseLikeModel;
@@ -13,12 +19,6 @@ import org.parceler.Parcel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.databinding.Bindable;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 /**
  * Created by aleksandar.kovachev.
@@ -66,6 +66,8 @@ public class Podcast extends BaseLikeModel {
     private String userId;
 
     private String username;
+
+    private boolean markAsPlayed;
 
     @TypeConverters({DateConverter.class})
     private Date createdTimestamp;
@@ -227,6 +229,16 @@ public class Podcast extends BaseLikeModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Bindable
+    public boolean isMarkAsPlayed() {
+        return markAsPlayed;
+    }
+
+    public void setMarkAsPlayed(boolean markAsPlayed) {
+        this.markAsPlayed = markAsPlayed;
+        notifyPropertyChanged(BR.markAsPlayed);
     }
 
     public Date getCreatedTimestamp() {

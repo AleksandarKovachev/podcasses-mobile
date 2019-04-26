@@ -2,6 +2,16 @@ package com.podcasses.viewmodel.base;
 
 import android.view.View;
 
+import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
+import androidx.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.android.gms.common.util.CollectionUtils;
 import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
@@ -10,18 +20,11 @@ import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.model.response.ApiResponse;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
-
-import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
-import androidx.databinding.PropertyChangeRegistry;
-import androidx.lifecycle.MutableLiveData;
 
 import static com.podcasses.util.CustomViewBindings.PODCAST_IMAGE;
 
@@ -38,6 +41,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
     private ObservableField<View> selectedViewOptions = new ObservableField<>();
+    private Integer selectedPodcastOptionsIndex;
     private String selectedPodcastOptions;
 
     public BasePodcastViewModel(MainDataRepository repository) {
@@ -52,6 +56,15 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     @Override
     public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
         callbacks.remove(callback);
+    }
+
+    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast,
+                                          String podcastId, String userId, boolean isSwipedToRefresh, boolean saveData) {
+        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isSwipedToRefresh, saveData);
+    }
+
+    public LiveData<ApiResponse> accountPodcasts(String token, List<String> podcastIds) {
+        return repository.getAccountPodcasts(token, podcastIds);
     }
 
     public PodcastAdapter getPodcastAdapter() {
@@ -127,12 +140,17 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         return selectedPodcastOptions;
     }
 
+    public Integer getSelectedPodcastOptionsIndex() {
+        return selectedPodcastOptionsIndex;
+    }
+
     public ObservableField<View> getSelectedViewOptions() {
         return selectedViewOptions;
     }
 
     public void onOptionsButtonClick(View view, Integer position) {
         selectedPodcastOptions = podcasts.getValue().get(position).getId();
+        selectedPodcastOptionsIndex = position;
         selectedViewOptions.set(view);
     }
 

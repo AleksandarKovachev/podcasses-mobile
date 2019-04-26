@@ -3,6 +3,10 @@ package com.podcasses.model.repository;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.model.entity.Account;
@@ -22,10 +26,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 /**
  * Created by aleksandar.kovachev.
  */
@@ -42,6 +42,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> podcastResponse;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
+    private final MutableLiveData<ApiResponse> accountPodcastsResponse;
     private final MutableLiveData<ApiResponse> commentsResponse;
     private final MutableLiveData<ApiResponse> accountCommentsResponse;
 
@@ -66,6 +67,7 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
+        accountPodcastsResponse = new MutableLiveData<>();
         commentsResponse = new MutableLiveData<>();
         accountCommentsResponse = new MutableLiveData<>();
         categories = new MutableLiveData<>();
@@ -198,6 +200,28 @@ public class MainDataRepository {
         }
 
         return accountPodcastResponse;
+    }
+
+    public LiveData<ApiResponse> getAccountPodcasts(String token, List<String> podcastIds) {
+        accountPodcastsResponse.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountPodcasts(token, podcastIds, new IDataCallback<List<AccountPodcast>>() {
+                @Override
+                public void onSuccess(List<AccountPodcast> data) {
+                    accountPodcastsResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountPodcastsResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            podcastResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return accountPodcastsResponse;
     }
 
     public MutableLiveData<List<Nomenclature>> getCategories() {

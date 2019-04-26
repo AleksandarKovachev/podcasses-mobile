@@ -17,8 +17,4 @@ public class SearchViewModel extends BasePodcastViewModel implements Observable 
         super(repository);
     }
 
-    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, boolean isSwipedToRefresh, boolean saveData) {
-        return repository.getPodcasts(lifecycleOwner, podcast, null, null, isSwipedToRefresh, saveData);
-    }
-
 }
