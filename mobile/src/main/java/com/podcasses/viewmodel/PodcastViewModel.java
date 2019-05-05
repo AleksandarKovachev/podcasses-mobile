@@ -1,8 +1,22 @@
 package com.podcasses.viewmodel;
 
 import android.net.Uri;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
+import androidx.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
@@ -23,6 +37,7 @@ import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioDownloadService;
+import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -33,15 +48,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableField;
-import androidx.databinding.PropertyChangeRegistry;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -270,6 +276,22 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
                 LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
+    }
+
+    public void commentOptions(View view, int position) {
+        PopupMenu popupOptions = new PopupMenu(view.getContext(), view);
+        popupOptions.getMenuInflater()
+                .inflate(R.menu.comment_options_menu, popupOptions.getMenu());
+        MenuPopupHelper menuHelper = new MenuPopupHelper(view.getContext(), (MenuBuilder) popupOptions.getMenu(), view);
+        menuHelper.setForceShowIcon(true);
+        menuHelper.setGravity(Gravity.END);
+        popupOptions.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.report) {
+                DialogUtil.createReportDialog(view.getContext(), comments.getValue().get(position).getId(), apiCallInterface, token, false);
+            }
+            return true;
+        });
+        menuHelper.show();
     }
 
     public void openAccount(Integer position) {

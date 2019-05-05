@@ -54,6 +54,7 @@
     <string name="successful_unsubscribing">Successful unsubscribing.</string>
     <string name="successfully_added_comment">Successfully added comment.</string>
     <string name="successful_response">Successful request.</string>
+    <string name="successful_report">Successful sent report.</string>
     <string name="error_response">Something went wrong. Please try again!</string>
 
     <string name="storage_permission_image">You need to give read storage permission to select image!</string>
@@ -61,5 +62,8 @@
 
     <string name="mark_as_played">Mark as played</string>
     <string name="report">Report</string>
+
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

@@ -41,6 +41,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -301,6 +302,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     }
                     break;
                 case R.id.report:
+                    DialogUtil.createReportDialog(getContext(), id, apiCallInterface, token.getValue(), true);
                     break;
             }
             return true;

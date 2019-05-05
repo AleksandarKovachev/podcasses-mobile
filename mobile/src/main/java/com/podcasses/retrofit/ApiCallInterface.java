@@ -8,7 +8,9 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
+import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -90,5 +92,11 @@ public interface ApiCallInterface {
 
     @POST("/podcast/comment")
     Call<Comment> accountComment(@Header("Authorization") String token, @Body CommentRequest commentRequest);
+
+    @POST("/feedback/comment")
+    Call<Void> commentReport(@Header("Authorization") String token, @Body CommentReportRequest commentReportRequest);
+
+    @POST("/feedback/podcast")
+    Call<Void> podcastReport(@Header("Authorization") String token, @Body PodcastReportRequest podcastReportRequest);
 
 }

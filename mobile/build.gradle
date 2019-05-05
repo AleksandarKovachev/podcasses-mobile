@@ -41,8 +41,8 @@ android {
 
         debug {
             debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.103:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.103:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.101:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.101:9090"'
         }
     }
     compileOptions {
@@ -66,7 +66,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha12'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.5.0-alpha13'
 
     // Android Jetpack
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha04'

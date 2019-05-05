@@ -54,6 +54,7 @@
     <string name="successful_unsubscribing">Успешно премахване на абонамент.</string>
     <string name="successfully_added_comment">Успешно добавен коментар.</string>
     <string name="successful_response">Успешна заявка.</string>
+    <string name="successful_report">Успешно подаден сигнал.</string>
     <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
 
     <string name="storage_permission_image">Трябва да дадеш достъп за четене на хранилището, за да избереш изображение!</string>
@@ -61,5 +62,8 @@
 
     <string name="mark_as_played">Маркирай като изслушан</string>
     <string name="report">Подай сигнал</string>
+
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

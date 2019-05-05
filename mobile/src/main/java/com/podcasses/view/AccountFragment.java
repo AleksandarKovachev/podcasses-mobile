@@ -39,6 +39,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
@@ -335,6 +336,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                                         token.getValue());
                                 break;
                             case R.id.report:
+                                DialogUtil.createReportDialog(getContext(), viewModel.getPodcastAt(viewModel.getSelectedPodcastOptionsIndex()).getId(), apiCallInterface, token.getValue(), true);
                                 break;
                         }
                         return true;

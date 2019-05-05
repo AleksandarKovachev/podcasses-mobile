@@ -109,6 +109,7 @@
             android:layout_marginEnd="5dp"
             android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_more_options"
+            android:onClick="@{v -> viewModel.commentOptions(v, position)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
