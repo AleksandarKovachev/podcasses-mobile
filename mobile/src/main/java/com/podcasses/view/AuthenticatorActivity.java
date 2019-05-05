@@ -15,7 +15,7 @@ import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.AuthenticatorActivityBinding;
 import com.podcasses.retrofit.AuthenticationCallInterface;
-import com.podcasses.util.LoadingUtil;
+import com.podcasses.util.DialogUtil;
 
 import java.util.Objects;
 
@@ -56,7 +56,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private View.OnClickListener loginClickListener = v -> {
-        ProgressDialog progressDialog = LoadingUtil.getProgressDialog(this);
+        ProgressDialog progressDialog = DialogUtil.getProgressDialog(this);
         progressDialog.show();
         final Intent intent = new Intent();
         Call<KeycloakToken> authToken = authenticationCall.grantNewAccessToken(

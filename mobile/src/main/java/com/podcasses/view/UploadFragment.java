@@ -33,7 +33,7 @@ import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.AuthenticationUtil;
-import com.podcasses.util.LoadingUtil;
+import com.podcasses.util.DialogUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -282,7 +282,7 @@ public class UploadFragment extends BaseFragment {
     }
 
     private View.OnClickListener onPodcastAdd = v -> {
-        ProgressDialog progressDialog = LoadingUtil.getProgressDialog(v.getContext());
+        ProgressDialog progressDialog = DialogUtil.getProgressDialog(v.getContext());
         progressDialog.show();
         Call<Podcast> call = apiCallInterface.podcast("Bearer " + token.getValue(), viewModel.getPodcast());
         call.enqueue(new Callback<Podcast>() {

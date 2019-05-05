@@ -18,5 +18,4 @@
             android:singleLine="false" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
 </LinearLayout>

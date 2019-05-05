@@ -3,12 +3,10 @@
     <string name="account_type">com.podcasses</string>
 
     <string name="title_home">Начало</string>
-    <string name="title_trending">Популярни</string>
-    <string name="title_notifications">Известия</string>
+    <string name="title_account">Акаунт</string>
 
     <string name="title_upload">Качи</string>
     <string name="title_search">Търси подкаст</string>
-    <string name="title_account">Акаунт</string>
     <string name="title_dark_theme">Тъмна тема</string>
     <string name="title_logout">Изход</string>
 

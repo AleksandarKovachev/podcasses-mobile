@@ -3,12 +3,10 @@
     <string name="account_type">com.podcasses</string>
 
     <string name="title_home">Home</string>
-    <string name="title_trending">Trending</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_account">Account</string>
 
     <string name="title_upload">Upload</string>
     <string name="title_search">Search podcast</string>
-    <string name="title_account">Account</string>
     <string name="title_dark_theme">Dark theme</string>
     <string name="title_logout">Logout</string>
 

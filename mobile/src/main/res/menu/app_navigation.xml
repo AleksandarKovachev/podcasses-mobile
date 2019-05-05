@@ -15,12 +15,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/navigation_account"
-        android:icon="@drawable/ic_person_white"
-        android:title="@string/title_account"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/navigation_logout"
         android:title="@string/title_logout"
         app:showAsAction="never" />

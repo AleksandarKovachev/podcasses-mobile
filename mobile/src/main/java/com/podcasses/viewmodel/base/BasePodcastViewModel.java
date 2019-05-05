@@ -21,6 +21,8 @@ import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.PopupMenuUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -40,12 +42,13 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
-    private ObservableField<View> selectedViewOptions = new ObservableField<>();
-    private Integer selectedPodcastOptionsIndex;
-    private String selectedPodcastOptions;
 
-    public BasePodcastViewModel(MainDataRepository repository) {
+    private ApiCallInterface apiCallInterface;
+    private String token;
+
+    public BasePodcastViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository);
+        this.apiCallInterface = apiCallInterface;
     }
 
     @Override
@@ -64,6 +67,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     }
 
     public LiveData<ApiResponse> accountPodcasts(String token, List<String> podcastIds) {
+        this.token = token;
         return repository.getAccountPodcasts(token, podcastIds);
     }
 
@@ -136,22 +140,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         }
     }
 
-    public String getSelectedPodcastOptions() {
-        return selectedPodcastOptions;
-    }
-
-    public Integer getSelectedPodcastOptionsIndex() {
-        return selectedPodcastOptionsIndex;
-    }
-
-    public ObservableField<View> getSelectedViewOptions() {
-        return selectedViewOptions;
-    }
-
     public void onOptionsButtonClick(View view, Integer position) {
-        selectedPodcastOptions = podcasts.getValue().get(position).getId();
-        selectedPodcastOptionsIndex = position;
-        selectedViewOptions.set(view);
+        PopupMenuUtil.podcastPopupMenu(view, podcasts.getValue().get(position), apiCallInterface, token);
     }
 
     protected void notifyPropertyChanged(int fieldId) {

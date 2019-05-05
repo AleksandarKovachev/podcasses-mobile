@@ -29,13 +29,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(HomeViewModel.class)) {
             return (T) new HomeViewModel(repository);
         } else if (modelClass.isAssignableFrom(SearchViewModel.class)) {
-            return (T) new SearchViewModel(repository);
+            return (T) new SearchViewModel(repository, apiCallInterface);
         } else if (modelClass.isAssignableFrom(AccountViewModel.class)) {
             return (T) new AccountViewModel(repository, apiCallInterface);
-        } else if (modelClass.isAssignableFrom(TrendingViewModel.class)) {
-            return (T) new TrendingViewModel(repository);
-        } else if (modelClass.isAssignableFrom(NotificationsViewModel.class)) {
-            return (T) new NotificationsViewModel(repository);
         } else if (modelClass.isAssignableFrom(UploadViewModel.class)) {
             return (T) new UploadViewModel(repository);
         } else if (modelClass.isAssignableFrom(PodcastViewModel.class)) {

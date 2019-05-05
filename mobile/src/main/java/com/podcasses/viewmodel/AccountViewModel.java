@@ -54,7 +54,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     private String token;
 
     AccountViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
-        super(repository);
+        super(repository, apiCallInterface);
         this.apiCallInterface = apiCallInterface;
     }
 

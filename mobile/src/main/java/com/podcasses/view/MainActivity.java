@@ -62,11 +62,9 @@ public class MainActivity extends AppCompatActivity implements
         Player.EventListener {
 
     private static final int INDEX_HOME = FragNavController.TAB1;
-    private static final int INDEX_TRENDING = FragNavController.TAB2;
-    private static final int INDEX_NOTIFICATION = FragNavController.TAB3;
-    private static final int INDEX_UPLOAD = FragNavController.TAB4;
-    private static final int INDEX_ACCOUNT = FragNavController.TAB5;
-    public static final int FRAGMENTS_COUNT = 5;
+    private static final int INDEX_ACCOUNT = FragNavController.TAB2;
+    private static final int INDEX_UPLOAD = FragNavController.TAB3;
+    public static final int FRAGMENTS_COUNT = 3;
 
     @Inject
     AuthenticationCallInterface authenticationCall;
@@ -105,11 +103,8 @@ public class MainActivity extends AppCompatActivity implements
                 case INDEX_HOME:
                     binder.bottomNavigation.setSelectedItemId(R.id.navigation_home);
                     break;
-                case INDEX_TRENDING:
-                    binder.bottomNavigation.setSelectedItemId(R.id.navigation_trending);
-                    break;
-                case INDEX_NOTIFICATION:
-                    binder.bottomNavigation.setSelectedItemId(R.id.navigation_notifications);
+                case INDEX_ACCOUNT:
+                    binder.bottomNavigation.setSelectedItemId(R.id.navigation_account);
                     break;
             }
         }));
@@ -147,11 +142,8 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.navigation_home:
                 fragNavController.switchTab(INDEX_HOME);
                 break;
-            case R.id.navigation_trending:
-                fragNavController.switchTab(INDEX_TRENDING);
-                break;
-            case R.id.navigation_notifications:
-                fragNavController.switchTab(INDEX_NOTIFICATION);
+            case R.id.navigation_account:
+                fragNavController.switchTab(INDEX_ACCOUNT);
                 break;
         }
         return true;
@@ -186,10 +178,6 @@ public class MainActivity extends AppCompatActivity implements
         switch (i) {
             case INDEX_HOME:
                 return HomeFragment.newInstance(0);
-            case INDEX_TRENDING:
-                return TrendingFragment.newInstance(0);
-            case INDEX_NOTIFICATION:
-                return NotificationsFragment.newInstance(0);
             case INDEX_UPLOAD:
                 return UploadFragment.newInstance(0);
             case INDEX_ACCOUNT:

@@ -45,6 +45,7 @@ import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
@@ -91,9 +92,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private Podcast playingPodcast;
     private IBinder binder;
     private AudioPlayerService service;
-
-    private PopupMenu popupOptions;
-    private MenuPopupHelper menuHelper;
 
     static PodcastFragment newInstance(int instance, String podcastId, Podcast openedPodcast) {
         id = podcastId;
@@ -143,13 +141,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         commentsResponse = viewModel.comments(id);
         commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, null));
 
-        popupOptions = new PopupMenu(getContext(), binding.optionsButton);
-        popupOptions.getMenuInflater()
-                .inflate(R.menu.podcast_options_menu, popupOptions.getMenu());
-        menuHelper = new MenuPopupHelper(getContext(), (MenuBuilder) popupOptions.getMenu(), binding.optionsButton);
-        menuHelper.setForceShowIcon(true);
-        menuHelper.setGravity(Gravity.END);
-        binding.optionsButton.setOnClickListener(onOptionsClickListener);
         binding.likeButton.setOnClickListener(onLikeClickListener);
         binding.dislikeButton.setOnClickListener(onDislikeClickListener);
 
@@ -212,7 +203,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     accountPodcast = (AccountPodcast) apiResponse.data;
                     binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
                     binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKE.getValue());
-                    popupOptions.getMenu().getItem(0).setChecked(accountPodcast.getMarkAsPlayed() == 1);
                     if (podcast != null) {
                         podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
                     }
@@ -291,24 +281,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             binding.playButton.change(!playingStatus);
         }
     }
-
-    @SuppressLint("RestrictedApi")
-    private View.OnClickListener onOptionsClickListener = view -> {
-        popupOptions.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.markAsPlayed:
-                    if (accountPodcast != null) {
-                        sendMarkAsPlayedRequest(item, apiCallInterface, podcast, token.getValue());
-                    }
-                    break;
-                case R.id.report:
-                    DialogUtil.createReportDialog(getContext(), id, apiCallInterface, token.getValue(), true);
-                    break;
-            }
-            return true;
-        });
-        menuHelper.show();
-    };
 
     private View.OnClickListener onLikeClickListener = v ->
             sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
@@ -39,7 +37,6 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
-import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
@@ -83,9 +80,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     private Account account;
     private String username;
     private static String accountId;
-
-    private PopupMenu popupOptions;
-    private MenuPopupHelper menuHelper;
 
     static AccountFragment newInstance(int instance, String openedAccountId) {
         accountId = openedAccountId;
@@ -140,7 +134,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
         setListClick();
         setAccountClick();
-        setPodcastOptionsClick();
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         player = service.getPlayerInstance();
@@ -314,40 +307,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             }
             viewModel.setPlayingIndex(i);
         }
-    }
-
-    private void setPodcastOptionsClick() {
-        viewModel.getSelectedViewOptions().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedViewOptions().get() != null) {
-                    popupOptions = new PopupMenu(getContext(), viewModel.getSelectedViewOptions().get());
-                    popupOptions.getMenuInflater()
-                            .inflate(R.menu.podcast_options_menu, popupOptions.getMenu());
-                    menuHelper = new MenuPopupHelper(getContext(), (MenuBuilder) popupOptions.getMenu(), viewModel.getSelectedViewOptions().get());
-                    menuHelper.setForceShowIcon(true);
-                    menuHelper.setGravity(Gravity.END);
-                    popupOptions.setOnMenuItemClickListener(item -> {
-                        switch (item.getItemId()) {
-                            case R.id.markAsPlayed:
-                                sendMarkAsPlayedRequest(
-                                        item, apiCallInterface,
-                                        viewModel.getPodcastAt(viewModel.getSelectedPodcastOptionsIndex()),
-                                        token.getValue());
-                                break;
-                            case R.id.report:
-                                DialogUtil.createReportDialog(getContext(), viewModel.getPodcastAt(viewModel.getSelectedPodcastOptionsIndex()).getId(), apiCallInterface, token.getValue(), true);
-                                break;
-                        }
-                        return true;
-                    });
-                    menuHelper.show();
-                    popupOptions.getMenu().getItem(0)
-                            .setChecked(viewModel.getPodcasts().get(viewModel.getSelectedPodcastOptionsIndex()).isMarkAsPlayed());
-                    viewModel.getSelectedViewOptions().set(null);
-                }
-            }
-        });
     }
 
 }

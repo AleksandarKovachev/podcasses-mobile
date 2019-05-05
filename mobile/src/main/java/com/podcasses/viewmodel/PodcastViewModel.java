@@ -1,14 +1,10 @@
 package com.podcasses.viewmodel;
 
 import android.net.Uri;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.Observable;
@@ -32,15 +28,14 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.CommentRequest;
-import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioDownloadService;
-import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatus;
-import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.util.NetworkRequestsUtil;
+import com.podcasses.util.PopupMenuUtil;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import org.greenrobot.eventbus.EventBus;
@@ -169,6 +164,10 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         DownloadService.startWithAction(view.getContext(), AudioDownloadService.class, progressiveDownloadAction, false);
     }
 
+    public void onOptionsButtonClick(View view) {
+        PopupMenuUtil.podcastPopupMenu(view, podcast.getValue(), apiCallInterface, token);
+    }
+
     public void setPodcast(Podcast podcast) {
         this.podcast.setValue(podcast);
         notifyPropertyChanged(BR.podcast);
@@ -237,7 +236,7 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
             } else {
                 accountCommentRequest.setLikeStatus(LikeStatus.LIKE.getValue());
             }
-            sendAccountCommentRequest(view, comment, accountCommentRequest);
+            NetworkRequestsUtil.sendAccountCommentRequest(view.getContext(), apiCallInterface, token, comment, accountCommentRequest);
         }
     }
 
@@ -251,61 +250,16 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
             } else {
                 accountCommentRequest.setLikeStatus(LikeStatus.DISLIKE.getValue());
             }
-            sendAccountCommentRequest(view, comment, accountCommentRequest);
+            NetworkRequestsUtil.sendAccountCommentRequest(view.getContext(), apiCallInterface, token, comment, accountCommentRequest);
         }
     }
 
-    private void sendAccountCommentRequest(View view, Comment comment, AccountCommentRequest accountCommentRequest) {
-        Call<AccountComment> call = apiCallInterface.accountComment("Bearer " + token, accountCommentRequest);
-        call.enqueue(new Callback<AccountComment>() {
-            @Override
-            public void onResponse(Call<AccountComment> call, Response<AccountComment> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_response), Toast.LENGTH_SHORT, true).show();
-                    int previousLikeStatus = getPreviousLikeStatus(comment);
-                    LikeStatusUtil.updateLikeStatus(comment, response.body().getLikeStatus(), previousLikeStatus);
-                    comment.setLiked(response.body().getLikeStatus() == LikeStatus.LIKE.getValue());
-                    comment.setDisliked(response.body().getLikeStatus() == LikeStatus.DISLIKE.getValue());
-                } else {
-                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AccountComment> call, Throwable t) {
-                LogErrorResponseUtil.logFailure(t, view.getContext());
-            }
-        });
-    }
-
     public void commentOptions(View view, int position) {
-        PopupMenu popupOptions = new PopupMenu(view.getContext(), view);
-        popupOptions.getMenuInflater()
-                .inflate(R.menu.comment_options_menu, popupOptions.getMenu());
-        MenuPopupHelper menuHelper = new MenuPopupHelper(view.getContext(), (MenuBuilder) popupOptions.getMenu(), view);
-        menuHelper.setForceShowIcon(true);
-        menuHelper.setGravity(Gravity.END);
-        popupOptions.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.report) {
-                DialogUtil.createReportDialog(view.getContext(), comments.getValue().get(position).getId(), apiCallInterface, token, false);
-            }
-            return true;
-        });
-        menuHelper.show();
+        PopupMenuUtil.commentPopupMenu(view, comments.getValue().get(position), apiCallInterface, token);
     }
 
     public void openAccount(Integer position) {
         selectedAccountId.set(comments.getValue().get(position).getUserId());
-    }
-
-    private int getPreviousLikeStatus(Comment comment) {
-        int previousLikeStatus = LikeStatus.DEFAULT.getValue();
-        if (comment.isLiked()) {
-            previousLikeStatus = LikeStatus.LIKE.getValue();
-        } else if (comment.isDisliked()) {
-            previousLikeStatus = LikeStatus.DISLIKE.getValue();
-        }
-        return previousLikeStatus;
     }
 
     private void notifyPropertyChanged(int fieldId) {

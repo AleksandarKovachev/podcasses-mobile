@@ -74,27 +74,6 @@ public class BaseFragment extends Fragment implements AuthenticationTokenTask {
         startActivityForResult(intent, 22);
     }
 
-    protected void sendMarkAsPlayedRequest(MenuItem item, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
-        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
-        accountPodcastRequest.setPodcastId(podcast.getId());
-        accountPodcastRequest.setMarkAsPlayed(podcast.isMarkAsPlayed() ? 0 : 1);
-        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
-        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
-            @Override
-            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    item.setChecked(response.body().getMarkAsPlayed() == 1);
-                    podcast.setMarkAsPlayed(response.body().getMarkAsPlayed() == 1);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
-            }
-        });
-    }
-
     public interface FragmentNavigation {
         void pushFragment(Fragment fragment);
     }

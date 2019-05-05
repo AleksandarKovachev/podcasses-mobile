@@ -1,6 +1,7 @@
 package com.podcasses.util;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -25,6 +26,12 @@ import retrofit2.Response;
  * Created by aleksandar.kovachev.
  */
 public class DialogUtil {
+
+    public static ProgressDialog getProgressDialog(Context context) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setCancelable(false);
+        return progressDialog;
+    }
 
     public static void createReportDialog(Context context, String id, ApiCallInterface apiCallInterface, String token, boolean isPodcast) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
