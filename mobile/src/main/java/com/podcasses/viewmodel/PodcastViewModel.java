@@ -183,16 +183,6 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
         notifyPropertyChanged(BR.accountId);
     }
 
-    @BindingAdapter(value = {"isLiked"})
-    public static void isLiked(View view, boolean isLiked) {
-        view.setSelected(isLiked);
-    }
-
-    @BindingAdapter(value = {"isDisliked"})
-    public static void isDisliked(View view, boolean isDisliked) {
-        view.setSelected(isDisliked);
-    }
-
     public void addComment(View view, String podcastId, TextInputEditText comment) {
         if (comment.getText() == null || Strings.isEmptyOrWhitespace(comment.getText().toString()) || token == null) {
             return;

@@ -7,6 +7,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -103,6 +104,26 @@ class NetworkDataSource {
 
     void getPodcasts(String podcast, String podcastId, String userId, IDataCallback<List<Podcast>> callback) {
         Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId);
+        call.enqueue(new Callback<List<Podcast>>() {
+            @Override
+            public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void getTrendingPodcasts(TrendingFilter trendingFilter, IDataCallback<List<Podcast>> callback) {
+        Call<List<Podcast>> call = apiCallInterface.trendingPodcasts(trendingFilter.toQueryMap());
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {

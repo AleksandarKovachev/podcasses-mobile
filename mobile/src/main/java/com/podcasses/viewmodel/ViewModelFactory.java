@@ -27,7 +27,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(HomeViewModel.class)) {
-            return (T) new HomeViewModel(repository);
+            return (T) new HomeViewModel(repository, apiCallInterface);
         } else if (modelClass.isAssignableFrom(SearchViewModel.class)) {
             return (T) new SearchViewModel(repository, apiCallInterface);
         } else if (modelClass.isAssignableFrom(AccountViewModel.class)) {

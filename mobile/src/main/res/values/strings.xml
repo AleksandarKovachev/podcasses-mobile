@@ -23,6 +23,9 @@
     <string name="subscribe">Subscribe %1$s</string>
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
+    <string name="trending_header">Trending podcasts</string>
+    <string name="trending_filter">Change filter</string>
+
     <string name="podcast_upload">Upload podcast</string>
     <string name="podcast_title">Title</string>
     <string name="podcast_quote">Quote</string>
@@ -62,6 +65,19 @@
     <string name="report">Report</string>
 
     <string name="send">Send</string>
+    <string name="set">Set</string>
     <string name="cancel">Cancel</string>
+
+    <string name="trending_filter_header">Choose from the list or manually set a date range.</string>
+    <string name="from_date">From date</string>
+    <string name="to_date">To date</string>
+
+    <string-array name="trendingFilter">
+        <item>Choose:</item>
+        <item>DAILY</item>
+        <item>WEEKLY</item>
+        <item>MONTHLY</item>
+        <item>YEARLY</item>
+    </string-array>
 
 </resources>

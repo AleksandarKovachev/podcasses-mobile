@@ -23,6 +23,9 @@
     <string name="subscribe">Абониране %1$s</string>
     <string name="podcast_files_title">Непубликувани качени подкаст файлове</string>
 
+    <string name="trending_header">Набиращи популярност</string>
+    <string name="trending_filter">Смени филтъра</string>
+
     <string name="podcast_upload">Качи подкаст</string>
     <string name="podcast_title">Заглавие</string>
     <string name="podcast_quote">Цитат</string>
@@ -62,6 +65,19 @@
     <string name="report">Подай сигнал</string>
 
     <string name="send">Send</string>
+    <string name="set">Задай</string>
     <string name="cancel">Cancel</string>
+
+    <string name="trending_filter_header">Избери от списъка или ръчно избери дати.</string>
+    <string name="from_date">От дата</string>
+    <string name="to_date">До дата</string>
+
+    <string-array name="trendingFilter">
+        <item>Избери:</item>
+        <item>DAILY</item>
+        <item>WEEKLY</item>
+        <item>MONTHLY</item>
+        <item>YEARLY</item>
+    </string-array>
 
 </resources>

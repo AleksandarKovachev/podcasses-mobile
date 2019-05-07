@@ -42,6 +42,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
+    private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, this);
 
     private ApiCallInterface apiCallInterface;
     private String token;
@@ -69,6 +70,16 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     public LiveData<ApiResponse> accountPodcasts(String token, List<String> podcastIds) {
         this.token = token;
         return repository.getAccountPodcasts(token, podcastIds);
+    }
+
+    public PodcastAdapter getTrendingPodcastAdapter() {
+        return trendingPodcastAdapter;
+    }
+
+    public void setTrendingPodcastsInAdapter(List<Podcast> podcasts) {
+        this.podcasts.setValue(podcasts);
+        this.trendingPodcastAdapter.setPodcasts(podcasts);
+        this.trendingPodcastAdapter.notifyDataSetChanged();
     }
 
     public PodcastAdapter getPodcastAdapter() {
@@ -129,15 +140,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     public void setPlayingIndex(Integer playingIndex) {
         this.playingIndex.set(playingIndex);
         notifyPropertyChanged(BR.playingIndex);
-    }
-
-    @BindingAdapter(value = {"playPauseStatus", "position"}, requireAll = false)
-    public static void playPauseStatus(PlayPauseView view, Integer position, Integer playingIndex) {
-        if (position == -1 || playingIndex == -1) {
-            view.change(true);
-        } else {
-            view.change(!position.equals(playingIndex));
-        }
     }
 
     public void onOptionsButtonClick(View view, Integer position) {

@@ -11,11 +11,13 @@ import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastReportRequest;
+import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -25,6 +27,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by aleksandar.kovachev.
@@ -98,5 +101,8 @@ public interface ApiCallInterface {
 
     @POST("/feedback/podcast")
     Call<Void> podcastReport(@Header("Authorization") String token, @Body PodcastReportRequest podcastReportRequest);
+
+    @GET("/podcast/trending")
+    Call<List<Podcast>> trendingPodcasts(@QueryMap Map<String, Object> query);
 
 }

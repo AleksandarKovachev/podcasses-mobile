@@ -14,6 +14,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
@@ -40,6 +41,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> accountSubscribesResponse;
     private final MutableLiveData<ApiResponse> checkAccountSubscribeResponse;
     private final MutableLiveData<ApiResponse> podcastResponse;
+    private final MutableLiveData<ApiResponse> trendingPodcastsResponse;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> accountPodcastsResponse;
@@ -65,6 +67,7 @@ public class MainDataRepository {
         accountSubscribesResponse = new MutableLiveData<>();
         checkAccountSubscribeResponse = new MutableLiveData<>();
         podcastResponse = new MutableLiveData<>();
+        trendingPodcastsResponse = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
         accountPodcastsResponse = new MutableLiveData<>();
@@ -174,6 +177,28 @@ public class MainDataRepository {
         }
 
         return podcastResponse;
+    }
+
+    public LiveData<ApiResponse> getTrendingPodcasts(TrendingFilter trendingFilter) {
+        trendingPodcastsResponse.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getTrendingPodcasts(trendingFilter, new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data) {
+                    trendingPodcastsResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    trendingPodcastsResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            podcastResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return trendingPodcastsResponse;
     }
 
     public LiveData<ApiResponse> getPodcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {

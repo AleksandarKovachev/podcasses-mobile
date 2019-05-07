@@ -195,11 +195,4 @@ public class AccountViewModel extends BasePodcastViewModel {
         });
     }
 
-    @BindingAdapter(value = {"isSubscribed"})
-    public static void isSubscribed(View view, boolean isSubscribed) {
-        int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);
-        int defaultColor = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
-        view.getBackground().setColorFilter(isSubscribed ? selectedColor : defaultColor, PorterDuff.Mode.MULTIPLY);
-    }
-
 }

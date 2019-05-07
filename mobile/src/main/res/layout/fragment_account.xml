@@ -151,10 +151,12 @@
                             android:id="@+id/podcast_files_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/podcast_files_title"
-                            app:setAdapter="@{viewModel.podcastFileAdapter}" />
+                            app:setAdapter="@{viewModel.podcastFileAdapter}"
+                            tools:listitem="@layout/item_podcast_file" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -163,10 +165,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/medium_offset"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
-                    app:setAdapter="@{viewModel.podcastAdapter}" />
+                    app:setAdapter="@{viewModel.podcastAdapter}"
+                    tools:listitem="@layout/item_podcast" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

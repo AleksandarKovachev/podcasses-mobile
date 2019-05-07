@@ -41,8 +41,8 @@ android {
 
         debug {
             debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.101:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.101:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
         }
     }
     compileOptions {
