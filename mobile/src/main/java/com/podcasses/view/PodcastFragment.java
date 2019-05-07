@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
@@ -31,6 +27,7 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
@@ -41,7 +38,6 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
-import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -74,6 +70,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
 
     private FragmentPodcastBinding binding;
 
@@ -170,6 +169,18 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         }
     }
 
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        playingPodcast = service.getPodcast();
+        setPlayingStatus(playWhenReady);
+
+        if (playbackState == Player.STATE_IDLE) {
+            binding.playButton.change(true);
+        } else if (!sharedPreferencesManager.isPodcastViewed(id)) {
+            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, id);
+        }
+    }
+
     void updateTitle() {
         if (podcast != null && getActivity() != null)
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast.getTitle());
@@ -263,16 +274,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 liveData.removeObservers(this);
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
-        }
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcast = service.getPodcast();
-        setPlayingStatus(playWhenReady);
-
-        if (playbackState == Player.STATE_IDLE) {
-            binding.playButton.change(true);
         }
     }
 

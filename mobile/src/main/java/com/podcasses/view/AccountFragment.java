@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
@@ -28,6 +26,7 @@ import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
@@ -38,6 +37,7 @@ import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.AccountViewModel;
@@ -60,6 +60,9 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
 
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
@@ -159,11 +162,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         }
     }
 
-    void updateTitle() {
-        if (account != null && getActivity() != null)
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
-    }
-
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         playingPodcast = service.getPodcast();
@@ -171,7 +169,14 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
         if (playbackState == Player.STATE_IDLE) {
             viewModel.setPlayingIndex(-1);
+        } else if (!sharedPreferencesManager.isPodcastViewed(playingPodcast.getId())) {
+            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, playingPodcast.getId());
         }
+    }
+
+    void updateTitle() {
+        if (account != null && getActivity() != null)
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {

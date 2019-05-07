@@ -105,4 +105,7 @@ public interface ApiCallInterface {
     @GET("/podcast/trending")
     Call<List<Podcast>> trendingPodcasts(@QueryMap Map<String, Object> query);
 
+    @POST("/podcast/view/{podcastId}")
+    Call<Void> podcastView(@Path("podcastId") String podcastId);
+
 }

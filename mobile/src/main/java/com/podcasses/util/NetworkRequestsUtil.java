@@ -5,6 +5,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.podcasses.R;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
@@ -63,6 +64,20 @@ public class NetworkRequestsUtil {
             @Override
             public void onFailure(Call<AccountComment> call, Throwable t) {
                 LogErrorResponseUtil.logFailure(t, context);
+            }
+        });
+    }
+
+    public static void sendPodcastViewRequest(ApiCallInterface apiCallInterface, SharedPreferencesManager sharedPreferencesManager, String podcastId) {
+        Call<Void> call = apiCallInterface.podcastView(podcastId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                sharedPreferencesManager.setViewedPodcast(podcastId);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
             }
         });
     }

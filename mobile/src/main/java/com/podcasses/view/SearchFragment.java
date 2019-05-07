@@ -22,10 +22,13 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.SearchViewModel;
@@ -44,7 +47,12 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private FragmentSearchBinding binding;
+    @Inject
+    ApiCallInterface apiCallInterface;
+
+    @Inject
+    SharedPreferencesManager sharedPreferencesManager;
+
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
     private List<Podcast> podcasts;
@@ -69,7 +77,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
 
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
@@ -105,6 +113,18 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
         } catch (ClassCastException e) {
             Log.e(getTag(), "Activity (Context) must implement FragmentCallback");
             throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        playingPodcast = service.getPodcast();
+        setPlayingStatus(playWhenReady);
+
+        if (playbackState == Player.STATE_IDLE) {
+            viewModel.setPlayingIndex(-1);
+        } else if (!sharedPreferencesManager.isPodcastViewed(playingPodcast.getId())) {
+            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, playingPodcast.getId());
         }
     }
 
@@ -154,16 +174,6 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
                 viewModel.getSelectedPodcast().setValue(null);
             }
         });
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcast = service.getPodcast();
-        setPlayingStatus(playWhenReady);
-
-        if (playbackState == Player.STATE_IDLE) {
-            viewModel.setPlayingIndex(-1);
-        }
     }
 
     private void setPlayingStatus(boolean playingStatus) {
