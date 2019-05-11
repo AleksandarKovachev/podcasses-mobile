@@ -7,12 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.podcasses.model.entity.Nomenclature;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Created by aleksandar.kovachev.
@@ -24,10 +24,12 @@ public class NomenclatureAdapter extends ArrayAdapter {
     public NomenclatureAdapter(Context context, int textViewResourceId, List<Nomenclature> nomenclatures, String prompt) {
         super(context, textViewResourceId, nomenclatures);
         this.nomenclatures = nomenclatures;
-        Nomenclature nomenclature = new Nomenclature();
-        nomenclature.setName(prompt);
-        nomenclature.setId(-1);
-        this.nomenclatures.add(0, nomenclature);
+        if (nomenclatures.get(0).getId() != -1) {
+            Nomenclature nomenclature = new Nomenclature();
+            nomenclature.setName(prompt);
+            nomenclature.setId(-1);
+            nomenclatures.add(0, nomenclature);
+        }
     }
 
     @Override

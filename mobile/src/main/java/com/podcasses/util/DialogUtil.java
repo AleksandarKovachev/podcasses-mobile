@@ -11,16 +11,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
+import com.podcasses.databinding.DialogTrendingFilterBinding;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.viewmodel.HomeViewModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,19 +63,12 @@ public class DialogUtil {
         builder.show();
     }
 
-    public static void createTrendingFilterDialog(Context context, MutableLiveData<TrendingFilter> trendingFilterMutableLiveData) {
-        LayoutInflater li = LayoutInflater.from(context);
-        View dialogView = li.inflate(R.layout.dialog_trending_filter, null);
+    public static void createTrendingFilterDialog(Context context, MutableLiveData<TrendingFilter> trendingFilterMutableLiveData, HomeViewModel viewModel) {
+        DialogTrendingFilterBinding binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_trending_filter, null, false);
+        binding.setViewModel(viewModel);
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-        alertDialogBuilder.setView(dialogView);
-
-        AppCompatEditText fromDateEditText = dialogView.findViewById(R.id.from_date);
-        AppCompatEditText toDateEditText = dialogView.findViewById(R.id.to_date);
-        AppCompatSpinner spinner = dialogView.findViewById(R.id.trending_filter_spinner);
-
-        fromDateEditText.setOnClickListener(openDatePicker(fromDateEditText));
-        toDateEditText.setOnClickListener(openDatePicker(toDateEditText));
+        alertDialogBuilder.setView(binding.getRoot());
 
         alertDialogBuilder
                 .setCancelable(false)
@@ -81,21 +76,28 @@ public class DialogUtil {
                         (dialog, id) -> {
                             TrendingReport trendingReport = null;
                             Date fromDate = null, toDate = null;
-                            if (spinner.getSelectedItemPosition() != 0) {
-                                trendingReport = TrendingReport.valueOf((String) spinner.getSelectedItem());
+                            Integer categoryId = null, languageId = null;
+                            if (viewModel.getCategoryId() != -1) {
+                                categoryId = viewModel.getCategoryId();
                             }
-                            if (!Strings.isEmptyOrWhitespace(fromDateEditText.getText().toString())
-                                    && !Strings.isEmptyOrWhitespace(toDateEditText.getText().toString())) {
+                            if (viewModel.getLanguageId() != -1) {
+                                languageId = viewModel.getLanguageId();
+                            }
+                            if (binding.trendingFilterSpinner.getSelectedItemPosition() != 0) {
+                                trendingReport = TrendingReport.valueOf((String) binding.trendingFilterSpinner.getSelectedItem());
+                            }
+                            if (!Strings.isEmptyOrWhitespace(binding.fromDate.getText().toString())
+                                    && !Strings.isEmptyOrWhitespace(binding.toDate.getText().toString())) {
                                 try {
                                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                                    fromDate = simpleDateFormat.parse(fromDateEditText.getText().toString());
-                                    toDate = simpleDateFormat.parse(toDateEditText.getText().toString());
+                                    fromDate = simpleDateFormat.parse(binding.fromDate.getText().toString());
+                                    toDate = simpleDateFormat.parse(binding.toDate.getText().toString());
                                 } catch (ParseException e) {
                                     Log.e(TAG, "createTrendingFilterDialog: ", e);
                                 }
                             }
                             if (trendingReport != null || fromDate != null || toDate != null) {
-                                trendingFilterMutableLiveData.setValue(new TrendingFilter(trendingReport, fromDate, toDate));
+                                trendingFilterMutableLiveData.setValue(new TrendingFilter(trendingReport, fromDate, toDate, categoryId, languageId));
                             }
                         })
                 .setNegativeButton(context.getString(R.string.cancel),
@@ -104,20 +106,18 @@ public class DialogUtil {
         alertDialogBuilder.create().show();
     }
 
-    private static View.OnClickListener openDatePicker(AppCompatEditText view) {
-        return v -> {
-            final Calendar calendar = Calendar.getInstance();
-            int yy = calendar.get(Calendar.YEAR);
-            int mm = calendar.get(Calendar.MONTH);
-            int dd = calendar.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), android.R.style.Theme_Material_Dialog_Alert, (view1, year, monthOfYear, dayOfMonth) -> {
-                String date = dayOfMonth + "/" + (monthOfYear + 1)
-                        + "/" + year;
-                view.setText(date);
-            }, yy, mm, dd);
-            datePicker.setOnCancelListener(dialog -> view.setText(""));
-            datePicker.show();
-        };
+    public static void openDatePicker(AppCompatEditText view) {
+        final Calendar calendar = Calendar.getInstance();
+        int yy = calendar.get(Calendar.YEAR);
+        int mm = calendar.get(Calendar.MONTH);
+        int dd = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), android.R.style.Theme_Material_Dialog_Alert, (view1, year, monthOfYear, dayOfMonth) -> {
+            String date = dayOfMonth + "/" + (monthOfYear + 1)
+                    + "/" + year;
+            view.setText(date);
+        }, yy, mm, dd);
+        datePicker.setOnCancelListener(dialog -> view.setText(""));
+        datePicker.show();
     }
 
     private static void sendReport(Context context, ApiCallInterface apiCallInterface, String token, String id, String report, boolean isPodcast) {

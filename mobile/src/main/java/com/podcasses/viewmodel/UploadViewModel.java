@@ -1,16 +1,13 @@
 package com.podcasses.viewmodel;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.AdapterView;
+import androidx.databinding.Bindable;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableField;
+import androidx.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
-import com.onegravity.rteditor.RTEditText;
-import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.BR;
-import com.podcasses.R;
-import com.podcasses.adapter.LanguageAdapter;
-import com.podcasses.adapter.NomenclatureAdapter;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
@@ -19,17 +16,6 @@ import com.podcasses.viewmodel.base.BaseViewModel;
 
 import java.util.List;
 
-import androidx.appcompat.widget.AppCompatSpinner;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.InverseBindingAdapter;
-import androidx.databinding.InverseBindingListener;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableField;
-import androidx.databinding.PropertyChangeRegistry;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import retrofit2.Response;
 
 

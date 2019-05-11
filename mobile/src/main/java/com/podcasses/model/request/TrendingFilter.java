@@ -15,13 +15,19 @@ public class TrendingFilter {
 
     private Date to;
 
+    private Integer categoryId;
+
+    private Integer languageId;
+
     public TrendingFilter() {
     }
 
-    public TrendingFilter(TrendingReport trendingReport, Date from, Date to) {
+    public TrendingFilter(TrendingReport trendingReport, Date from, Date to, Integer categoryId, Integer languageId) {
         this.trendingReport = trendingReport;
         this.from = from;
         this.to = to;
+        this.categoryId = categoryId;
+        this.languageId = languageId;
     }
 
     public TrendingReport getTrendingReport() {
@@ -48,6 +54,22 @@ public class TrendingFilter {
         this.to = to;
     }
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
+    }
+
     public Map<String, Object> toQueryMap() {
         Map<String, Object> queryMap = new HashMap<>();
         if (trendingReport != null) {
@@ -60,6 +82,14 @@ public class TrendingFilter {
 
         if (to != null) {
             queryMap.put("to", to.getTime());
+        }
+
+        if (categoryId != null) {
+            queryMap.put("categoryId", categoryId);
+        }
+
+        if (languageId != null) {
+            queryMap.put("languageId", languageId);
         }
         return queryMap;
     }

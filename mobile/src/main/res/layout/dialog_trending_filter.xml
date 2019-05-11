@@ -1,54 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/trending_filter_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/medium_offset"
-        android:text="@string/trending_filter_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/trending_filter_spinner"
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.HomeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_offset"
-        android:drawSelectorOnTop="true"
-        android:entries="@array/trendingFilter"
-        android:spinnerMode="dropdown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/trending_filter_header" />
+        android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/from_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_offset"
-        android:focusable="false"
-        android:hint="@string/from_date"
-        app:layout_constraintEnd_toStartOf="@id/to_date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/trending_filter_spinner"
-        app:layout_constraintVertical_bias="0" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/trending_filter_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/medium_offset"
+            android:text="@string/trending_filter_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/to_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_offset"
-        android:focusable="false"
-        android:hint="@string/to_date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/from_date"
-        app:layout_constraintTop_toBottomOf="@id/trending_filter_spinner"
-        app:layout_constraintVertical_bias="0" />
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/trending_filter_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/trendingFilter"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/trending_filter_header" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/from_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:focusable="false"
+            android:hint="@string/from_date"
+            android:onClick="@{v -> viewModel.openDatePicker(v)}"
+            app:layout_constraintEnd_toStartOf="@id/to_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/trending_filter_spinner"
+            app:layout_constraintVertical_bias="0" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/to_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:focusable="false"
+            android:hint="@string/to_date"
+            android:onClick="@{v -> viewModel.openDatePicker(v)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/from_date"
+            app:layout_constraintTop_toBottomOf="@id/trending_filter_spinner"
+            app:layout_constraintVertical_bias="0" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/categories_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:drawSelectorOnTop="true"
+            android:spinnerMode="dialog"
+            app:categories="@{viewModel.categories}"
+            app:layout_constraintEnd_toStartOf="@id/languages_spinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/to_date"
+            app:selectedCategory="@={viewModel.categoryId}" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/languages_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_offset"
+            android:drawSelectorOnTop="true"
+            android:spinnerMode="dialog"
+            app:languages="@{viewModel.languages}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/categories_spinner"
+            app:layout_constraintTop_toBottomOf="@id/to_date"
+            app:selectedLanguage="@={viewModel.languageId}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
