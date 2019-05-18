@@ -35,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:scaleType="fitCenter"
-                app:imageUrl='@{viewModel.podcastImage(position)}'
+                app:imageUrl='@{viewModel.getPodcastAt(position).imageUrl}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -28,15 +28,11 @@
 
     <string name="podcast_upload">Upload podcast</string>
     <string name="podcast_title">Title</string>
-    <string name="podcast_quote">Quote</string>
-    <string name="podcast_participator">Participator</string>
     <string name="podcast_description">Description</string>
     <string name="podcast_privacy">Privacy</string>
     <string name="podcast_category">Category</string>
     <string name="podcast_language">Language</string>
     <string name="podcast_comments">Comments</string>
-    <string name="podcast_canDownload">Can be downloaded</string>
-    <string name="podcast_ageRestriction">Age restriction</string>
     <string name="podcast_add">Add podcast</string>
     <string name="podcast_add_comment">Add a comment</string>
 

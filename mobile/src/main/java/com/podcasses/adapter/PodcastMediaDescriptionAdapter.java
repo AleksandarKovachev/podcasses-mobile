@@ -38,7 +38,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Nullable
     @Override
     public String getCurrentContentText(Player player) {
-        return podcast.getQuote();
+        return podcast.getDisplayName();
     }
 
     @Nullable
@@ -46,7 +46,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
         Glide.with(context)
                 .asBitmap()
-                .load(BuildConfig.API_GATEWAY_URL.concat("/podcast/image/").concat(podcast.getId()))
+                .load(podcast.getImageUrl())
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

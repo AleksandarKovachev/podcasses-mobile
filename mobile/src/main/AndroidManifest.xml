@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -25,7 +26,6 @@
         android:roundIcon="@drawable/ic_podcast"
         android:supportsRtl="true"
         android:theme="@style/DarkAppTheme"
-        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".view.MainActivity">
             <intent-filter>
@@ -52,7 +52,14 @@
         </service>
 
         <service android:name=".service.AudioPlayerService" />
-        <service android:name=".service.AudioDownloadService" />
+        <service
+            android:name=".service.AudioDownloadService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

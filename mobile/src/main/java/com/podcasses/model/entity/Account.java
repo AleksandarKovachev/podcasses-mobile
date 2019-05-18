@@ -16,7 +16,7 @@ public class Account {
 
     private String username;
 
-    private String password;
+    private String displayName;
 
     private String email;
 
@@ -25,6 +25,20 @@ public class Account {
     private String lastName;
 
     private String description;
+
+    private Integer categoryId;
+
+    private Integer countryId;
+
+    private String city;
+
+    private Integer languageId;
+
+    private String rssFeed;
+
+    private Integer rssFeedVerified;
+
+    private String rssFeedEmail;
 
     private int emailVerified;
 
@@ -45,12 +59,12 @@ public class Account {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {
@@ -85,6 +99,62 @@ public class Account {
         this.description = description;
     }
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public Integer getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
+    }
+
+    public String getRssFeed() {
+        return rssFeed;
+    }
+
+    public void setRssFeed(String rssFeed) {
+        this.rssFeed = rssFeed;
+    }
+
+    public Integer getRssFeedVerified() {
+        return rssFeedVerified;
+    }
+
+    public void setRssFeedVerified(Integer rssFeedVerified) {
+        this.rssFeedVerified = rssFeedVerified;
+    }
+
+    public String getRssFeedEmail() {
+        return rssFeedEmail;
+    }
+
+    public void setRssFeedEmail(String rssFeedEmail) {
+        this.rssFeedEmail = rssFeedEmail;
+    }
+
     public int getEmailVerified() {
         return emailVerified;
     }
@@ -92,5 +162,4 @@ public class Account {
     public void setEmailVerified(int emailVerified) {
         this.emailVerified = emailVerified;
     }
-
 }

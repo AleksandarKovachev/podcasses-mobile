@@ -6,7 +6,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.databinding.PropertyChangeRegistry;
@@ -14,8 +13,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.exoplayer2.offline.DownloadRequest;
 import com.google.android.exoplayer2.offline.DownloadService;
-import com.google.android.exoplayer2.offline.ProgressiveDownloadAction;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.google.android.material.textfield.TextInputEditText;
@@ -41,6 +40,7 @@ import com.podcasses.viewmodel.base.BaseViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -158,10 +158,18 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     }
 
     public void onDownloadButtonClick(View view) {
-        ProgressiveDownloadAction progressiveDownloadAction = ProgressiveDownloadAction.createDownloadAction(
-                Uri.parse(BuildConfig.API_GATEWAY_URL.concat("/podcast/download/").concat(podcast.getValue().getId())),
-                null, null);
-        DownloadService.startWithAction(view.getContext(), AudioDownloadService.class, progressiveDownloadAction, false);
+        DownloadRequest downloadRequest = new DownloadRequest(
+                podcast.getValue().getId(),
+                DownloadRequest.TYPE_PROGRESSIVE,
+                Uri.parse(podcast.getValue().getDownloadUrl()),
+                Collections.emptyList(),
+                null,
+                podcast.getValue().getTitle().getBytes());
+        DownloadService.sendAddDownload(
+                view.getContext(),
+                AudioDownloadService.class,
+                downloadRequest,
+                false);
     }
 
     public void onOptionsButtonClick(View view) {

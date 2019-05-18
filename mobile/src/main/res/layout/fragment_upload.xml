@@ -103,56 +103,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/podcast_quote_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="@string/podcast_quote"
-                android:padding="@dimen/medium_offset"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/podcast_participator_input"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
-                app:layout_constraintVertical_bias="0">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/podcast_quote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:imeOptions="actionDone|flagNoEnterAction"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:singleLine="true"
-                    android:text="@={viewModel.podcast.quote}" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/podcast_participator_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="@string/podcast_participator"
-                android:padding="@dimen/medium_offset"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/podcast_quote_input"
-                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
-                app:layout_constraintVertical_bias="0">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/podcast_participator"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:imeOptions="actionDone|flagNoEnterAction"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:singleLine="true"
-                    android:text="@={viewModel.podcast.participator}" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/podcast_privacy"
                 android:layout_width="0dp"
@@ -162,7 +112,7 @@
                 android:spinnerMode="dropdown"
                 app:layout_constraintEnd_toStartOf="@id/podcast_category"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
                 app:privacies="@{viewModel.privacies}"
                 app:selectedPrivacy="@={viewModel.podcast.privacyId}" />
 
@@ -176,7 +126,7 @@
                 app:categories="@{viewModel.categories}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/podcast_privacy"
-                app:layout_constraintTop_toBottomOf="@id/podcast_quote_input"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
                 app:selectedCategory="@={viewModel.podcast.categoryId}" />
 
             <androidx.appcompat.widget.AppCompatSpinner
@@ -234,34 +184,8 @@
                 android:gravity="center"
                 android:text="@string/podcast_comments"
                 app:layout_constraintBottom_toTopOf="@id/podcast_add"
-                app:layout_constraintEnd_toStartOf="@id/podcast_canDownload"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_description" />
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/podcast_canDownload"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:checked="@={viewModel.podcast.canDownload}"
-                android:gravity="center"
-                android:text="@string/podcast_canDownload"
-                app:layout_constraintBottom_toTopOf="@id/podcast_add"
-                app:layout_constraintEnd_toStartOf="@id/podcast_ageRestriction"
-                app:layout_constraintStart_toEndOf="@id/podcast_comments"
-                app:layout_constraintTop_toBottomOf="@id/podcast_description" />
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/podcast_ageRestriction"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:checked="@={viewModel.podcast.ageRestrict}"
-                android:gravity="center"
-                android:text="@string/podcast_ageRestriction"
-                app:layout_constraintBottom_toTopOf="@id/podcast_add"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/podcast_canDownload"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/podcast_description" />
 
             <com.google.android.material.button.MaterialButton

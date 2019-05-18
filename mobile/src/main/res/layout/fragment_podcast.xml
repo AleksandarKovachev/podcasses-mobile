@@ -36,7 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:scaleType="fitXY"
-                    app:imageUrl='@{viewModel.podcastImage}'
+                    app:imageUrl='@{viewModel.podcast.imageUrl}'
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView

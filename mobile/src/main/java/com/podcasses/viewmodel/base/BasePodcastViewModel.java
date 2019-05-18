@@ -124,14 +124,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
         return null;
     }
 
-    public String podcastImage(Integer position) {
-        if (!CollectionUtils.isEmpty(podcasts.getValue())) {
-            Podcast podcast = podcasts.getValue().get(position);
-            return BuildConfig.API_GATEWAY_URL.concat(PODCAST_IMAGE).concat(podcast.getId());
-        }
-        return null;
-    }
-
     @Bindable
     public Integer getPlayingIndex() {
         return playingIndex.get();

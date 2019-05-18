@@ -33,10 +33,6 @@ public class Podcast extends BaseLikeModel {
 
     private String title;
 
-    private String quote;
-
-    private String participator;
-
     private String description;
 
     private int isActive;
@@ -46,10 +42,6 @@ public class Podcast extends BaseLikeModel {
     private int privacyId;
 
     private boolean hasComments;
-
-    private boolean canDownload;
-
-    private boolean ageRestrict;
 
     private int languageId;
 
@@ -63,7 +55,15 @@ public class Podcast extends BaseLikeModel {
 
     private String imageFileName;
 
+    private String podcastUrl;
+
+    private String imageUrl;
+
+    private String downloadUrl;
+
     private String userId;
+
+    private String displayName;
 
     private String username;
 
@@ -89,22 +89,6 @@ public class Podcast extends BaseLikeModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getQuote() {
-        return quote;
-    }
-
-    public void setQuote(String quote) {
-        this.quote = quote;
-    }
-
-    public String getParticipator() {
-        return participator;
-    }
-
-    public void setParticipator(String participator) {
-        this.participator = participator;
     }
 
     public String getDescription() {
@@ -145,22 +129,6 @@ public class Podcast extends BaseLikeModel {
 
     public void setHasComments(boolean hasComments) {
         this.hasComments = hasComments;
-    }
-
-    public boolean isCanDownload() {
-        return canDownload;
-    }
-
-    public void setCanDownload(boolean canDownload) {
-        this.canDownload = canDownload;
-    }
-
-    public boolean isAgeRestrict() {
-        return ageRestrict;
-    }
-
-    public void setAgeRestrict(boolean ageRestrict) {
-        this.ageRestrict = ageRestrict;
     }
 
     public int getLanguageId() {
@@ -229,6 +197,38 @@ public class Podcast extends BaseLikeModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPodcastUrl() {
+        return podcastUrl;
+    }
+
+    public void setPodcastUrl(String podcastUrl) {
+        this.podcastUrl = podcastUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     @Bindable
