@@ -136,6 +136,7 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:onClick="@{(view) -> viewModel.onDownloadButtonClick(view)}"
                     android:src="@drawable/ic_file_download"
+                    app:isDownloaded="@{viewModel.podcast.downloadUrl}"
                     app:layout_constraintBottom_toBottomOf="@id/play_button"
                     app:layout_constraintEnd_toStartOf="@id/options_button"
                     app:layout_constraintStart_toEndOf="@id/dislikes"

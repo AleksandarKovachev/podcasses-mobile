@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.podcasses.BuildConfig;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
+import com.podcasses.util.DownloadTracker;
 
 import net.gotev.uploadservice.UploadService;
 
@@ -43,6 +44,7 @@ public class BaseApplication extends Application {
     private AppComponent appComponent;
     private DatabaseProvider databaseProvider;
     private DownloadManager downloadManager;
+    private DownloadTracker downloadTracker;
     private Cache downloadCache;
     private File downloadDirectory;
 
@@ -68,6 +70,11 @@ public class BaseApplication extends Application {
     public DownloadManager getDownloadManager() {
         initDownloadManager();
         return downloadManager;
+    }
+
+    public DownloadTracker getDownloadTracker() {
+        initDownloadManager();
+        return downloadTracker;
     }
 
     public DataSource.Factory buildDataSourceFactory() {
@@ -127,6 +134,8 @@ public class BaseApplication extends Application {
                     new DownloaderConstructorHelper(getDownloadCache(), buildHttpDataSourceFactory());
             downloadManager = new DownloadManager(this, downloadIndex, new DefaultDownloaderFactory(downloaderConstructorHelper));
             downloadManager.setMaxParallelDownloads(5);
+            downloadTracker = new DownloadTracker(this, downloadManager);
+
         }
     }
 

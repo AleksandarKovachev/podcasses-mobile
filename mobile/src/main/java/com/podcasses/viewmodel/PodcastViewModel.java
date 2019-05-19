@@ -1,10 +1,10 @@
 package com.podcasses.viewmodel;
 
-import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
@@ -13,8 +13,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.exoplayer2.offline.DownloadRequest;
-import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.google.android.material.textfield.TextInputEditText;
@@ -23,6 +21,7 @@ import com.podcasses.BR;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastCommentAdapter;
+import com.podcasses.dagger.BaseApplication;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.request.AccountCommentRequest;
@@ -30,7 +29,8 @@ import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.service.AudioDownloadService;
+import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.DownloadTracker;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.util.NetworkRequestsUtil;
@@ -40,7 +40,6 @@ import com.podcasses.viewmodel.base.BaseViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -158,18 +157,8 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     }
 
     public void onDownloadButtonClick(View view) {
-        DownloadRequest downloadRequest = new DownloadRequest(
-                podcast.getValue().getId(),
-                DownloadRequest.TYPE_PROGRESSIVE,
-                Uri.parse(podcast.getValue().getDownloadUrl()),
-                Collections.emptyList(),
-                null,
-                podcast.getValue().getTitle().getBytes());
-        DownloadService.sendAddDownload(
-                view.getContext(),
-                AudioDownloadService.class,
-                downloadRequest,
-                false);
+        DownloadTracker downloadTracker = ((BaseApplication) view.getContext().getApplicationContext()).getDownloadTracker();
+        downloadTracker.toggleDownload(podcast.getValue().getDownloadUrl(), podcast.getValue().getId(), podcast.getValue().getTitle());
     }
 
     public void onOptionsButtonClick(View view) {

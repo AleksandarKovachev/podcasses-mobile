@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
@@ -22,6 +23,7 @@ import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.R;
 import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.adapter.NomenclatureAdapter;
+import com.podcasses.dagger.BaseApplication;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.response.Language;
 
@@ -46,6 +48,14 @@ public class CustomViewBindings {
     @BindingAdapter("imageUrl")
     public static void loadImage(ImageView view, String url) {
         Glide.with(view).load(url).apply(RequestOptions.placeholderOf(R.drawable.cover_placeholder)).into(view);
+    }
+
+    @BindingAdapter("isDownloaded")
+    public static void isDownloaded(AppCompatImageButton view, String url) {
+        DownloadTracker downloadTracker = ((BaseApplication) view.getContext().getApplicationContext()).getDownloadTracker();
+        if (downloadTracker.isDownloaded(url)) {
+            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_cloud_done));
+        }
     }
 
     @BindingAdapter(value = {"playPauseStatus", "position"}, requireAll = false)

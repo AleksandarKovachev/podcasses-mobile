@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class AudioDownloadService extends DownloadService {
 
-    public static final int FOREGROUND_NOTIFICATION_ID = 1;
+    public static final int FOREGROUND_NOTIFICATION_ID = 2;
     private static final int JOB_ID = 1;
     public static final String CHANNEL_ID = "download_channel";
 
@@ -52,7 +52,7 @@ public class AudioDownloadService extends DownloadService {
     @Override
     protected Notification getForegroundNotification(List<Download> downloads) {
         return notificationHelper.buildProgressNotification(
-                R.drawable.ic_download, null, null, downloads);
+                R.drawable.ic_file_download, null, null, downloads);
     }
 
     @Override

@@ -92,6 +92,7 @@ public class AudioPlayerService extends Service {
                         }
                     }
             );
+            playerNotificationManager.setSmallIcon(R.drawable.ic_iconfinder_podcast_287666_white);
             playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
             playerNotificationManager.setPlayer(player);
         }

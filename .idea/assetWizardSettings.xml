@@ -148,7 +148,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/alert/ic_error_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/file/ic_cloud_done_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -158,8 +158,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_error" />
-                            <entry key="sourceFile" value="C:\Users\PC\Desktop\facebook.svg" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="ic_cloud_done" />
+                            <entry key="sourceFile" value="C:\Users\PC\Desktop\iconfinder_podcast_287666.svg" />
                           </map>
                         </option>
                       </PersistentState>

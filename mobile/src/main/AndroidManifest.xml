@@ -21,11 +21,12 @@
     <application
         android:name=".dagger.BaseApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_podcast"
+        android:icon="@drawable/ic_iconfinder_podcast_287666_black_circle"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_podcast"
+        android:roundIcon="@drawable/ic_iconfinder_podcast_287666_black_circle"
         android:supportsRtl="true"
         android:theme="@style/DarkAppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".view.MainActivity">
             <intent-filter>
@@ -60,6 +61,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>
