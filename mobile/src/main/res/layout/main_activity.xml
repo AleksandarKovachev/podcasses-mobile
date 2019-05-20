@@ -46,12 +46,12 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appbar" />
 
-        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        <com.podcasses.view.ExoPlayerControlView
             android:id="@+id/exoplayer_view"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:visibility="gone"
-            app:controller_layout_id="@layout/exo_playback_control_view"
+            app:controller_layout_id="@layout/exo_player_custom_view"
             app:hide_on_touch="false"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
             app:show_timeout="0"

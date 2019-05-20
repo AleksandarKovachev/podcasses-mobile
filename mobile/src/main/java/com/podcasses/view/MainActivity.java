@@ -306,9 +306,8 @@ public class MainActivity extends AppCompatActivity implements
         player.addListener(this);
         if (player != null && (player.getPlayWhenReady() || forceStart)) {
             binder.exoplayerView.setPlayer(player);
-            binder.exoplayerView.showController();
-            binder.exoplayerView.setControllerAutoShow(true);
-            binder.exoplayerView.setControllerHideOnTouch(false);
+            binder.exoplayerView.show();
+            binder.exoplayerView.showContextMenu();
             binder.exoplayerView.setVisibility(View.VISIBLE);
         }
     }
