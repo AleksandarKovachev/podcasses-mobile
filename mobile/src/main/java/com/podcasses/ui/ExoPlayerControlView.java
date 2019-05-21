@@ -1,4 +1,4 @@
-package com.podcasses.view;
+package com.podcasses.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -34,6 +34,7 @@ import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.SearchViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ import javax.inject.Inject;
 /**
  * Created by aleksandar.kovachev.
  */
-public class SearchFragment extends BaseFragment implements Player.EventListener {
+public class SearchFragment extends BaseFragment implements Player.EventListener, OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -78,17 +79,18 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
-
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-
         updateTitle();
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchViewModel.class);
         binding.setViewModel(viewModel);
+        binding.refreshLayout.setOnRefreshListener(this);
+        return binding.getRoot();
+    }
 
-        binding.refreshLayout.setOnRefreshListener(this::getPodcasts);
-        getPodcasts(binding.refreshLayout);
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getPodcasts(null);
         setListClick();
         setAccountClick();
 
@@ -100,8 +102,11 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
             player.addListener(this);
             setPlayingStatus(player.getPlayWhenReady());
         }
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        getPodcasts(refreshLayout);
     }
 
     @Override

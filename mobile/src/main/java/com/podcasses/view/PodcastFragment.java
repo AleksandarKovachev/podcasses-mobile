@@ -63,7 +63,7 @@ import retrofit2.Response;
 /**
  * Created by aleksandar.kovachev.
  */
-public class PodcastFragment extends BaseFragment implements Player.EventListener {
+public class PodcastFragment extends BaseFragment implements Player.EventListener, OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -109,16 +109,18 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                              @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_podcast, container, false);
         binding.setLifecycleOwner(this);
-
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-        token = AuthenticationUtil.isAuthenticated(getContext(), this);
-
-        binding.refreshLayout.setOnRefreshListener(refreshListener);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PodcastViewModel.class);
         binding.setViewModel(viewModel);
         binding.setPodcastId(id);
+        binding.refreshLayout.setOnRefreshListener(this);
+        return binding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
         viewModel.setPodcastImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PODCAST_IMAGE + id);
 
         if (podcast != null) {
@@ -153,8 +155,19 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         }
 
         setAccountClickListener();
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        podcastResponse = viewModel.podcast(this, id, true);
+        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
+
+        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
+            JWT jwt = new JWT(token.getValue());
+            accountPodcastResponse = viewModel.accountPodcasts(this, token.getValue(), jwt.getSubject(), id, true);
+            accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
+        }
+        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, refreshLayout));
     }
 
     @Override
@@ -185,18 +198,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         if (podcast != null && getActivity() != null)
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast.getTitle());
     }
-
-    private OnRefreshListener refreshListener = refreshLayout -> {
-        podcastResponse = viewModel.podcast(this, id, true);
-        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
-
-        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
-            JWT jwt = new JWT(token.getValue());
-            accountPodcastResponse = viewModel.accountPodcasts(this, token.getValue(), jwt.getSubject(), id, true);
-            accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
-        }
-        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, refreshLayout));
-    };
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
         switch (apiResponse.status) {

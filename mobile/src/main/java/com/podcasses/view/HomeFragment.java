@@ -12,7 +12,6 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
@@ -27,19 +26,18 @@ import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.HomeViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class HomeFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
 
     private HomeViewModel viewModel;
-
     private LiveData<ApiResponse> trendingPodcasts;
 
     static HomeFragment newInstance(int instance) {
@@ -55,26 +53,31 @@ public class HomeFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         FragmentHomeBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         binder.setViewModel(viewModel);
+        binder.refreshLayout.setOnRefreshListener(this);
+        return binder.getRoot();
+    }
 
-        TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
-        getData(null, trendingFilter);
-        binder.refreshLayout.setOnRefreshListener(r -> getData(r, trendingFilter));
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getData(null);
         setListClick();
         setAccountClick();
         setTrendingFilterChange();
         setLanguages();
         setCategories();
-
-        return binder.getRoot();
     }
 
-    private void getData(RefreshLayout refreshLayout, TrendingFilter trendingFilter) {
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        getData(refreshLayout);
+    }
+
+    private void getData(RefreshLayout refreshLayout) {
+        TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
     }
 

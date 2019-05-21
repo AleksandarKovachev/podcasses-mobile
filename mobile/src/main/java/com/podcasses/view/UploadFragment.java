@@ -108,17 +108,22 @@ public class UploadFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
-
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-
-        token = AuthenticationUtil.isAuthenticated(getContext(), this);
         UploadService.HTTP_STACK = new OkHttpStack(okHttpClient);
-
         lifecycleOwner = this;
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UploadViewModel.class);
         binder.setViewModel(viewModel);
+        binder.podcastUpload.setOnClickListener(onPodcastUpload);
+        binder.podcastUploadFab.setOnClickListener(onPodcastUpload);
+        binder.podcastImageUpload.setOnClickListener(onPodcastImageUpload);
+        binder.podcastAdd.setOnClickListener(onPodcastAdd);
+        return binder.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
         RTApi rtApi = new RTApi(getContext(), new RTProxyImpl((Activity) getContext()), new RTMediaFactoryImpl(getContext(), true));
         rtManager = new RTManager(rtApi, savedInstanceState);
 
@@ -126,16 +131,9 @@ public class UploadFragment extends BaseFragment {
         rtManager.registerToolbar(binder.rteToolbarContainer, binder.rteToolbarContainer.findViewById(R.id.rte_toolbar_paragraph));
         rtManager.registerEditor(binder.podcastDescription, true);
 
-        binder.podcastUpload.setOnClickListener(onPodcastUpload);
-        binder.podcastUploadFab.setOnClickListener(onPodcastUpload);
-        binder.podcastImageUpload.setOnClickListener(onPodcastImageUpload);
-        binder.podcastAdd.setOnClickListener(onPodcastAdd);
-
         setPrivacies();
         setLanguages();
         setCategories();
-
-        return binder.getRoot();
     }
 
     @Override

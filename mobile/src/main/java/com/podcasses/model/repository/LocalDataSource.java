@@ -1,5 +1,7 @@
 package com.podcasses.model.repository;
 
+import androidx.lifecycle.LiveData;
+
 import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
@@ -10,10 +12,9 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
-
-import androidx.lifecycle.LiveData;
 
 /**
  * Created by aleksandar.kovachev.
@@ -45,11 +46,11 @@ public class LocalDataSource {
     }
 
     void insertPodcasts(Podcast... podcasts) {
-        podcastDao.insertAll(podcasts);
+        Executors.newSingleThreadExecutor().execute(() -> podcastDao.insertAll(podcasts));
     }
 
     void deleteAllPodcasts() {
-        podcastDao.deleteAll();
+        Executors.newSingleThreadExecutor().execute(() -> podcastDao.deleteAll());
     }
 
     LiveData<Account> getAccountById(String accountId) {
@@ -61,7 +62,8 @@ public class LocalDataSource {
     }
 
     void insertAccount(Account account) {
-        accountDao.insert(account);
+        Executors.newSingleThreadExecutor().execute(() ->
+                accountDao.insert(account));
     }
 
     LiveData<AccountPodcast> getAccountPodcast(String accountId, String podcastId) {
@@ -73,7 +75,8 @@ public class LocalDataSource {
     }
 
     void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
-        accountPodcastDao.insertAll(accountPodcasts);
+        Executors.newSingleThreadExecutor().execute(() ->
+                accountPodcastDao.insertAll(accountPodcasts));
     }
 
     LiveData<List<PodcastFile>> getUserPodcastFiles(String userId) {
@@ -81,15 +84,18 @@ public class LocalDataSource {
     }
 
     void insertPodcastFiles(PodcastFile... podcastFiles) {
-        podcastFileDao.insertAll(podcastFiles);
+        Executors.newSingleThreadExecutor().execute(() ->
+                podcastFileDao.insertAll(podcastFiles));
     }
 
     void deletePodcastFile(String id) {
-        podcastFileDao.deletePodcastFile(id);
+        Executors.newSingleThreadExecutor().execute(() ->
+                podcastFileDao.deletePodcastFile(id));
     }
 
     void deletePodcastFiles() {
-        podcastFileDao.deletePodcastFiles();
+        Executors.newSingleThreadExecutor().execute(() ->
+                podcastFileDao.deletePodcastFiles());
     }
 
 }

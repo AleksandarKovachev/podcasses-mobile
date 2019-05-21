@@ -43,6 +43,7 @@ import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +54,7 @@ import javax.inject.Inject;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountFragment extends BaseFragment implements Player.EventListener {
+public class AccountFragment extends BaseFragment implements Player.EventListener, OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -99,17 +100,20 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                              @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
         binding.setLifecycleOwner(this);
-
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
+        binding.refreshLayout.setOnRefreshListener(this);
+        return binding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (accountId != null) {
             binding.setAccountId(accountId);
             viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
             viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
-            binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, false, r));
             token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
@@ -118,7 +122,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 }
             });
         } else {
-            binding.refreshLayout.setOnRefreshListener(r -> getAccountData(null, true, r));
             token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
@@ -135,7 +138,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             });
         }
 
-        setListClick();
+        setPodcastClick();
         setAccountClick();
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
@@ -146,8 +149,11 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             player.addListener(this);
             setPlayingStatus(player.getPlayWhenReady());
         }
+    }
 
-        return binding.getRoot();
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        getAccountData(null, false, refreshLayout);
     }
 
     @Override
@@ -177,6 +183,25 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     void updateTitle() {
         if (account != null && getActivity() != null)
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
+    }
+
+    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
+        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
+        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, true);
+
+        if (isPrimaryAccount) {
+            accountResponse = viewModel.account(this, username, refreshLayout != null);
+            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
+        } else {
+            accountResponse = viewModel.account(accountId);
+            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
+            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+        }
+
+        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
+        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -223,26 +248,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         }
     }
 
-    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
-        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, true);
-
-        if (isPrimaryAccount) {
-            accountResponse = viewModel.account(this, username, refreshLayout != null);
-            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
-            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
-        } else {
-            accountResponse = viewModel.account(accountId);
-            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
-            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
-        }
-
-        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
-        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
-        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
-    }
-
-    private void setListClick() {
+    private void setPodcastClick() {
         viewModel.getSelectedPodcast().observe(this, podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
