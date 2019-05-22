@@ -66,6 +66,9 @@ public interface ApiCallInterface {
     @GET("/nomenclature/languages")
     Call<List<Language>> languages();
 
+    @GET("/nomenclature/countries")
+    Call<List<Nomenclature>> countries();
+
     @POST("/podcast")
     Call<Podcast> podcast(@Header("Authorization") String token, @Body Podcast podcast);
 

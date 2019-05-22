@@ -7,12 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.podcasses.model.response.Language;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Created by aleksandar.kovachev.
@@ -24,10 +24,12 @@ public class LanguageAdapter extends ArrayAdapter {
     public LanguageAdapter(Context context, int textViewResourceId, List<Language> languages, String prompt) {
         super(context, textViewResourceId, languages);
         this.languages = languages;
-        Language language = new Language();
-        language.setName(prompt);
-        language.setId(-1);
-        this.languages.add(0, language);
+        if (languages.get(0).getId() != -1) {
+            Language language = new Language();
+            language.setName(prompt);
+            language.setId(-1);
+            languages.add(0, language);
+        }
     }
 
     @Override

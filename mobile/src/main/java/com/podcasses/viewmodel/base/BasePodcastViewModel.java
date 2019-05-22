@@ -3,19 +3,13 @@ package com.podcasses.viewmodel.base;
 import android.view.View;
 
 import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.common.util.CollectionUtils;
-import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
-import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
@@ -28,14 +22,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import static com.podcasses.util.CustomViewBindings.PODCAST_IMAGE;
-
 /**
  * Created by aleksandar.kovachev.
  */
-public abstract class BasePodcastViewModel extends BaseViewModel implements Observable {
-
-    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+public abstract class BasePodcastViewModel extends BaseViewModel {
 
     private ObservableInt playingIndex = new ObservableInt(-1);
     private MutableLiveData<List<Podcast>> podcasts = new MutableLiveData<>();
@@ -50,16 +40,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
     public BasePodcastViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository);
         this.apiCallInterface = apiCallInterface;
-    }
-
-    @Override
-    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.add(callback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.remove(callback);
     }
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast,
@@ -136,10 +116,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel implements Obse
 
     public void onOptionsButtonClick(View view, Integer position) {
         PopupMenuUtil.podcastPopupMenu(view, podcasts.getValue().get(position), apiCallInterface, token);
-    }
-
-    protected void notifyPropertyChanged(int fieldId) {
-        callbacks.notifyCallbacks(this, fieldId, null);
     }
 
 }

@@ -57,6 +57,7 @@ public class MainDataRepository {
     private MutableLiveData<List<Nomenclature>> categories;
     private MutableLiveData<List<Language>> languages;
     private MutableLiveData<List<Nomenclature>> privacies;
+    private MutableLiveData<List<Nomenclature>> countries;
 
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
@@ -76,6 +77,7 @@ public class MainDataRepository {
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
         privacies = new MutableLiveData<>();
+        countries = new MutableLiveData<>();
     }
 
     public void savePodcast(Podcast podcast) {
@@ -250,18 +252,35 @@ public class MainDataRepository {
     }
 
     public MutableLiveData<List<Nomenclature>> getCategories() {
+        if (!CollectionUtils.isEmpty(categories.getValue())) {
+            return categories;
+        }
         networkDataSource.getCategories(getNomenclaturesCallback(categories, "getCategories"));
         return categories;
     }
 
     public MutableLiveData<List<Language>> getLanguages() {
+        if (!CollectionUtils.isEmpty(languages.getValue())) {
+            return languages;
+        }
         networkDataSource.getLanguages(getNomenclaturesCallback(languages, "getLanguages"));
         return languages;
     }
 
     public MutableLiveData<List<Nomenclature>> getPrivacies() {
+        if (!CollectionUtils.isEmpty(privacies.getValue())) {
+            return privacies;
+        }
         networkDataSource.getPrivacies(getNomenclaturesCallback(privacies, "getPrivacies"));
         return privacies;
+    }
+
+    public MutableLiveData<List<Nomenclature>> getCountries() {
+        if (!CollectionUtils.isEmpty(countries.getValue())) {
+            return countries;
+        }
+        networkDataSource.getCountries(getNomenclaturesCallback(countries, "getCountries"));
+        return countries;
     }
 
     public void deletePodcastFile(String id) {

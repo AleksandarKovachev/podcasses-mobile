@@ -85,15 +85,24 @@ public class CustomViewBindings {
     }
 
     @BindingAdapter(value = {"languages", "selectedLanguage", "selectedLanguageAttrChanged"}, requireAll = false)
-    public static void setLanguages(AppCompatSpinner spinner, List<Language> languages, int selectedLanguage, InverseBindingListener listener) {
+    public static void setLanguages(AppCompatSpinner spinner, List<Language> languages, Integer selectedLanguage, InverseBindingListener listener) {
         if (languages == null) {
             return;
+        }
+        int selectedPosition = -1;
+        if (selectedLanguage != null && selectedLanguage != -1) {
+            for (Language language : languages) {
+                if (language.getId().equals(selectedLanguage)) {
+                    selectedLanguage = languages.indexOf(language);
+                }
+            }
         }
         spinner.setAdapter(
                 new LanguageAdapter(spinner.getContext(),
                         android.R.layout.simple_dropdown_item_1line,
                         languages,
-                        spinner.getContext().getString(R.string.podcast_language)));
+                        spinner.getContext().getString(R.string.language)));
+        spinner.setSelection(selectedPosition);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -113,20 +122,7 @@ public class CustomViewBindings {
 
     @BindingAdapter(value = {"privacies", "selectedPrivacy", "selectedPrivacyAttrChanged"}, requireAll = false)
     public static void setPrivacies(AppCompatSpinner spinner, List<Nomenclature> privacies, Integer selectedPrivacy, InverseBindingListener listener) {
-        if (privacies == null) {
-            return;
-        }
-        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, privacies, spinner.getContext().getString(R.string.podcast_privacy)));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                listener.onChange();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        nomenclatureSpinnerAdapter(spinner, privacies, selectedPrivacy, listener, R.string.privacy);
     }
 
     @InverseBindingAdapter(attribute = "selectedPrivacy", event = "selectedPrivacyAttrChanged")
@@ -136,10 +132,39 @@ public class CustomViewBindings {
 
     @BindingAdapter(value = {"categories", "selectedCategory", "selectedCategoryAttrChanged"}, requireAll = false)
     public static void setCategoriesAdapter(AppCompatSpinner spinner, List<Nomenclature> categories, Integer selectedCategory, InverseBindingListener listener) {
-        if (categories == null) {
+        nomenclatureSpinnerAdapter(spinner, categories, selectedCategory, listener, R.string.category);
+    }
+
+    @InverseBindingAdapter(attribute = "selectedCategory", event = "selectedCategoryAttrChanged")
+    public static Integer getSelectedCategory(AppCompatSpinner spinner) {
+        return ((Nomenclature) spinner.getSelectedItem()).getId();
+    }
+
+    @BindingAdapter(value = {"countries", "selectedCountry", "selectedCountryAttrChanged"}, requireAll = false)
+    public static void setCountriesAdapter(AppCompatSpinner spinner, List<Nomenclature> countries, Integer selectedCountry, InverseBindingListener listener) {
+        nomenclatureSpinnerAdapter(spinner, countries, selectedCountry, listener, R.string.country);
+    }
+
+    @InverseBindingAdapter(attribute = "selectedCountry", event = "selectedCountryAttrChanged")
+    public static Integer getSelectedCountry(AppCompatSpinner spinner) {
+        return ((Nomenclature) spinner.getSelectedItem()).getId();
+    }
+
+    private static void nomenclatureSpinnerAdapter(AppCompatSpinner spinner, List<Nomenclature> nomenclatures, Integer selectedId, InverseBindingListener listener, int p) {
+        if (nomenclatures == null) {
             return;
         }
-        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, categories, spinner.getContext().getString(R.string.podcast_category)));
+
+        int selectedPosition = -1;
+        if (selectedId != null && selectedId != -1) {
+            for (Nomenclature nomenclature : nomenclatures) {
+                if (nomenclature.getId().equals(selectedId)) {
+                    selectedPosition = nomenclatures.indexOf(nomenclature);
+                }
+            }
+        }
+        spinner.setAdapter(new NomenclatureAdapter(spinner.getContext(), android.R.layout.simple_spinner_dropdown_item, nomenclatures, spinner.getContext().getString(p)));
+        spinner.setSelection(selectedPosition);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -150,11 +175,6 @@ public class CustomViewBindings {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-    }
-
-    @InverseBindingAdapter(attribute = "selectedCategory", event = "selectedCategoryAttrChanged")
-    public static Integer getSelectedCategory(AppCompatSpinner spinner) {
-        return ((Nomenclature) spinner.getSelectedItem()).getId();
     }
 
     @BindingAdapter(value = {"htmlText", "htmlTextAttrChanged"}, requireAll = false)

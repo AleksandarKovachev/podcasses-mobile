@@ -130,10 +130,6 @@ public class UploadFragment extends BaseFragment {
         rtManager.registerToolbar(binder.rteToolbarContainer, binder.rteToolbarContainer.findViewById(R.id.rte_toolbar_character));
         rtManager.registerToolbar(binder.rteToolbarContainer, binder.rteToolbarContainer.findViewById(R.id.rte_toolbar_paragraph));
         rtManager.registerEditor(binder.podcastDescription, true);
-
-        setPrivacies();
-        setLanguages();
-        setCategories();
     }
 
     @Override
@@ -253,30 +249,6 @@ public class UploadFragment extends BaseFragment {
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             return cursor.getString(idx);
         }
-    }
-
-    private void setCategories() {
-        LiveData<List<Nomenclature>> categories = viewModel.getCategoryNomenclatures();
-        categories.observe(lifecycleOwner, nomenclatures -> {
-            categories.removeObservers(lifecycleOwner);
-            viewModel.setCategories(nomenclatures);
-        });
-    }
-
-    private void setPrivacies() {
-        LiveData<List<Nomenclature>> privacies = viewModel.getPrivacyNomenclatures();
-        privacies.observe(lifecycleOwner, nomenclatures -> {
-            privacies.removeObservers(lifecycleOwner);
-            viewModel.setPrivacies(nomenclatures);
-        });
-    }
-
-    private void setLanguages() {
-        LiveData<List<Language>> languages = viewModel.getLanguageNomenclatures();
-        languages.observe(lifecycleOwner, language -> {
-            languages.removeObservers(lifecycleOwner);
-            viewModel.setLanguages(language);
-        });
     }
 
     private View.OnClickListener onPodcastAdd = v -> {

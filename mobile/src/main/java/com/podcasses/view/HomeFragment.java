@@ -67,8 +67,6 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         setListClick();
         setAccountClick();
         setTrendingFilterChange();
-        setLanguages();
-        setCategories();
     }
 
     @Override
@@ -134,22 +132,6 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         viewModel.getTrendingFilterMutableLiveData().observe(this, trendingFilter ->
                 getTrendingPodcasts(null, trendingFilter)
         );
-    }
-
-    private void setCategories() {
-        LiveData<List<Nomenclature>> categories = viewModel.getCategoryNomenclatures();
-        categories.observe(this, nomenclatures -> {
-            categories.removeObservers(this);
-            viewModel.setCategories(nomenclatures);
-        });
-    }
-
-    private void setLanguages() {
-        LiveData<List<Language>> languages = viewModel.getLanguageNomenclatures();
-        languages.observe(this, language -> {
-            languages.removeObservers(this);
-            viewModel.setLanguages(language);
-        });
     }
 
 }

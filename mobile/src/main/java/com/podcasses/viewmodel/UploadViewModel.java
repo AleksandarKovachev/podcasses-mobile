@@ -1,10 +1,7 @@
 package com.podcasses.viewmodel;
 
 import androidx.databinding.Bindable;
-import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
-import androidx.databinding.PropertyChangeRegistry;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.BR;
@@ -22,13 +19,8 @@ import retrofit2.Response;
 /**
  * Created by aleksandar.kovachev.
  */
-public class UploadViewModel extends BaseViewModel implements Observable {
+public class UploadViewModel extends BaseViewModel {
 
-    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
-
-    private MutableLiveData<List<Nomenclature>> categories = new MutableLiveData<>();
-    private MutableLiveData<List<Nomenclature>> privacies = new MutableLiveData<>();
-    private MutableLiveData<List<Language>> languages = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
 
     private Podcast podcast = new Podcast();
@@ -37,60 +29,20 @@ public class UploadViewModel extends BaseViewModel implements Observable {
         super(repository);
     }
 
-    @Override
-    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.add(callback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.remove(callback);
-    }
-
-    public LiveData<List<Nomenclature>> getCategoryNomenclatures() {
+    public MutableLiveData<List<Nomenclature>> getCategories() {
         return repository.getCategories();
     }
 
-    public LiveData<List<Nomenclature>> getPrivacyNomenclatures() {
-        return repository.getPrivacies();
+    public MutableLiveData<List<Language>> getLanguages() {
+        return repository.getLanguages();
     }
 
-    public LiveData<List<Language>> getLanguageNomenclatures() {
-        return repository.getLanguages();
+    public MutableLiveData<List<Nomenclature>> getPrivacies() {
+        return repository.getPrivacies();
     }
 
     public Podcast getPodcast() {
         return podcast;
-    }
-
-    @Bindable
-    public List<Nomenclature> getCategories() {
-        return categories.getValue();
-    }
-
-    public void setCategories(List<Nomenclature> categories) {
-        this.categories.setValue(categories);
-        notifyPropertyChanged(BR.categories);
-    }
-
-    @Bindable
-    public List<Language> getLanguages() {
-        return languages.getValue();
-    }
-
-    public void setLanguages(List<Language> languages) {
-        this.languages.setValue(languages);
-        notifyPropertyChanged(BR.languages);
-    }
-
-    @Bindable
-    public List<Nomenclature> getPrivacies() {
-        return privacies.getValue();
-    }
-
-    public void setPrivacies(List<Nomenclature> privacies) {
-        this.privacies.setValue(privacies);
-        notifyPropertyChanged(BR.privacies);
     }
 
     @Bindable
@@ -111,10 +63,6 @@ public class UploadViewModel extends BaseViewModel implements Observable {
             }
         };
         thread.start();
-    }
-
-    private void notifyPropertyChanged(int fieldId) {
-        callbacks.notifyCallbacks(this, fieldId, null);
     }
 
 }

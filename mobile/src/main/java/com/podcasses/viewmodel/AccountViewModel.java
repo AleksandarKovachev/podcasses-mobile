@@ -1,8 +1,15 @@
 package com.podcasses.viewmodel;
 
-import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.Bindable;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.BR;
 import com.podcasses.R;
@@ -19,15 +26,6 @@ import com.podcasses.viewmodel.base.BasePodcastViewModel;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,6 +45,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     private ObservableField<String> coverImage = new ObservableField<>();
     private ObservableField<String> accountSubscribes = new ObservableField<>();
     private ObservableBoolean isSubscribed = new ObservableBoolean();
+    private ObservableField<String> editAccountId = new ObservableField<>();
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
     private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(R.layout.item_podcast_file, this);
@@ -193,6 +192,14 @@ public class AccountViewModel extends BasePodcastViewModel {
                 LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
+    }
+
+    public ObservableField<String> getEditAccountId() {
+        return editAccountId;
+    }
+
+    public void onEditClick(String accountId) {
+        editAccountId.set(accountId);
     }
 
 }

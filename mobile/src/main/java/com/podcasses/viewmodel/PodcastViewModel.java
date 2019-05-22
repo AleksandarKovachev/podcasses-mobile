@@ -4,11 +4,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.databinding.Bindable;
-import androidx.databinding.Observable;
 import androidx.databinding.ObservableField;
-import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -29,7 +26,6 @@ import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.DownloadTracker;
 import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -52,9 +48,8 @@ import static com.podcasses.util.CustomViewBindings.PROFILE_IMAGE;
 /**
  * Created by aleksandar.kovachev.
  */
-public class PodcastViewModel extends BaseViewModel implements Observable {
+public class PodcastViewModel extends BaseViewModel {
 
-    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
     private MutableLiveData<Podcast> podcast = new MutableLiveData<>();
     private ObservableField<String> podcastImage = new ObservableField<>();
     private MutableLiveData<List<Comment>> comments = new MutableLiveData<>();
@@ -88,16 +83,6 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
     public LiveData<ApiResponse> accountComments(@NonNull String token, @NonNull List<String> commentIds) {
         this.token = token;
         return repository.getAccountComments(token, commentIds);
-    }
-
-    @Override
-    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.add(callback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
-        callbacks.remove(callback);
     }
 
     @Bindable
@@ -247,10 +232,6 @@ public class PodcastViewModel extends BaseViewModel implements Observable {
 
     public void openAccount(Integer position) {
         selectedAccountId.set(comments.getValue().get(position).getUserId());
-    }
-
-    private void notifyPropertyChanged(int fieldId) {
-        callbacks.notifyCallbacks(this, fieldId, null);
     }
 
 }

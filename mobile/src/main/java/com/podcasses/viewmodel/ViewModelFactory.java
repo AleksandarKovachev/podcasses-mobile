@@ -1,13 +1,13 @@
 package com.podcasses.viewmodel;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 
 import javax.inject.Inject;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 /**
  * Created by aleksandar.kovachev.
@@ -36,6 +36,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new UploadViewModel(repository);
         } else if (modelClass.isAssignableFrom(PodcastViewModel.class)) {
             return (T) new PodcastViewModel(repository, apiCallInterface);
+        } else if (modelClass.isAssignableFrom(EditAccountViewModel.class)) {
+            return (T) new EditAccountViewModel(repository);
         }
         throw new IllegalArgumentException("Unknown class name");
     }
