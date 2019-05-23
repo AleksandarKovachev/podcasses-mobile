@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.Strings;
@@ -63,8 +64,9 @@ public class DialogUtil {
         builder.show();
     }
 
-    public static void createTrendingFilterDialog(Context context, MutableLiveData<TrendingFilter> trendingFilterMutableLiveData, HomeViewModel viewModel) {
+    public static void createTrendingFilterDialog(Context context, MutableLiveData<TrendingFilter> trendingFilterMutableLiveData, HomeViewModel viewModel, LifecycleOwner lifecycleOwner) {
         DialogTrendingFilterBinding binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_trending_filter, null, false);
+        binding.setLifecycleOwner(lifecycleOwner);
         binding.setViewModel(viewModel);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);

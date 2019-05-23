@@ -11,6 +11,8 @@ public class Nomenclature {
 
     private String language;
 
+    private Integer commonId;
+
     public Integer getId() {
         return id;
     }
@@ -34,5 +36,12 @@ public class Nomenclature {
     public void setLanguage(String language) {
         this.language = language;
     }
-    
+
+    public Integer getCommonId() {
+        return commonId;
+    }
+
+    public void setCommonId(Integer commonId) {
+        this.commonId = commonId;
+    }
 }

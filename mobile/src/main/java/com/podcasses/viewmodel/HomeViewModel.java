@@ -3,6 +3,7 @@ package com.podcasses.viewmodel;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,16 +22,17 @@ public class HomeViewModel extends BasePodcastViewModel {
 
     private MutableLiveData<TrendingFilter> trendingFilterMutableLiveData = new MutableLiveData<>();
     private Integer categoryId = null, languageId = null;
+    private LifecycleOwner lifecycleOwner;
 
     HomeViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository, apiCallInterface);
     }
 
-    public MutableLiveData<List<Nomenclature>> getCategories() {
+    public LiveData<List<Nomenclature>> getCategories() {
         return repository.getCategories();
     }
 
-    public MutableLiveData<List<Language>> getLanguages() {
+    public LiveData<List<Language>> getLanguages() {
         return repository.getLanguages();
     }
 
@@ -43,7 +45,7 @@ public class HomeViewModel extends BasePodcastViewModel {
     }
 
     public void onFilterButtonClick(View view) {
-        DialogUtil.createTrendingFilterDialog(view.getContext(), trendingFilterMutableLiveData, this);
+        DialogUtil.createTrendingFilterDialog(view.getContext(), trendingFilterMutableLiveData, this, lifecycleOwner);
     }
 
     public void openDatePicker(View view) {
@@ -64,5 +66,9 @@ public class HomeViewModel extends BasePodcastViewModel {
 
     public void setLanguageId(Integer languageId) {
         this.languageId = languageId;
+    }
+
+    public void setLifecycleOwner(LifecycleOwner lifecycleOwner) {
+        this.lifecycleOwner = lifecycleOwner;
     }
 }

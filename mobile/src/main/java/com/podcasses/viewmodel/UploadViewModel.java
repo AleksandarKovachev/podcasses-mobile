@@ -2,6 +2,7 @@ package com.podcasses.viewmodel;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.BR;
@@ -29,15 +30,15 @@ public class UploadViewModel extends BaseViewModel {
         super(repository);
     }
 
-    public MutableLiveData<List<Nomenclature>> getCategories() {
+    public LiveData<List<Nomenclature>> getCategories() {
         return repository.getCategories();
     }
 
-    public MutableLiveData<List<Language>> getLanguages() {
+    public LiveData<List<Language>> getLanguages() {
         return repository.getLanguages();
     }
 
-    public MutableLiveData<List<Nomenclature>> getPrivacies() {
+    public LiveData<List<Nomenclature>> getPrivacies() {
         return repository.getPrivacies();
     }
 

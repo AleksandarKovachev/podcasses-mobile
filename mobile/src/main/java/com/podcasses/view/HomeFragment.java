@@ -55,7 +55,9 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         FragmentHomeBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
+        viewModel.setLifecycleOwner(this);
         binder.setViewModel(viewModel);
+        binder.setLifecycleOwner(this);
         binder.refreshLayout.setOnRefreshListener(this);
         return binder.getRoot();
     }

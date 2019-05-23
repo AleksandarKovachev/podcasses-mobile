@@ -89,8 +89,6 @@ public class UploadFragment extends BaseFragment {
 
     private RTManager rtManager;
 
-    private LifecycleOwner lifecycleOwner;
-
     private LiveData<String> token;
 
     private FragmentUploadBinding binder;
@@ -110,8 +108,8 @@ public class UploadFragment extends BaseFragment {
         binder = DataBindingUtil.inflate(inflater, R.layout.fragment_upload, container, false);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         UploadService.HTTP_STACK = new OkHttpStack(okHttpClient);
-        lifecycleOwner = this;
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UploadViewModel.class);
+        binder.setLifecycleOwner(this);
         binder.setViewModel(viewModel);
         binder.podcastUpload.setOnClickListener(onPodcastUpload);
         binder.podcastUploadFab.setOnClickListener(onPodcastUpload);

@@ -24,17 +24,17 @@ public class NomenclatureAdapter extends ArrayAdapter {
     public NomenclatureAdapter(Context context, int textViewResourceId, List<Nomenclature> nomenclatures, String prompt) {
         super(context, textViewResourceId, nomenclatures);
         this.nomenclatures = nomenclatures;
-        if (nomenclatures.get(0).getId() != -1) {
+        if (nomenclatures.size() > 0 && nomenclatures.get(nomenclatures.size() - 1).getId() != -1) {
             Nomenclature nomenclature = new Nomenclature();
             nomenclature.setName(prompt);
             nomenclature.setId(-1);
-            nomenclatures.add(0, nomenclature);
+            nomenclatures.add(nomenclature);
         }
     }
 
     @Override
     public int getCount() {
-        return nomenclatures.size();
+        return nomenclatures.size() > 0 ? nomenclatures.size() - 1 : nomenclatures.size();
     }
 
     @Nullable
@@ -45,7 +45,9 @@ public class NomenclatureAdapter extends ArrayAdapter {
 
     @Override
     public long getItemId(int position) {
-        return nomenclatures.get(position).getId();
+        return nomenclatures.get(position).getCommonId() != null
+                ? nomenclatures.get(position).getCommonId()
+                : nomenclatures.get(position).getId();
     }
 
     @Override
@@ -65,9 +67,6 @@ public class NomenclatureAdapter extends ArrayAdapter {
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
         label.setText(nomenclatures.get(position).getName());
-        if (position == 0) {
-            label.setTextColor(Color.GRAY);
-        }
         return label;
     }
 

@@ -37,13 +37,13 @@ public class Podcast extends BaseLikeModel {
 
     private int isActive;
 
-    private int categoryId;
+    private Integer categoryId;
 
-    private int privacyId;
+    private Integer privacyId;
 
     private boolean hasComments;
 
-    private int languageId;
+    private Integer languageId;
 
     private int views;
 
@@ -107,19 +107,19 @@ public class Podcast extends BaseLikeModel {
         this.isActive = isActive;
     }
 
-    public int getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public int getPrivacyId() {
+    public Integer getPrivacyId() {
         return privacyId;
     }
 
-    public void setPrivacyId(int privacyId) {
+    public void setPrivacyId(Integer privacyId) {
         this.privacyId = privacyId;
     }
 
@@ -131,11 +131,11 @@ public class Podcast extends BaseLikeModel {
         this.hasComments = hasComments;
     }
 
-    public int getLanguageId() {
+    public Integer getLanguageId() {
         return languageId;
     }
 
-    public void setLanguageId(int languageId) {
+    public void setLanguageId(Integer languageId) {
         this.languageId = languageId;
     }
 

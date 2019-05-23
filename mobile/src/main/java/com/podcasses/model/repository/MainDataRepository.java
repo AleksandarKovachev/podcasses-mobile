@@ -251,7 +251,7 @@ public class MainDataRepository {
         return accountPodcastsResponse;
     }
 
-    public MutableLiveData<List<Nomenclature>> getCategories() {
+    public LiveData<List<Nomenclature>> getCategories() {
         if (!CollectionUtils.isEmpty(categories.getValue())) {
             return categories;
         }
@@ -259,7 +259,7 @@ public class MainDataRepository {
         return categories;
     }
 
-    public MutableLiveData<List<Language>> getLanguages() {
+    public LiveData<List<Language>> getLanguages() {
         if (!CollectionUtils.isEmpty(languages.getValue())) {
             return languages;
         }
@@ -267,7 +267,7 @@ public class MainDataRepository {
         return languages;
     }
 
-    public MutableLiveData<List<Nomenclature>> getPrivacies() {
+    public LiveData<List<Nomenclature>> getPrivacies() {
         if (!CollectionUtils.isEmpty(privacies.getValue())) {
             return privacies;
         }
@@ -275,7 +275,7 @@ public class MainDataRepository {
         return privacies;
     }
 
-    public MutableLiveData<List<Nomenclature>> getCountries() {
+    public LiveData<List<Nomenclature>> getCountries() {
         if (!CollectionUtils.isEmpty(countries.getValue())) {
             return countries;
         }
