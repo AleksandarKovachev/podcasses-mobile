@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.ohoussein.playpause.PlayPauseView;
 import com.onegravity.rteditor.RTEditText;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.R;
@@ -59,11 +58,11 @@ public class CustomViewBindings {
     }
 
     @BindingAdapter(value = {"playPauseStatus", "position"}, requireAll = false)
-    public static void playPauseStatus(PlayPauseView view, Integer position, Integer playingIndex) {
+    public static void playPauseStatus(View view, Integer position, Integer playingIndex) {
         if (position == -1 || playingIndex == -1) {
-            view.change(true);
+            view.setSelected(false);
         } else {
-            view.change(!position.equals(playingIndex));
+            view.setSelected(position.equals(playingIndex));
         }
     }
 

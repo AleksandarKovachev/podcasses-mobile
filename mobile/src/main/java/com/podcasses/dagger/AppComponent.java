@@ -3,6 +3,7 @@ package com.podcasses.dagger;
 import com.podcasses.service.AccountAuthenticatorService;
 import com.podcasses.view.AccountFragment;
 import com.podcasses.view.AuthenticatorActivity;
+import com.podcasses.view.EditAccountFragment;
 import com.podcasses.view.HomeFragment;
 import com.podcasses.view.MainActivity;
 import com.podcasses.view.PodcastFragment;
@@ -35,5 +36,7 @@ public interface AppComponent {
     void inject(AccountAuthenticatorService service);
 
     void inject(PodcastFragment fragment);
+
+    void inject(EditAccountFragment fragment);
 
 }

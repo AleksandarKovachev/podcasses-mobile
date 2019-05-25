@@ -98,9 +98,6 @@ dependencies {
     // FragNav
     implementation 'com.ncapdevi:frag-nav:3.1.0'
 
-    // PlayPause
-    implementation 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
-
     // SmartRefreshLayout
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-3'
 

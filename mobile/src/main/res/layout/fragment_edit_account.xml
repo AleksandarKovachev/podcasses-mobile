@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="username"
+            type="java.lang.String" />
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.EditAccountViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/account_cover_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                app:imageUrl="@{viewModel.coverImage}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/account_cover_image_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                app:layout_constraintEnd_toEndOf="@id/account_cover_image"
+                app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/account_profile_image"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="@dimen/medium_offset"
+                app:imageUrl="@{viewModel.profileImage}"
+                app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/account_profile_image_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@id/account_profile_image"
+                app:layout_constraintEnd_toEndOf="@id/account_profile_image"
+                app:layout_constraintTop_toBottomOf="@id/account_profile_image" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/small_offset"
+                android:text="@{username}"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/small_text_size"
+                app:layout_constraintEnd_toStartOf="@id/account_cover_image_upload"
+                app:layout_constraintStart_toEndOf="@id/account_profile_image"
+                app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/first_name_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_first_name"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toStartOf="@id/last_name_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_profile_image_upload"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textPersonName"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.firstName}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/last_name_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_last_name"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/first_name_input"
+                app:layout_constraintTop_toBottomOf="@id/account_profile_image_upload"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/last_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textPersonName"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.lastName}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email_input"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/last_name_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences|textEmailAddress"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.email}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/account_category"
+                android:layout_width="0dp"
+                android:layout_height="7dp"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/category"
+                android:spinnerMode="dialog"
+                app:categories="@{viewModel.categories}"
+                app:layout_constraintEnd_toStartOf="@id/account_language"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/email_input"
+                app:selectedCategory="@={viewModel.account.categoryId}" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/account_language"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/language"
+                android:spinnerMode="dialog"
+                app:languages="@{viewModel.languages}"
+                app:layout_constraintBottom_toBottomOf="@id/account_category"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/account_category"
+                app:layout_constraintTop_toTopOf="@id/account_category"
+                app:selectedLanguage="@={viewModel.account.languageId}" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/city_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_city"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toStartOf="@id/account_country"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_category"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences|textEmailAddress"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.city}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/account_country"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/country"
+                android:spinnerMode="dialog"
+                app:countries="@{viewModel.countries}"
+                app:layout_constraintBottom_toBottomOf="@id/city_input"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/city_input"
+                app:layout_constraintTop_toTopOf="@id/city_input"
+                app:selectedCountry="@={viewModel.account.countryId}" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/podcast_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:text="@string/account_save_changes"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_country" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

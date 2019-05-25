@@ -13,7 +13,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.google.android.material.textfield.TextInputEditText;
-import com.ohoussein.playpause.PlayPauseView;
 import com.podcasses.BR;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
@@ -137,7 +136,7 @@ public class PodcastViewModel extends BaseViewModel {
     }
 
     public void onPlayPauseButtonClick(View view) {
-        ((PlayPauseView) view).toggle();
+        view.setSelected(!view.isSelected());
         EventBus.getDefault().post(podcast.getValue());
     }
 

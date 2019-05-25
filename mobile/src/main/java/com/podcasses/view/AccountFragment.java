@@ -118,16 +118,24 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binding.setToken(s);
-                    getAccountData(s, false, null);
+                    JWT jwt = new JWT(s);
+                    if (accountId.equals(jwt.getSubject())) {
+                        binding.setIsMyAccount(true);
+                        getAccountData(s, true, null);
+                    } else {
+                        getAccountData(s, false, null);
+                    }
                 }
             });
         } else {
+            binding.setIsMyAccount(true);
             token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     JWT jwt = new JWT(s);
-                    username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
                     accountId = jwt.getSubject();
+                    binding.setAccountId(accountId);
+                    username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
                     binding.setToken(s);
 
                     viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
@@ -140,6 +148,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
         setPodcastClick();
         setAccountClick();
+        setAccountEditClick();
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         player = service.getPlayerInstance();
@@ -185,11 +194,11 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
-    private void getAccountData(String token, boolean isPrimaryAccount, RefreshLayout refreshLayout) {
+    private void getAccountData(String token, boolean isMyAccount, RefreshLayout refreshLayout) {
         accountSubscribesResponse = viewModel.accountSubscribes(accountId);
         podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, true);
 
-        if (isPrimaryAccount) {
+        if (isMyAccount) {
             accountResponse = viewModel.account(this, username, refreshLayout != null);
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
@@ -198,7 +207,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
             checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
         }
-
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
         accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
@@ -264,6 +272,18 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 if (viewModel.getSelectedAccount().get() != null) {
                     fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
                     viewModel.getSelectedAccount().set(null);
+                }
+            }
+        });
+    }
+
+    private void setAccountEditClick() {
+        viewModel.getEditAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getEditAccountId().get() != null) {
+                    fragmentNavigation.pushFragment(EditAccountFragment.newInstance(fragmentCount + 1, account));
+                    viewModel.getEditAccountId().set(null);
                 }
             }
         });

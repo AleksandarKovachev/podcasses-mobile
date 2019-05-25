@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="accountId"
             type="java.lang.String" />
@@ -16,6 +18,10 @@
         <variable
             name="viewModel"
             type="com.podcasses.viewmodel.AccountViewModel" />
+
+        <variable
+            name="isMyAccount"
+            type="java.lang.Boolean" />
     </data>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -63,8 +69,21 @@
                     android:text="@{viewModel.account.username}"
                     android:textColor="@color/colorPrimaryText"
                     android:textSize="@dimen/small_text_size"
+                    app:layout_constraintEnd_toStartOf="@id/account_edit"
+                    app:layout_constraintStart_toEndOf="@id/account_profile_image"
+                    app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/account_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/medium_offset"
+                    android:layout_marginBottom="@dimen/medium_offset"
+                    android:onClick="@{v -> viewModel.onEditClick(accountId)}"
+                    android:src="@drawable/ic_edit"
+                    android:visibility="@{isMyAccount ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
 
                 <com.google.android.material.button.MaterialButton
@@ -78,6 +97,7 @@
                     app:icon="@drawable/ic_record_voice_over"
                     app:isSubscribed="@{viewModel.isSubscribed}"
                     app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                    app:layout_constraintBottom_toTopOf="@id/account_edit"
                     app:layout_constraintRight_toRightOf="parent" />
 
                 <com.google.android.material.card.MaterialCardView

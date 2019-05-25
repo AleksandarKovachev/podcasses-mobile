@@ -188,7 +188,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         setPlayingStatus(playWhenReady);
 
         if (playbackState == Player.STATE_IDLE) {
-            binding.playButton.change(true);
+            binding.playButton.setSelected(false);
         } else if (!sharedPreferencesManager.isPodcastViewed(id)) {
             NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, id);
         }
@@ -280,7 +280,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     private void setPlayingStatus(boolean playingStatus) {
         if (playingPodcast != null && playingPodcast.getId().equals(id)) {
-            binding.playButton.change(!playingStatus);
+            binding.playButton.setSelected(playingStatus);
         }
     }
 
