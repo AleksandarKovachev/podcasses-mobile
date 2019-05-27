@@ -1,15 +1,23 @@
 package com.podcasses.viewmodel;
 
+import android.webkit.URLUtil;
+
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.common.util.Strings;
+import com.google.android.material.button.MaterialButton;
 import com.podcasses.BR;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.model.request.AccountRequest;
 import com.podcasses.model.response.Language;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import java.util.List;
@@ -19,12 +27,15 @@ import java.util.List;
  */
 public class EditAccountViewModel extends BaseViewModel {
 
-    private MutableLiveData<Account> account = new MutableLiveData<>();
+    private MutableLiveData<AccountRequest> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();
 
-    EditAccountViewModel(MainDataRepository repository) {
+    private ApiCallInterface apiCallInterface;
+
+    EditAccountViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository);
+        this.apiCallInterface = apiCallInterface;
     }
 
     public LiveData<List<Nomenclature>> getCategories() {
@@ -39,13 +50,22 @@ public class EditAccountViewModel extends BaseViewModel {
         return repository.getLanguages();
     }
 
+    public void verifyRssFeed(CharSequence rssFeed,
+                              AppCompatTextView rssFeedEmail,
+                              ContentLoadingProgressBar progressBar,
+                              MaterialButton submitButton) {
+        if (!Strings.isEmptyOrWhitespace(rssFeed.toString()) && URLUtil.isValidUrl(rssFeed.toString())) {
+            NetworkRequestsUtil.rssFeedVerify(apiCallInterface, rssFeed.toString(), rssFeedEmail, progressBar, submitButton);
+        }
+    }
+
     @Bindable
-    public Account getAccount() {
+    public AccountRequest getAccount() {
         return account.getValue();
     }
 
-    public void setAccount(Account account) {
-        this.account.setValue(account);
+    public void setAccount(AccountRequest accountRequest) {
+        this.account.setValue(accountRequest);
         notifyPropertyChanged(BR.account);
     }
 

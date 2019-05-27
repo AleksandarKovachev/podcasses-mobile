@@ -65,6 +65,7 @@ public class NetModule {
     Gson provideGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY);
+        gsonBuilder.setLenient();
         return gsonBuilder.create();
     }
 

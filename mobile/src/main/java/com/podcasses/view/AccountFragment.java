@@ -226,7 +226,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     updateTitle();
                     viewModel.setAccount(account);
                 } else if (apiResponse.data instanceof Integer) {
-                    viewModel.setAccountSubscribes(String.format(getString(R.string.subscribe), apiResponse.data));
+                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
                 } else if (apiResponse.data instanceof Boolean) {
                     viewModel.setIsSubscribed((Boolean) apiResponse.data);
                 } else if (apiResponse.data instanceof List) {
@@ -252,6 +252,9 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     refreshLayout.finishRefresh();
                 }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
+                break;
+            case FETCHED:
+                liveData.removeObservers(this);
                 break;
         }
     }

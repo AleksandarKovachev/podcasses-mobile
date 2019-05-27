@@ -20,7 +20,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="register">Register</string>
 
-    <string name="subscribe">Subscribe %1$s</string>
+    <string name="subscribe">Subscribe</string>
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
     <string name="trending_header">Trending podcasts</string>
@@ -36,6 +36,7 @@
     <string name="account_first_name">First name</string>
     <string name="account_last_name">Last name</string>
     <string name="account_email">Email</string>
+    <string name="account_description">Description</string>
     <string name="account_city">City</string>
     <string name="account_rss_feed">RSS Feed</string>
 
@@ -63,6 +64,8 @@
     <string name="successful_response">Successful request.</string>
     <string name="successful_report">Successful sent report.</string>
     <string name="error_response">Something went wrong. Please try again!</string>
+
+    <string name="error_invalid_rss_feed">Invalid RSS Feed</string>
 
     <string name="storage_permission_image">You need to give read storage permission to select image!</string>
     <string name="storage_permission_audio">You need to give read storage permission to select audio!</string>

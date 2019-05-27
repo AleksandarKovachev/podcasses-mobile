@@ -5,10 +5,6 @@
     <data>
 
         <variable
-            name="username"
-            type="java.lang.String" />
-
-        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.EditAccountViewModel" />
     </data>
@@ -67,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/small_offset"
-                android:text="@{username}"
+                android:text="@{viewModel.account.username}"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/small_text_size"
                 app:layout_constraintEnd_toStartOf="@id/account_cover_image_upload"
@@ -140,25 +136,69 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/description_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_description"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/email_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.description}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/category"
+                app:layout_constraintEnd_toStartOf="@id/language"
+                app:layout_constraintStart_toStartOf="@id/account_category"
+                app:layout_constraintTop_toBottomOf="@id/description_input" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/language"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/language"
+                app:layout_constraintBottom_toBottomOf="@id/category"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/category"
+                app:layout_constraintStart_toStartOf="@id/account_language"
+                app:layout_constraintTop_toTopOf="@id/category" />
+
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/account_category"
                 android:layout_width="0dp"
-                android:layout_height="7dp"
-                android:layout_margin="@dimen/medium_offset"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/medium_offset"
+                android:layout_marginEnd="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:prompt="@string/category"
                 android:spinnerMode="dialog"
                 app:categories="@{viewModel.categories}"
                 app:layout_constraintEnd_toStartOf="@id/account_language"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/email_input"
+                app:layout_constraintTop_toBottomOf="@id/category"
                 app:selectedCategory="@={viewModel.account.categoryId}" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/account_language"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
+                android:layout_marginStart="@dimen/medium_offset"
+                android:layout_marginEnd="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:prompt="@string/language"
                 android:spinnerMode="dialog"
@@ -175,7 +215,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/account_city"
                 android:padding="@dimen/medium_offset"
-                app:layout_constraintEnd_toStartOf="@id/account_country"
+                app:layout_constraintEnd_toEndOf="@id/account_category"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/account_category"
                 app:layout_constraintVertical_bias="0">
@@ -191,23 +231,70 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/country"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/medium_offset"
+                android:text="@string/country"
+                app:layout_constraintEnd_toEndOf="@id/account_language"
+                app:layout_constraintStart_toStartOf="@id/account_country"
+                app:layout_constraintTop_toTopOf="@id/city_input" />
+
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/account_country"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
                 android:drawSelectorOnTop="true"
                 android:prompt="@string/country"
                 android:spinnerMode="dialog"
                 app:countries="@{viewModel.countries}"
-                app:layout_constraintBottom_toBottomOf="@id/city_input"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/city_input"
-                app:layout_constraintTop_toTopOf="@id/city_input"
+                app:layout_constraintEnd_toEndOf="@id/account_language"
+                app:layout_constraintStart_toStartOf="@id/account_language"
+                app:layout_constraintTop_toBottomOf="@id/country"
                 app:selectedCountry="@={viewModel.account.countryId}" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/rssFeed_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_rss_feed"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintTop_toBottomOf="@id/city_input">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/rssFeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textUri"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.verifyRssFeed(text, rssFeedEmail, progressBar, updateAccountBtn)}"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.rssFeed}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/rssFeedEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="@dimen/small_offset"
+                android:text="@{viewModel.account.rssFeedEmail}"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/small_text_size"
+                app:layout_constraintTop_toBottomOf="@id/rssFeed_input" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/rssFeed_input" />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/podcast_add"
+                android:id="@+id/updateAccountBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/medium_offset"
@@ -215,7 +302,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/account_country" />
+                app:layout_constraintTop_toBottomOf="@id/rssFeedEmail" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

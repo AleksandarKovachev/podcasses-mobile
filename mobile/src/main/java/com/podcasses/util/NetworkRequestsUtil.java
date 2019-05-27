@@ -1,9 +1,16 @@
 package com.podcasses.util;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.widget.ContentLoadingProgressBar;
+
+import com.google.android.material.button.MaterialButton;
 import com.podcasses.R;
 import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.AccountPodcast;
@@ -78,6 +85,36 @@ public class NetworkRequestsUtil {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
+    }
+
+    public static void rssFeedVerify(ApiCallInterface apiCallInterface, String rssFeed,
+                                     AppCompatTextView rssFeedEmail,
+                                     ContentLoadingProgressBar progressBar,
+                                     MaterialButton submitButton) {
+        rssFeedEmail.setText("");
+        submitButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        submitButton.setClickable(false);
+        progressBar.setVisibility(View.VISIBLE);
+        Call<String> call = apiCallInterface.rssFeedVerify(rssFeed);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    rssFeedEmail.setText(response.body());
+                    submitButton.setClickable(true);
+                    submitButton.getBackground().setColorFilter(null);
+                } else {
+                    rssFeedEmail.setText(R.string.error_invalid_rss_feed);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                rssFeedEmail.setText(R.string.error_invalid_rss_feed);
             }
         });
     }

@@ -5,7 +5,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
-import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -43,8 +42,8 @@ public class AccountViewModel extends BasePodcastViewModel {
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();
-    private ObservableField<String> accountSubscribes = new ObservableField<>();
-    private ObservableBoolean isSubscribed = new ObservableBoolean();
+    private ObservableField<Integer> accountSubscribes = new ObservableField<>();
+    private ObservableField<Boolean> isSubscribed = new ObservableField();
     private ObservableField<String> editAccountId = new ObservableField<>();
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
@@ -58,6 +57,9 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, @NonNull String username, boolean isSwipedToRefresh) {
+        if (!isSwipedToRefresh && account.getValue() != null && account.getValue().getUsername().equals(username)) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.getAccount(lifecycleOwner, username, isSwipedToRefresh);
     }
 
@@ -66,15 +68,24 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
+        if (accountSubscribes.get() != null) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.checkAccountSubscribe(accountId);
     }
 
     public LiveData<ApiResponse> checkAccountSubscribe(@NonNull String token, @NonNull String accountId) {
+        if (isSubscribed.get() != null) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.checkAccountSubscribe(token, accountId);
     }
 
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
         this.token = token;
+        if (!isSwipedToRefresh && podcastFiles.getValue() != null && !podcastFiles.getValue().isEmpty()) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.getPodcastFiles(lifecycleOwner, token, userId, isSwipedToRefresh);
     }
 
@@ -94,7 +105,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     @Bindable
-    public String getAccountSubscribes() {
+    public Integer getAccountSubscribes() {
         return accountSubscribes.get();
     }
 
@@ -164,7 +175,7 @@ public class AccountViewModel extends BasePodcastViewModel {
         notifyPropertyChanged(BR.isSubscribed);
     }
 
-    public void setAccountSubscribes(String accountSubscribes) {
+    public void setAccountSubscribes(Integer accountSubscribes) {
         this.accountSubscribes.set(accountSubscribes);
         notifyPropertyChanged(BR.accountSubscribes);
     }

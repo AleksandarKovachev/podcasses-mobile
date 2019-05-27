@@ -8,10 +8,10 @@ import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
+import com.podcasses.model.request.AccountRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastReportRequest;
-import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -41,6 +41,9 @@ public interface ApiCallInterface {
 
     @GET("/keycloak/id/{id}")
     Call<Account> accountById(@Path("id") String id);
+
+    @POST("/keycloak/account")
+    Call<Account> account(@Header("Authorization") String token, @Body AccountRequest accountRequest);
 
     @GET("/account/subscribes/{accountById}")
     Call<Integer> accountSubscribes(@Path("accountById") String accountId);
@@ -110,5 +113,8 @@ public interface ApiCallInterface {
 
     @POST("/podcast/view/{podcastId}")
     Call<Void> podcastView(@Path("podcastId") String podcastId);
+
+    @GET("/podcast/feed/verify")
+    Call<String> rssFeedVerify(@Query("url") String url);
 
 }

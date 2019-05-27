@@ -15,6 +15,7 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentEditAccountBinding;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.request.AccountRequest;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.EditAccountViewModel;
@@ -50,7 +51,6 @@ public class EditAccountFragment extends BaseFragment {
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(EditAccountViewModel.class);
         binder.setLifecycleOwner(this);
-        binder.setUsername(account.getUsername());
         binder.setViewModel(viewModel);
         return binder.getRoot();
     }
@@ -58,7 +58,7 @@ public class EditAccountFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.setAccount(account);
+        viewModel.setAccount(AccountRequest.toAccountRequest(account));
         viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + account.getId());
         viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + account.getId());
     }

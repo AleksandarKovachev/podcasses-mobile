@@ -44,11 +44,17 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast,
                                           String podcastId, String userId, boolean isSwipedToRefresh, boolean saveData) {
+        if (!isSwipedToRefresh && podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isSwipedToRefresh, saveData);
     }
 
     public LiveData<ApiResponse> accountPodcasts(String token, List<String> podcastIds) {
         this.token = token;
+        if (podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
         return repository.getAccountPodcasts(token, podcastIds);
     }
 
