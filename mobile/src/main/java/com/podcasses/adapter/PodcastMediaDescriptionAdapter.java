@@ -5,40 +5,46 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
-import com.podcasses.BuildConfig;
-import com.podcasses.model.entity.Podcast;
 import com.podcasses.view.MainActivity;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Created by aleksandar.kovachev.
  */
 public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
 
-    private Podcast podcast;
     private Context context;
+    private String podcastTitle;
+    private String podcastImageUrl;
+    private String podcastDuration;
+    private String displayName;
 
-    public PodcastMediaDescriptionAdapter(Context context, Podcast podcast) {
+    public PodcastMediaDescriptionAdapter(Context context,
+                                          String podcastTitle, String podcastImageUrl,
+                                          String podcastDuration, String displayName) {
         this.context = context;
-        this.podcast = podcast;
+        this.podcastTitle = podcastTitle;
+        this.podcastImageUrl = podcastImageUrl;
+        this.podcastDuration = podcastDuration;
+        this.displayName = displayName;
     }
 
     @Override
     public String getCurrentContentTitle(Player player) {
-        return podcast.getTitle();
+        return podcastTitle;
     }
 
     @Nullable
     @Override
     public String getCurrentContentText(Player player) {
-        return podcast.getDisplayName();
+        return displayName;
     }
 
     @Nullable
@@ -46,7 +52,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
         Glide.with(context)
                 .asBitmap()
-                .load(podcast.getImageUrl())
+                .load(podcastImageUrl)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -66,7 +72,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Nullable
     @Override
     public String getCurrentSubText(Player player) {
-        return podcast.getDuration();
+        return podcastDuration;
     }
 
 }

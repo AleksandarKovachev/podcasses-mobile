@@ -55,7 +55,7 @@ public class EditAccountViewModel extends BaseViewModel {
                               ContentLoadingProgressBar progressBar,
                               MaterialButton submitButton) {
         if (!Strings.isEmptyOrWhitespace(rssFeed.toString()) && URLUtil.isValidUrl(rssFeed.toString())) {
-            NetworkRequestsUtil.rssFeedVerify(apiCallInterface, rssFeed.toString(), rssFeedEmail, progressBar, submitButton);
+            NetworkRequestsUtil.rssFeedVerify(apiCallInterface, rssFeed.toString(), rssFeedEmail, progressBar, submitButton, account.getValue());
         }
     }
 

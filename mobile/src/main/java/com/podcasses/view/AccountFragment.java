@@ -76,7 +76,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     private LiveData<ApiResponse> podcasts;
     private LiveData<ApiResponse> podcastFiles;
 
-    private Podcast playingPodcast;
+    private String playingPodcastId;
     private IBinder binder;
     private AudioPlayerService service;
     private SimpleExoPlayer player;
@@ -154,7 +154,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         player = service.getPlayerInstance();
 
         if (player != null) {
-            playingPodcast = service.getPodcast();
+            playingPodcastId = service.getPodcastId();
             player.addListener(this);
             setPlayingStatus(player.getPlayWhenReady());
         }
@@ -179,13 +179,13 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcast = service.getPodcast();
+        playingPodcastId = service.getPodcastId();
         setPlayingStatus(playWhenReady);
 
         if (playbackState == Player.STATE_IDLE) {
             viewModel.setPlayingIndex(-1);
-        } else if (!sharedPreferencesManager.isPodcastViewed(playingPodcast.getId())) {
-            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, playingPodcast.getId());
+        } else if (!sharedPreferencesManager.isPodcastViewed(playingPodcastId)) {
+            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, playingPodcastId);
         }
     }
 
@@ -332,10 +332,10 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             viewModel.setPlayingIndex(-1);
             return;
         }
-        if (playingPodcast != null && !CollectionUtils.isEmpty(viewModel.getPodcasts())) {
+        if (playingPodcastId != null && !CollectionUtils.isEmpty(viewModel.getPodcasts())) {
             int i;
             for (i = 0; i < viewModel.getPodcasts().size(); i++) {
-                if (playingPodcast.getId().equals(viewModel.getPodcasts().get(i).getId())) {
+                if (playingPodcastId.equals(viewModel.getPodcasts().get(i).getId())) {
                     break;
                 }
             }

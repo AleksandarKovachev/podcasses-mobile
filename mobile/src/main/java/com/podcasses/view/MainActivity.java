@@ -13,6 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.ferfalk.simplesearchview.SimpleOnQueryTextListener;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 import com.google.android.exoplayer2.Player;
@@ -37,15 +43,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.parceler.Parcels;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
     private SimpleExoPlayer player;
 
     private MainActivityBinding binder;
-    private Podcast podcast;
+    private String playingPodcastId;
     private AudioPlayerService.LocalBinder localBinder;
 
     @Override
@@ -204,6 +204,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void popFragment() {
+        fragNavController.popFragment();
+    }
+
+    @Override
     public void onBackPressed() {
         if (binder.searchView.onBackPressed()) {
             return;
@@ -246,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             localBinder = (AudioPlayerService.LocalBinder) iBinder;
             service = localBinder.getService();
-            podcast = service.getPodcast();
+            playingPodcastId = service.getPodcastId();
             initializePlayer(false);
         }
 
@@ -285,17 +290,22 @@ public class MainActivity extends AppCompatActivity implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPodcast(Podcast podcast) {
-        if (this.podcast != null && this.podcast.getId().equals(podcast.getId()) && player.getPlaybackState() == Player.STATE_READY) {
+        if (playingPodcastId != null && playingPodcastId.equals(podcast.getId()) && player.getPlaybackState() == Player.STATE_READY) {
             player.setPlayWhenReady(!player.getPlayWhenReady());
         } else {
-            this.podcast = podcast;
+            playingPodcastId = podcast.getId();
             startBackgroundService(podcast);
         }
     }
 
     private void startBackgroundService(Podcast podcast) {
         Bundle serviceBundle = new Bundle();
-        serviceBundle.putParcelable("podcast", Parcels.wrap(podcast));
+        serviceBundle.putString("podcastId", podcast.getId());
+        serviceBundle.putString("podcastTitle", podcast.getTitle());
+        serviceBundle.putString("podcastImageUrl", podcast.getImageUrl());
+        serviceBundle.putString("podcastUrl", podcast.getPodcastUrl());
+        serviceBundle.putString("podcastDuration", podcast.getDuration());
+        serviceBundle.putString("displayName", podcast.getDisplayName());
         intent.putExtra("player", serviceBundle);
         Util.startForegroundService(this, intent);
         initializePlayer(true);

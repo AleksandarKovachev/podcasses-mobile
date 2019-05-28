@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.podcasses.BuildConfig;
@@ -16,7 +17,10 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentEditAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.request.AccountRequest;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.EditAccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -30,6 +34,11 @@ public class EditAccountFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    ApiCallInterface apiCallInterface;
+
+    private LiveData<String> token;
 
     private EditAccountViewModel viewModel;
     private static Account account;
@@ -52,6 +61,8 @@ public class EditAccountFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(EditAccountViewModel.class);
         binder.setLifecycleOwner(this);
         binder.setViewModel(viewModel);
+        binder.updateAccountBtn.setOnClickListener(updateAccountClickListener);
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
         return binder.getRoot();
     }
 
@@ -62,5 +73,18 @@ public class EditAccountFragment extends BaseFragment {
         viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + account.getId());
         viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + account.getId());
     }
+
+    private View.OnClickListener updateAccountClickListener =
+            v -> {
+                LiveData<Account> response =
+                        NetworkRequestsUtil.sendUpdateAccountRequest(apiCallInterface, token.getValue(), viewModel.getAccount(), getContext());
+                response.observe(this, accountResponse -> {
+                    fragmentNavigation.popFragment();
+                    if (accountResponse != null) {
+                        account = accountResponse;
+                    }
+                    response.removeObservers(getViewLifecycleOwner());
+                });
+            };
 
 }

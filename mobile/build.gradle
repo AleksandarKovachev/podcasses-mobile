@@ -118,10 +118,6 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.1'
     implementation 'com.google.android.exoplayer:extension-mediasession:2.10.1'
 
-    // Parcelable
-    implementation 'org.parceler:parceler-api:1.1.12'
-    annotationProcessor 'org.parceler:parceler:1.1.12'
-
     // EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
 

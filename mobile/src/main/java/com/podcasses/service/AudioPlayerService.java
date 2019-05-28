@@ -26,9 +26,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastMediaDescriptionAdapter;
 import com.podcasses.dagger.BaseApplication;
-import com.podcasses.model.entity.Podcast;
-
-import org.parceler.Parcels;
 
 /**
  * Created by aleksandar.kovachev.
@@ -38,9 +35,15 @@ public class AudioPlayerService extends Service {
     private final IBinder binder = new LocalBinder();
     private SimpleExoPlayer player;
     private PlayerNotificationManager playerNotificationManager;
-    private Podcast podcast;
     private MediaSessionConnector mediaSessionConnector;
     private MediaSessionCompat mediaSession;
+
+    private String podcastId;
+    private String podcastTitle;
+    private String podcastUrl;
+    private String podcastImageUrl;
+    private String podcastDuration;
+    private String displayName;
 
     @Override
     public void onCreate() {
@@ -67,18 +70,23 @@ public class AudioPlayerService extends Service {
         if (intent != null) {
             Bundle bundle = intent.getBundleExtra("player");
             if (bundle != null) {
-                podcast = Parcels.unwrap(bundle.getParcelable("podcast"));
+                podcastId = bundle.getString("podcastId");
+                podcastTitle = bundle.getString("podcastTitle");
+                podcastImageUrl = bundle.getString("podcastImageUrl");
+                podcastUrl = bundle.getString("podcastUrl");
+                podcastDuration = bundle.getString("podcastDuration");
+                displayName = bundle.getString("displayName");
             }
 
             DataSource.Factory dataSourceFactory = ((BaseApplication) getApplication()).buildDataSourceFactory();
-            player.prepare(new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource((Uri.parse(podcast.getPodcastUrl()))));
+            player.prepare(new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource((Uri.parse(podcastUrl))));
             player.setPlayWhenReady(true);
 
             playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(context,
                     "playback_channel",
                     R.string.app_name,
                     1,
-                    new PodcastMediaDescriptionAdapter(context, podcast),
+                    new PodcastMediaDescriptionAdapter(context, podcastTitle, podcastImageUrl, podcastDuration, displayName),
                     new PlayerNotificationManager.NotificationListener() {
                         @Override
                         public void onNotificationCancelled(int notificationId, boolean dismissedByUser) {
@@ -122,12 +130,12 @@ public class AudioPlayerService extends Service {
         return binder;
     }
 
-    public SimpleExoPlayer getPlayerInstance() {
-        return player;
+    public String getPodcastId() {
+        return podcastId;
     }
 
-    public Podcast getPodcast() {
-        return podcast;
+    public SimpleExoPlayer getPlayerInstance() {
+        return player;
     }
 
     public class LocalBinder extends Binder {
@@ -138,15 +146,13 @@ public class AudioPlayerService extends Service {
     }
 
     private MediaDescriptionCompat getMediaDescription() {
-        String image = podcast.getImageUrl();
         Bundle extras = new Bundle();
-        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, Uri.parse(image));
-        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, Uri.parse(image));
+        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, Uri.parse(podcastUrl));
+        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, Uri.parse(podcastUrl));
         return new MediaDescriptionCompat.Builder()
-                .setMediaId(podcast.getId())
-                .setIconUri(Uri.parse(image))
-                .setTitle(podcast.getTitle())
-                .setDescription(podcast.getDescription())
+                .setMediaId(podcastId)
+                .setIconUri(Uri.parse(podcastImageUrl))
+                .setTitle(podcastTitle)
                 .setExtras(extras)
                 .build();
     }

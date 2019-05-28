@@ -14,8 +14,6 @@ import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 import com.podcasses.model.base.BaseLikeModel;
 
-import org.parceler.Parcel;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +22,6 @@ import java.util.Date;
  * Created by aleksandar.kovachev.
  */
 @Entity
-@Parcel(Parcel.Serialization.BEAN)
 public class Podcast extends BaseLikeModel {
 
     @NonNull

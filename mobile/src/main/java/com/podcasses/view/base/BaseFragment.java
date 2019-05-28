@@ -76,6 +76,8 @@ public class BaseFragment extends Fragment implements AuthenticationTokenTask {
 
     public interface FragmentNavigation {
         void pushFragment(Fragment fragment);
+
+        void popFragment();
     }
 
 }
