@@ -65,7 +65,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     public void setTrendingPodcastsInAdapter(List<Podcast> podcasts) {
         this.podcasts.setValue(podcasts);
         this.trendingPodcastAdapter.setPodcasts(podcasts);
-        this.trendingPodcastAdapter.notifyDataSetChanged();
     }
 
     public PodcastAdapter getPodcastAdapter() {
@@ -75,7 +74,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     public void setPodcastsInAdapter(List<Podcast> podcasts) {
         this.podcasts.setValue(podcasts);
         this.podcastAdapter.setPodcasts(podcasts);
-        this.podcastAdapter.notifyDataSetChanged();
     }
 
     public MutableLiveData<Podcast> getSelectedPodcast() {

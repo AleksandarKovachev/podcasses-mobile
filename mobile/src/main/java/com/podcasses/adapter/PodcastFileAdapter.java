@@ -1,21 +1,20 @@
 package com.podcasses.adapter;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-import com.podcasses.BR;
-import com.podcasses.R;
-import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.viewmodel.AccountViewModel;
-import com.podcasses.viewmodel.base.BasePodcastViewModel;
-
-import java.util.List;
-
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.podcasses.R;
+import com.podcasses.databinding.ItemPodcastFileBinding;
+import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.viewmodel.AccountViewModel;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.
@@ -23,25 +22,23 @@ import androidx.recyclerview.widget.RecyclerView;
 public class PodcastFileAdapter extends RecyclerView.Adapter<PodcastFileAdapter.ViewHolder> {
 
     private List<PodcastFile> podcastFiles;
-    private int layoutId;
     private AccountViewModel viewModel;
 
-    public PodcastFileAdapter(@LayoutRes int layoutId, AccountViewModel viewModel) {
-        this.layoutId = layoutId;
+    public PodcastFileAdapter(AccountViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, parent, false);
-        return new ViewHolder(binding);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_podcast_file,
+                new FrameLayout(parent.getContext()), false);
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(viewModel, position);
+        holder.setData(viewModel, position);
     }
 
     @Override
@@ -50,28 +47,45 @@ public class PodcastFileAdapter extends RecyclerView.Adapter<PodcastFileAdapter.
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return layoutId;
+    public void onViewAttachedToWindow(ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        holder.bind();
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.unbind();
     }
 
     public void setPodcasts(List<PodcastFile> podcasts) {
         this.podcastFiles = podcasts;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        final ViewDataBinding binding;
+        private ItemPodcastFileBinding binding;
 
-        ViewHolder(ViewDataBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+        ViewHolder(View itemView) {
+            super(itemView);
         }
 
-        void bind(BasePodcastViewModel viewModel, Integer position) {
-            binding.getRoot().findViewById(R.id.podcast_file_name).setSelected(true);
-            binding.setVariable(BR.position, position);
-            binding.setVariable(BR.viewModel, viewModel);
-            binding.executePendingBindings();
+        void setData(AccountViewModel viewModel, Integer position) {
+            binding.setViewModel(viewModel);
+            binding.setPosition(position);
+        }
+
+        void bind() {
+            if (binding == null) {
+                binding = DataBindingUtil.bind(itemView);
+            }
+        }
+
+        void unbind() {
+            if (binding != null) {
+                binding.unbind();
+            }
         }
 
     }

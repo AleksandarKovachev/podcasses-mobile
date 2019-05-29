@@ -19,10 +19,8 @@ import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
-import com.podcasses.view.base.AuthenticationTokenTask;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -37,8 +35,6 @@ public class AccountViewModel extends BasePodcastViewModel {
 
     private ApiCallInterface apiCallInterface;
 
-    private WeakReference<AuthenticationTokenTask> weakReference;
-
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();
@@ -47,7 +43,7 @@ public class AccountViewModel extends BasePodcastViewModel {
     private ObservableField<String> editAccountId = new ObservableField<>();
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
-    private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(R.layout.item_podcast_file, this);
+    private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(this);
 
     private String token;
 
@@ -121,7 +117,6 @@ public class AccountViewModel extends BasePodcastViewModel {
     public void setPodcastFilesInAdapter(List<PodcastFile> podcastFiles) {
         this.podcastFiles.setValue(podcastFiles);
         this.podcastFileAdapter.setPodcasts(podcastFiles);
-        this.podcastFileAdapter.notifyDataSetChanged();
     }
 
     public PodcastFile getPodcastFileAt(Integer index) {
