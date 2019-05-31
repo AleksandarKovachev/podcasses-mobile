@@ -38,6 +38,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new PodcastViewModel(repository, apiCallInterface);
         } else if (modelClass.isAssignableFrom(EditAccountViewModel.class)) {
             return (T) new EditAccountViewModel(repository, apiCallInterface);
+        } else if (modelClass.isAssignableFrom(AccountPodcastsViewModel.class)) {
+            return (T) new AccountPodcastsViewModel(repository, apiCallInterface);
+        } else if (modelClass.isAssignableFrom(HistoryViewModel.class)) {
+            return (T) new HistoryViewModel(repository);
         }
         throw new IllegalArgumentException("Unknown class name");
     }

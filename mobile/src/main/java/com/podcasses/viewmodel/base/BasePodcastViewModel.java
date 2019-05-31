@@ -33,6 +33,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
     private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, this);
+    private PodcastAdapter simplePodcastAdapter = new PodcastAdapter(R.layout.item_simple_podcast, this);
 
     private ApiCallInterface apiCallInterface;
     private String token;
@@ -74,6 +75,15 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     public void setPodcastsInAdapter(List<Podcast> podcasts) {
         this.podcasts.setValue(podcasts);
         this.podcastAdapter.setPodcasts(podcasts);
+    }
+
+    public PodcastAdapter getSimplePodcastAdapter() {
+        return simplePodcastAdapter;
+    }
+
+    public void setPodcastsInSimpleAdapter(List<Podcast> podcasts) {
+        this.podcasts.setValue(podcasts);
+        this.simplePodcastAdapter.setPodcasts(podcasts);
     }
 
     public MutableLiveData<Podcast> getSelectedPodcast() {

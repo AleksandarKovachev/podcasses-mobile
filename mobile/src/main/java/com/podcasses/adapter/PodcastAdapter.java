@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.podcasses.R;
 import com.podcasses.databinding.ItemPodcastBinding;
+import com.podcasses.databinding.ItemSimplePodcastBinding;
 import com.podcasses.databinding.ItemTrendingPodcastBinding;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
@@ -99,9 +100,12 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
                 if (layoutId == R.layout.item_podcast) {
                     ((ItemPodcastBinding) binding).setViewModel(viewModel);
                     ((ItemPodcastBinding) binding).setPosition(position);
-                } else {
+                } else if (layoutId == R.layout.item_trending_podcast) {
                     ((ItemTrendingPodcastBinding) binding).setViewModel(viewModel);
                     ((ItemTrendingPodcastBinding) binding).setPosition(position);
+                } else {
+                    ((ItemSimplePodcastBinding) binding).setViewModel(viewModel);
+                    ((ItemSimplePodcastBinding) binding).setPosition(position);
                 }
             }
         }

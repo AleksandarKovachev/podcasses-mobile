@@ -22,6 +22,14 @@
         <variable
             name="isMyAccount"
             type="java.lang.Boolean" />
+
+        <variable
+            name="instance"
+            type="java.lang.Integer" />
+
+        <variable
+            name="fragmentManager"
+            type="androidx.fragment.app.FragmentManager" />
     </data>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -33,6 +41,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fillViewport="true"
             tools:context=".view.AccountFragment">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -106,10 +115,7 @@
                     style="@style/Widget.MaterialComponents.CardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/medium_offset"
-                    android:layout_marginTop="@dimen/medium_offset"
-                    android:layout_marginRight="@dimen/medium_offset"
-                    android:layout_marginBottom="@dimen/medium_offset"
+                    android:layout_margin="@dimen/medium_offset"
                     android:clickable="true"
                     android:focusable="true"
                     app:cardCornerRadius="10dp"
@@ -126,8 +132,6 @@
                             android:id="@+id/description"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/medium_offset"
-                            android:layout_marginEnd="@dimen/medium_offset"
                             android:padding="@dimen/medium_offset"
                             android:text="@{viewModel.account.description}"
                             app:layout_constraintTop_toTopOf="parent" />

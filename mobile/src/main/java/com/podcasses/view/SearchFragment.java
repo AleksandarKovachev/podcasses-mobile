@@ -79,6 +79,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        binding.setLifecycleOwner(this);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         updateTitle();
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchViewModel.class);

@@ -3,6 +3,7 @@
     <string name="account_type">com.podcasses</string>
 
     <string name="title_home">Home</string>
+    <string name="title_history">History</string>
     <string name="title_account">Account</string>
 
     <string name="title_upload">Upload</string>
@@ -32,6 +33,9 @@
     <string name="podcast_comments">Comments</string>
     <string name="podcast_add">Add podcast</string>
     <string name="podcast_add_comment">Add a comment</string>
+
+    <string name="history">History</string>
+    <string name="liked_podcasts">Liked podcasts</string>
 
     <string name="account_first_name">First name</string>
     <string name="account_last_name">Last name</string>

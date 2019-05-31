@@ -2,6 +2,7 @@ package com.podcasses.model.repository;
 
 import android.content.Context;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
@@ -14,6 +15,7 @@ import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -103,7 +105,7 @@ class NetworkDataSource {
     }
 
     void getPodcasts(String podcast, String podcastId, String userId, IDataCallback<List<Podcast>> callback) {
-        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId);
+        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, null);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
@@ -117,6 +119,46 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void getPodcasts(String token, Integer likeStatus, IDataCallback<List<Podcast>> callback) {
+        Call<List<AccountPodcast>> accountPodcastsCall = apiCallInterface.accountPodcasts("Bearer " + token, likeStatus);
+        accountPodcastsCall.enqueue(new Callback<List<AccountPodcast>>() {
+            @Override
+            public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {
+                if (response.isSuccessful() && !CollectionUtils.isEmpty(response.body())) {
+                    List<String> podcastIds = new ArrayList<>();
+                    for (AccountPodcast accountPodcast : response.body()) {
+                        podcastIds.add(accountPodcast.getPodcastId());
+                    }
+                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, null, podcastIds);
+                    podcastsCall.enqueue(new Callback<List<Podcast>>() {
+                        @Override
+                        public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                            if (response.isSuccessful()) {
+                                callback.onSuccess(response.body());
+                            } else {
+                                callback.onSuccess(null);
+                                LogErrorResponseUtil.logErrorResponse(response, context);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                            callback.onFailure(t);
+                        }
+                    });
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AccountPodcast>> call, Throwable t) {
                 callback.onFailure(t);
             }
         });

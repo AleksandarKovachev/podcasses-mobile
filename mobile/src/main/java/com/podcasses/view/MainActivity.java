@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int INDEX_HOME = FragNavController.TAB1;
     private static final int INDEX_ACCOUNT = FragNavController.TAB2;
     private static final int INDEX_UPLOAD = FragNavController.TAB3;
-    public static final int FRAGMENTS_COUNT = 3;
+    private static final int INDEX_HISTORY = FragNavController.TAB4;
+    public static final int FRAGMENTS_COUNT = 4;
 
     @Inject
     AuthenticationCallInterface authenticationCall;
@@ -131,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.app_navigation, menu);
-
         binder.searchView.setMenuItem(menu.findItem(R.id.navigation_search));
         return true;
     }
@@ -152,11 +152,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.navigation_account:
-                fragNavController.switchTab(INDEX_ACCOUNT);
-                break;
             case R.id.navigation_upload:
                 fragNavController.switchTab(INDEX_UPLOAD);
+                break;
+            case R.id.navigation_history:
+                fragNavController.switchTab(INDEX_HISTORY);
                 break;
             case R.id.navigation_logout:
                 handleLogout();
@@ -178,10 +178,12 @@ public class MainActivity extends AppCompatActivity implements
         switch (i) {
             case INDEX_HOME:
                 return HomeFragment.newInstance(0);
-            case INDEX_UPLOAD:
-                return UploadFragment.newInstance(0);
             case INDEX_ACCOUNT:
                 return AccountFragment.newInstance(0, null);
+            case INDEX_UPLOAD:
+                return UploadFragment.newInstance(0);
+            case INDEX_HISTORY:
+                return HistoryFragment.newInstance(0);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

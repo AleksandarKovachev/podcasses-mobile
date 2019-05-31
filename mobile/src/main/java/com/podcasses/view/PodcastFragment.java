@@ -293,7 +293,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage, int successfulDefaultMessage) {
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
-        if (accountPodcast.getLikeStatus() == likeStatus) {
+        if (accountPodcast != null && accountPodcast.getLikeStatus() == likeStatus) {
             accountPodcastRequest.setLikeStatus(LikeStatus.DEFAULT.getValue());
         } else {
             accountPodcastRequest.setLikeStatus(likeStatus);
@@ -303,7 +303,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    LikeStatusUtil.updateLikeStatus(viewModel.getPodcast(), likeStatus, accountPodcast.getLikeStatus());
+                    LikeStatusUtil.updateLikeStatus(viewModel.getPodcast(),
+                            likeStatus, accountPodcast != null ? accountPodcast.getLikeStatus() : likeStatus);
                     accountPodcast = response.body();
                     if (likeStatus == LikeStatus.LIKE.getValue()) {
                         binding.likeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);

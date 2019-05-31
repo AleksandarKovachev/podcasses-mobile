@@ -14,15 +14,19 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.tabs.TabLayout;
 import com.onegravity.rteditor.RTEditText;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.R;
 import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.adapter.NomenclatureAdapter;
+import com.podcasses.adapter.PodcastsPagerAdapter;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.response.Language;
@@ -214,6 +218,19 @@ public class CustomViewBindings {
     @InverseBindingAdapter(attribute = "htmlText")
     public static String getHtmlText(RTEditText editText) {
         return editText.getText(RTFormat.HTML);
+    }
+
+    @BindingAdapter(value = {"viewPagerFragmentManager"}, requireAll = false)
+    public static void viewPagerHandler(ViewPager view, FragmentManager fragmentManager) {
+        if (fragmentManager != null) {
+            PodcastsPagerAdapter adapter = new PodcastsPagerAdapter(view.getContext(), fragmentManager);
+            view.setAdapter(adapter);
+        }
+    }
+
+    @BindingAdapter({"pager"})
+    public static void pager(TabLayout view, ViewPager pagerView) {
+        view.setupWithViewPager(pagerView, true);
     }
 
 }

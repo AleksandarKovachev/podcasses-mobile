@@ -28,6 +28,8 @@ public class Podcast extends BaseLikeModel {
     @PrimaryKey
     private String id;
 
+    private int type;
+
     private String title;
 
     private String description;
@@ -78,6 +80,14 @@ public class Podcast extends BaseLikeModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getTitle() {

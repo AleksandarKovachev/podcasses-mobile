@@ -84,9 +84,11 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     private Account account;
     private String username;
     private static String accountId;
+    private static int instanceCount;
 
     static AccountFragment newInstance(int instance, String openedAccountId) {
         accountId = openedAccountId;
+        instanceCount = instance;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         AccountFragment fragment = new AccountFragment();
@@ -135,6 +137,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     JWT jwt = new JWT(s);
                     accountId = jwt.getSubject();
                     binding.setAccountId(accountId);
+                    binding.setInstance(instanceCount);
+                    binding.setFragmentManager(getChildFragmentManager());
                     username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
                     binding.setToken(s);
 

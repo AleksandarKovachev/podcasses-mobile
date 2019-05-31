@@ -3,6 +3,7 @@
     <string name="account_type">com.podcasses</string>
 
     <string name="title_home">Начало</string>
+    <string name="title_history">История</string>
     <string name="title_account">Акаунт</string>
 
     <string name="title_upload">Качи</string>
@@ -32,6 +33,9 @@
     <string name="podcast_comments">Коментари</string>
     <string name="podcast_add">Добави подкаст</string>
     <string name="podcast_add_comment">Добави коментар</string>
+
+    <string name="history">История</string>
+    <string name="liked_podcasts">Харесани подкасти</string>
 
     <string name="account_first_name">Първо име</string>
     <string name="account_last_name">Последно име</string>

@@ -58,7 +58,8 @@ public interface ApiCallInterface {
     Call<List<Podcast>> podcast(
             @Query(value = "podcast", encoded = true) String podcast,
             @Query(value = "podcastId", encoded = true) String podcastId,
-            @Query(value = "userId", encoded = true) String userId);
+            @Query(value = "userId", encoded = true) String userId,
+            @Query(value = "id", encoded = true) List<String> id);
 
     @GET("/nomenclature/categories")
     Call<List<Nomenclature>> categories();
@@ -83,6 +84,9 @@ public interface ApiCallInterface {
 
     @GET("/account/podcasts")
     Call<List<AccountPodcast>> accountPodcasts(@Header("Authorization") String token, @Query("id") List<String> ids);
+
+    @GET("/account/podcast")
+    Call<List<AccountPodcast>> accountPodcasts(@Header("Authorization") String token, @Query("likeStatus") Integer likeStatus);
 
     @GET("/podcast/files")
     Call<List<PodcastFile>> podcastFiles(@Header("Authorization") String token);
