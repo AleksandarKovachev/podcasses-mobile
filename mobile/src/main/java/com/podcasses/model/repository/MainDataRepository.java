@@ -43,6 +43,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> podcastResponse;
     private final MutableLiveData<ApiResponse> trendingPodcastsResponse;
     private final MutableLiveData<ApiResponse> historyPodcasts;
+    private final MutableLiveData<ApiResponse> likedPodcasts;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> accountPodcastsResponse;
@@ -71,6 +72,7 @@ public class MainDataRepository {
         podcastResponse = new MutableLiveData<>();
         trendingPodcastsResponse = new MutableLiveData<>();
         historyPodcasts = new MutableLiveData<>();
+        likedPodcasts = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
         accountPodcastsResponse = new MutableLiveData<>();
@@ -206,25 +208,37 @@ public class MainDataRepository {
     }
 
     public LiveData<ApiResponse> getHistoryPodcasts(String token, Integer likeStatus) {
-        historyPodcasts.setValue(ApiResponse.loading());
+        if (likeStatus == null) {
+            historyPodcasts.setValue(ApiResponse.loading());
+        } else {
+            likedPodcasts.setValue(ApiResponse.loading());
+        }
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getPodcasts(token, likeStatus, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
-                    historyPodcasts.setValue(ApiResponse.success(data));
+                    if (likeStatus == null) {
+                        historyPodcasts.setValue(ApiResponse.success(data));
+                    } else {
+                        likedPodcasts.setValue(ApiResponse.success(data));
+                    }
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
-                    historyPodcasts.setValue(ApiResponse.error(error));
+                    if (likeStatus == null) {
+                        historyPodcasts.setValue(ApiResponse.error(error));
+                    } else {
+                        likedPodcasts.setValue(ApiResponse.error(error));
+                    }
                 }
             });
         } else {
             podcastResponse.setValue(ApiResponse.error(new ConnectException()));
         }
 
-        return historyPodcasts;
+        return likeStatus == null ? historyPodcasts : likedPodcasts;
     }
 
     public LiveData<ApiResponse> getPodcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {

@@ -119,6 +119,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
+                    token.removeObservers(this);
                     binding.setToken(s);
                     JWT jwt = new JWT(s);
                     if (accountId.equals(jwt.getSubject())) {
@@ -134,6 +135,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             token = AuthenticationUtil.isAuthenticated(getContext(), this);
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
+                    token.removeObservers(this);
                     JWT jwt = new JWT(s);
                     accountId = jwt.getSubject();
                     binding.setAccountId(accountId);

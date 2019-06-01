@@ -23,7 +23,7 @@ public class PodcastsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return AccountPodcastsFragment.newInstance(position, position);
+        return AccountPodcastsFragment.newInstance(0, position);
     }
 
     @Override

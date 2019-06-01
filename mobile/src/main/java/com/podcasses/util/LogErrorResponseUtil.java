@@ -22,7 +22,7 @@ public class LogErrorResponseUtil {
     public static void logErrorResponse(Response response, Context context) {
         if (response.errorBody() != null) {
             try {
-                Log.e("ErrorResponse", String.format("Bad network request with code $1$s and body: %1$s", response.code(), response.errorBody().string()));
+                Log.e("ErrorResponse", String.format("Bad network request with code %1$s and body: %2$s", response.code(), response.errorBody().string()));
             } catch (IOException e) {
                 Log.e("ErrorResponse", "Could not parse error response: ", e);
             }

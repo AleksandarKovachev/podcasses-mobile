@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -88,6 +89,8 @@ public class AccountPodcastsFragment extends BaseFragment implements OnRefreshLi
                 getPodcasts(s, null);
             }
         });
+        setPodcastClick();
+        setAccountClick();
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
@@ -136,6 +139,27 @@ public class AccountPodcastsFragment extends BaseFragment implements OnRefreshLi
                 }
                 break;
         }
+    }
+
+    private void setPodcastClick() {
+        viewModel.getSelectedPodcast().observe(this, podcast -> {
+            if (podcast != null) {
+                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
+                viewModel.getSelectedPodcast().setValue(null);
+            }
+        });
+    }
+
+    private void setAccountClick() {
+        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getSelectedAccount().get() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
+                    viewModel.getSelectedAccount().set(null);
+                }
+            }
+        });
     }
 
 }
