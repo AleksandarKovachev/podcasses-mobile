@@ -35,7 +35,12 @@
     <string name="podcast_add_comment">Add a comment</string>
 
     <string name="history">History</string>
-    <string name="liked_podcasts">Liked podcasts</string>
+    <string name="liked_podcasts">Liked</string>
+    <string name="my_podcasts">My podcasts</string>
+    <string name="trending_podcasts">Trending</string>
+    <string name="downloaded_podcasts">Downloaded</string>
+    <string name="podcasts_in_progress">In progress</string>
+    <string name="podcasts_from_subscribe">New podcasts</string>
 
     <string name="account_first_name">First name</string>
     <string name="account_last_name">Last name</string>
@@ -48,7 +53,7 @@
     <string name="country">Country</string>
     <string name="category">Category</string>
     <string name="language">Language</string>
-    
+
     <string name="account_save_changes">Save changes</string>
 
     <string name="podcast_successfully_added">Successfully added podcast</string>

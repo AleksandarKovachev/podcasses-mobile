@@ -104,8 +104,8 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String podcast, String podcastId, String userId, IDataCallback<List<Podcast>> callback) {
-        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, null);
+    void getPodcasts(String podcast, String podcastId, String userId, List<String> ids, IDataCallback<List<Podcast>> callback) {
+        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, ids);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {

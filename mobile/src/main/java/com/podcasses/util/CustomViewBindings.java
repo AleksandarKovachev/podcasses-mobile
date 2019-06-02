@@ -220,10 +220,10 @@ public class CustomViewBindings {
         return editText.getText(RTFormat.HTML);
     }
 
-    @BindingAdapter(value = {"viewPagerFragmentManager"}, requireAll = false)
-    public static void viewPagerHandler(ViewPager view, FragmentManager fragmentManager) {
-        if (fragmentManager != null) {
-            PodcastsPagerAdapter adapter = new PodcastsPagerAdapter(view.getContext(), fragmentManager);
+    @BindingAdapter(value = {"viewPagerFragmentManager", "viewPagerTypes"}, requireAll = false)
+    public static void viewPagerHandler(ViewPager view, FragmentManager fragmentManager, List<Integer> types) {
+        if (fragmentManager != null && types != null) {
+            PodcastsPagerAdapter adapter = new PodcastsPagerAdapter(view.getContext(), fragmentManager, types);
             view.setAdapter(adapter);
         }
     }

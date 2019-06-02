@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.podcasses.service.AudioDownloadService;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -41,6 +42,10 @@ public class DownloadTracker {
         downloadIndex = downloadManager.getDownloadIndex();
         downloadManager.addListener(new DownloadManagerListener());
         loadDownloads();
+    }
+
+    public Collection<Download> getAllDownloads() {
+        return downloads.values();
     }
 
     boolean isDownloaded(String url) {

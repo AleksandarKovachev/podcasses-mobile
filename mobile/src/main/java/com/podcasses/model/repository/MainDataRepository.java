@@ -44,6 +44,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> trendingPodcastsResponse;
     private final MutableLiveData<ApiResponse> historyPodcasts;
     private final MutableLiveData<ApiResponse> likedPodcasts;
+    private final MutableLiveData<ApiResponse> downloadedPodcasts;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> accountPodcastsResponse;
@@ -73,6 +74,7 @@ public class MainDataRepository {
         trendingPodcastsResponse = new MutableLiveData<>();
         historyPodcasts = new MutableLiveData<>();
         likedPodcasts = new MutableLiveData<>();
+        downloadedPodcasts = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
         accountPodcastsResponse = new MutableLiveData<>();
@@ -235,10 +237,36 @@ public class MainDataRepository {
                 }
             });
         } else {
-            podcastResponse.setValue(ApiResponse.error(new ConnectException()));
+            if (likeStatus == null) {
+                historyPodcasts.setValue(ApiResponse.error(new ConnectException()));
+            } else {
+                likedPodcasts.setValue(ApiResponse.error(new ConnectException()));
+            }
         }
 
         return likeStatus == null ? historyPodcasts : likedPodcasts;
+    }
+
+    public LiveData<ApiResponse> getDownloadedPodcasts(List<String> ids) {
+        downloadedPodcasts.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getPodcasts(null, null, null, ids, new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data) {
+                    downloadedPodcasts.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    downloadedPodcasts.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            downloadedPodcasts.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return downloadedPodcasts;
     }
 
     public LiveData<ApiResponse> getPodcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
@@ -434,7 +462,7 @@ public class MainDataRepository {
 
     private void fetchPodcastsOnNetwork(String podcast, String podcastId, String userId, boolean saveData) {
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getPodcasts(podcast, podcastId, userId, new IDataCallback<List<Podcast>>() {
+            networkDataSource.getPodcasts(podcast, podcastId, userId, null, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));

@@ -5,9 +5,19 @@
 
     <data>
 
+        <import type="java.util.List" />
+
         <variable
             name="viewModel"
             type="com.podcasses.viewmodel.HomeViewModel" />
+
+        <variable
+            name="fragmentManager"
+            type="androidx.fragment.app.FragmentManager" />
+
+        <variable
+            name="types"
+            type="List&lt;Integer>" />
     </data>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -27,6 +37,45 @@
                 android:layout_height="match_parent"
                 tools:context=".view.AccountFragment">
 
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView"
+                    style="@style/Widget.MaterialComponents.CardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/medium_offset"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="10dp"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/account_podcast_tabs"
+                            style="@style/Widget.MaterialComponents.TabLayout.Colored"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:pager="@{(viewpager)}"
+                            app:tabMode="fixed" />
+
+                        <androidx.viewpager.widget.ViewPager
+                            android:id="@+id/viewpager"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                            app:layout_constraintTop_toBottomOf="@id/account_podcast_tabs"
+                            app:viewPagerFragmentManager="@{fragmentManager}"
+                            app:viewPagerTypes="@{types}" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/trending_header"
                     android:layout_width="wrap_content"
@@ -34,7 +83,7 @@
                     android:padding="@dimen/small_offset"
                     android:text="@string/trending_header"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/materialCardView" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/trending_filter_button"

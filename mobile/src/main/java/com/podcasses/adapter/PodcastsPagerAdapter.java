@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.podcasses.R;
-import com.podcasses.view.AccountPodcastsFragment;
+import com.podcasses.model.entity.PodcastType;
+import com.podcasses.view.PodcastsPageFragment;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.
@@ -15,33 +17,27 @@ import com.podcasses.view.AccountPodcastsFragment;
 public class PodcastsPagerAdapter extends FragmentPagerAdapter {
 
     private Context context;
+    private List<Integer> types;
 
-    public PodcastsPagerAdapter(Context context, FragmentManager fragmentManager) {
+    public PodcastsPagerAdapter(Context context, FragmentManager fragmentManager, List<Integer> types) {
         super(fragmentManager);
         this.context = context;
+        this.types = types;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return AccountPodcastsFragment.newInstance(0, position);
+        return PodcastsPageFragment.newInstance(types.get(position));
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return types.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return context.getString(R.string.history);
-            case 1:
-                return context.getString(R.string.liked_podcasts);
-            default:
-                return null;
-        }
+        return PodcastType.getTitle(context, types.get(position));
     }
-
 
 }

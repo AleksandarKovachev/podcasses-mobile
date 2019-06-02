@@ -101,7 +101,7 @@ dependencies {
     implementation 'com.ncapdevi:frag-nav:3.2.0'
 
     // SmartRefreshLayout
-    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-3'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-11'
 
     // Rich Text Editor
     implementation 'com.1gravity:android-rteditor:1.6.7'

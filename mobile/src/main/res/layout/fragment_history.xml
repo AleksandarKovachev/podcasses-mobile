@@ -6,6 +6,8 @@
 
         <import type="android.view.View" />
 
+        <import type="java.util.List" />
+
         <variable
             name="viewModel"
             type="com.podcasses.viewmodel.HistoryViewModel" />
@@ -13,6 +15,10 @@
         <variable
             name="fragmentManager"
             type="androidx.fragment.app.FragmentManager" />
+
+        <variable
+            name="types"
+            type="List&lt;Integer>" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +43,8 @@
             android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintTop_toBottomOf="@id/account_podcast_tabs"
-            app:viewPagerFragmentManager="@{fragmentManager}" />
+            app:viewPagerFragmentManager="@{fragmentManager}"
+            app:viewPagerTypes="@{types}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

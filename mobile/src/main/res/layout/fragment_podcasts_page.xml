@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.podcasses.viewmodel.AccountPodcastsViewModel" />
+            type="com.podcasses.viewmodel.PodcastsPageViewModel" />
     </data>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -24,7 +24,6 @@
                 android:id="@+id/podcast_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/medium_offset"
                 android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:setAdapter="@{viewModel.simplePodcastAdapter}"

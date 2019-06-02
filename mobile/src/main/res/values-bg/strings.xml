@@ -24,7 +24,7 @@
     <string name="subscribe">Абониране</string>
     <string name="podcast_files_title">Непубликувани качени подкаст файлове</string>
 
-    <string name="trending_header">Набиращи популярност</string>
+    <string name="trending_header">Популярни</string>
     <string name="trending_filter">Смени филтъра</string>
 
     <string name="podcast_upload">Качи подкаст</string>
@@ -36,6 +36,11 @@
 
     <string name="history">История</string>
     <string name="liked_podcasts">Харесани подкасти</string>
+    <string name="my_podcasts">Мои подкасти</string>
+    <string name="trending_podcasts">Популярни</string>
+    <string name="downloaded_podcasts">Свалени</string>
+    <string name="podcasts_in_progress">Недовършени</string>
+    <string name="podcasts_from_subscribe">Нови</string>
 
     <string name="account_first_name">Първо име</string>
     <string name="account_last_name">Последно име</string>

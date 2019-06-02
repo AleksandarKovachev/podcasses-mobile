@@ -13,9 +13,12 @@ import androidx.lifecycle.ViewModelProviders;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHistoryBinding;
+import com.podcasses.model.entity.PodcastType;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.HistoryViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -45,6 +48,7 @@ public class HistoryFragment extends BaseFragment {
         HistoryViewModel viewModel = ViewModelProviders.of(this, viewModelFactory).get(HistoryViewModel.class);
         binder.setViewModel(viewModel);
         binder.setFragmentManager(getChildFragmentManager());
+        binder.setTypes(Arrays.asList(PodcastType.HISTORY.getType(), PodcastType.LIKED_PODCASTS.getType()));
         return binder.getRoot();
     }
 

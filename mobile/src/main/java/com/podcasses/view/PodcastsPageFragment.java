@@ -12,22 +12,25 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.auth0.android.jwt.JWT;
+import com.google.android.exoplayer2.offline.Download;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
-import com.podcasses.databinding.FragmentAccountPodcastsBinding;
+import com.podcasses.databinding.FragmentPodcastsPageBinding;
 import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.PodcastType;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.AuthenticationUtil;
+import com.podcasses.util.DownloadTracker;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
-import com.podcasses.viewmodel.AccountPodcastsViewModel;
+import com.podcasses.viewmodel.PodcastsPageViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,24 +39,22 @@ import javax.inject.Inject;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountPodcastsFragment extends BaseFragment implements OnRefreshListener {
+public class PodcastsPageFragment extends BaseFragment implements OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private FragmentAccountPodcastsBinding binder;
-    private AccountPodcastsViewModel viewModel;
-    private String accountId;
+    private PodcastsPageViewModel viewModel;
 
     private LiveData<ApiResponse> podcasts;
     private LiveData<String> token;
-    private int page;
+    private int type;
 
-    public static AccountPodcastsFragment newInstance(int instance, int page) {
+    public static PodcastsPageFragment newInstance(int type) {
         Bundle args = new Bundle();
-        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
-        args.putInt("page", page);
-        AccountPodcastsFragment fragment = new AccountPodcastsFragment();
+        args.putInt(BaseFragment.ARGS_INSTANCE, 0);
+        args.putInt("type", type);
+        PodcastsPageFragment fragment = new PodcastsPageFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,17 +62,17 @@ public class AccountPodcastsFragment extends BaseFragment implements OnRefreshLi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt("page");
+        type = getArguments().getInt("type");
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binder = DataBindingUtil.inflate(inflater, R.layout.fragment_account_podcasts, container, false);
+        FragmentPodcastsPageBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_podcasts_page, container, false);
         binder.setLifecycleOwner(getViewLifecycleOwner());
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountPodcastsViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PodcastsPageViewModel.class);
         binder.setViewModel(viewModel);
         binder.refreshLayout.setOnRefreshListener(this);
         return binder.getRoot();
@@ -80,30 +81,48 @@ public class AccountPodcastsFragment extends BaseFragment implements OnRefreshLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        token = AuthenticationUtil.isAuthenticated(this.getContext(), this);
-        token.observe(getViewLifecycleOwner(), s -> {
-            if (!Strings.isEmptyOrWhitespace(s)) {
-                token.removeObservers(getViewLifecycleOwner());
-                JWT jwt = new JWT(s);
-                accountId = jwt.getSubject();
-                getPodcasts(s, null);
-            }
-        });
+        if (type == PodcastType.DOWNLOADED.getType()) {
+            getDownloadedPodcasts();
+        } else if (type == PodcastType.HISTORY.getType() || type == PodcastType.LIKED_PODCASTS.getType()) {
+            token = AuthenticationUtil.isAuthenticated(this.getContext(), this);
+            token.observe(getViewLifecycleOwner(), s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    token.removeObservers(getViewLifecycleOwner());
+                    getHistoryPodcasts(s, null);
+                }
+            });
+        }
         setPodcastClick();
         setAccountClick();
     }
 
-    private void getPodcasts(String token, RefreshLayout refreshLayout) {
-        if (accountId != null) {
-            podcasts = viewModel.getHistoryPodcasts(token, page == 1 ? 1 : null);
-            podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+    private void getDownloadedPodcasts() {
+        DownloadTracker downloadTracker = ((BaseApplication) getContext().getApplicationContext()).getDownloadTracker();
+        Collection<Download> downloads = downloadTracker.getAllDownloads();
+        if (downloads.isEmpty()) {
+            return;
         }
+        List<String> ids = new ArrayList<>();
+        for (Download download : downloads) {
+            if (download.state == Download.STATE_COMPLETED) {
+                ids.add(download.request.id);
+            }
+        }
+        if (!ids.isEmpty()) {
+            podcasts = viewModel.getDownloadedPodcasts(ids);
+        }
+        podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, null));
+    }
+
+    private void getHistoryPodcasts(String token, RefreshLayout refreshLayout) {
+        podcasts = viewModel.getHistoryPodcasts(token, type == PodcastType.LIKED_PODCASTS.getType() ? 1 : null);
+        podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         if (token != null && token.getValue() != null) {
-            getPodcasts(token.getValue(), refreshLayout);
+            getHistoryPodcasts(token.getValue(), refreshLayout);
         }
     }
 

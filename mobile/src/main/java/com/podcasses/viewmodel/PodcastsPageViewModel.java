@@ -15,14 +15,18 @@ import java.util.List;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountPodcastsViewModel extends BasePodcastViewModel {
+public class PodcastsPageViewModel extends BasePodcastViewModel {
 
-    AccountPodcastsViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
+    PodcastsPageViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository, apiCallInterface);
     }
 
     public LiveData<ApiResponse> getHistoryPodcasts(String token, Integer likeStatus) {
         return repository.getHistoryPodcasts(token, likeStatus);
+    }
+
+    public LiveData<ApiResponse> getDownloadedPodcasts(List<String> ids) {
+        return repository.getDownloadedPodcasts(ids);
     }
 
 }
