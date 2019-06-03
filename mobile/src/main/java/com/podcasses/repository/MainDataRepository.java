@@ -1,4 +1,4 @@
-package com.podcasses.model.repository;
+package com.podcasses.repository;
 
 import android.app.Application;
 import android.util.Log;
@@ -23,6 +23,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.ConnectivityUtil;
 
 import java.net.ConnectException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,6 +46,7 @@ public class MainDataRepository {
     private final MutableLiveData<ApiResponse> historyPodcasts;
     private final MutableLiveData<ApiResponse> likedPodcasts;
     private final MutableLiveData<ApiResponse> downloadedPodcasts;
+    private final MutableLiveData<ApiResponse> subscriptionPodcasts;
     private final MutableLiveData<ApiResponse> podcastFilesResponse;
     private final MutableLiveData<ApiResponse> accountPodcastResponse;
     private final MutableLiveData<ApiResponse> accountPodcastsResponse;
@@ -75,6 +77,7 @@ public class MainDataRepository {
         historyPodcasts = new MutableLiveData<>();
         likedPodcasts = new MutableLiveData<>();
         downloadedPodcasts = new MutableLiveData<>();
+        subscriptionPodcasts = new MutableLiveData<>();
         podcastFilesResponse = new MutableLiveData<>();
         accountPodcastResponse = new MutableLiveData<>();
         accountPodcastsResponse = new MutableLiveData<>();
@@ -267,6 +270,28 @@ public class MainDataRepository {
         }
 
         return downloadedPodcasts;
+    }
+
+    public LiveData<ApiResponse> getPodcastsFromSubscribtions(String token) {
+        subscriptionPodcasts.setValue(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getPodcastsFromSubscriptions(token, new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data) {
+                    subscriptionPodcasts.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    subscriptionPodcasts.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            subscriptionPodcasts.setValue(ApiResponse.error(new ConnectException()));
+        }
+
+        return subscriptionPodcasts;
     }
 
     public LiveData<ApiResponse> getPodcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
@@ -462,7 +487,7 @@ public class MainDataRepository {
 
     private void fetchPodcastsOnNetwork(String podcast, String podcastId, String userId, boolean saveData) {
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getPodcasts(podcast, podcastId, userId, null, new IDataCallback<List<Podcast>>() {
+            networkDataSource.getPodcasts(podcast, podcastId, Collections.singletonList(userId), null, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data) {
                     podcastResponse.setValue(ApiResponse.success(data));

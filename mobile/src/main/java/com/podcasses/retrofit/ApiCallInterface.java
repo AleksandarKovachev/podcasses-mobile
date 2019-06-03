@@ -58,7 +58,7 @@ public interface ApiCallInterface {
     Call<List<Podcast>> podcast(
             @Query(value = "podcast", encoded = true) String podcast,
             @Query(value = "podcastId", encoded = true) String podcastId,
-            @Query(value = "userId", encoded = true) String userId,
+            @Query(value = "userId", encoded = true) List<String> userId,
             @Query(value = "id", encoded = true) List<String> id);
 
     @GET("/nomenclature/categories")
@@ -123,5 +123,8 @@ public interface ApiCallInterface {
 
     @POST("/podcast/feed/sync")
     Call<Void> rssFeedSync(@Header("Authorization") String token);
+
+    @GET("/account/subscribes")
+    Call<List<String>> getSubscriptions(@Header("Authorization") String token);
 
 }

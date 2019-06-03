@@ -28,6 +28,7 @@ import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.adapter.NomenclatureAdapter;
 import com.podcasses.adapter.PodcastsPagerAdapter;
 import com.podcasses.dagger.BaseApplication;
+import com.podcasses.manager.DownloadTracker;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.response.Language;
 

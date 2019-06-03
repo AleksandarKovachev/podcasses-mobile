@@ -16,7 +16,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_offset"
+        android:layout_marginStart="@dimen/medium_offset"
+        android:layout_marginEnd="@dimen/medium_offset"
+        android:layout_marginTop="@dimen/extra_small_offset"
         android:onClick="@{() -> viewModel.onPodcastClick(position)}">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -43,11 +45,10 @@
             android:id="@+id/podcast_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_offset"
+            android:layout_marginEnd="@dimen/small_offset"
             android:ellipsize="end"
             android:maxLines="3"
-            android:paddingStart="@dimen/small_offset"
-            android:paddingEnd="@dimen/small_offset"
-            android:paddingBottom="@dimen/small_offset"
             android:text="@{viewModel.getPodcastAt(position).title}"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,10 +59,9 @@
             android:id="@+id/podcast_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_offset"
+            android:layout_marginEnd="@dimen/small_offset"
             android:onClick="@{() -> viewModel.onAccountClick(position)}"
-            android:paddingStart="@dimen/small_offset"
-            android:paddingEnd="@dimen/small_offset"
-            android:paddingBottom="5dp"
             android:text="@{viewModel.getPodcastAt(position).username}"
             app:layout_constraintStart_toEndOf="@id/podcast_image"
             app:layout_constraintTop_toBottomOf="@id/podcast_title" />

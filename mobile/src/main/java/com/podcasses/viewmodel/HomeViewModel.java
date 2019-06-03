@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.model.entity.Nomenclature;
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Language;

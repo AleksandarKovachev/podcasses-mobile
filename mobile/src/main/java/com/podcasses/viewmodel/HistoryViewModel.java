@@ -1,6 +1,6 @@
 package com.podcasses.viewmodel;
 
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 /**

@@ -2,11 +2,8 @@ package com.podcasses.viewmodel;
 
 import androidx.lifecycle.LiveData;
 
-import com.podcasses.R;
-import com.podcasses.adapter.PodcastAdapter;
-import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
@@ -27,6 +24,10 @@ public class PodcastsPageViewModel extends BasePodcastViewModel {
 
     public LiveData<ApiResponse> getDownloadedPodcasts(List<String> ids) {
         return repository.getDownloadedPodcasts(ids);
+    }
+
+    public LiveData<ApiResponse> getPodcastsFromSubscriptions(String token) {
+        return repository.getPodcastsFromSubscribtions(token);
     }
 
 }

@@ -1,13 +1,10 @@
 package com.podcasses.viewmodel;
 
-import com.podcasses.model.repository.MainDataRepository;
-import com.podcasses.model.response.ApiResponse;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import androidx.databinding.Observable;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 
 /**
  * Created by aleksandar.kovachev.

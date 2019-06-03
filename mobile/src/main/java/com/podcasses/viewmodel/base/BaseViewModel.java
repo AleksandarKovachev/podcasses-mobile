@@ -4,7 +4,7 @@ import androidx.databinding.Observable;
 import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.ViewModel;
 
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.MainDataRepository;
 
 /**
  * Created by aleksandar.kovachev.

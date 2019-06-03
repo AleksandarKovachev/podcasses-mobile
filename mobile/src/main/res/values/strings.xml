@@ -54,6 +54,7 @@
     <string name="category">Category</string>
     <string name="language">Language</string>
 
+    <string name="see_more">See more</string>
     <string name="account_save_changes">Save changes</string>
 
     <string name="podcast_successfully_added">Successfully added podcast</string>
@@ -89,6 +90,8 @@
     <string name="trending_filter_header">Choose from the list or manually set a date range.</string>
     <string name="from_date">From date</string>
     <string name="to_date">To date</string>
+
+    <string name="trim_silence">Trim silence</string>
 
     <string-array name="trendingFilter">
         <item>Choose:</item>

@@ -13,7 +13,7 @@ import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.PopupMenuUtil;

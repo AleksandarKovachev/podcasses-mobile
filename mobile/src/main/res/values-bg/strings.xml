@@ -54,6 +54,7 @@
     <string name="category">Категория</string>
     <string name="language">Език</string>
 
+    <string name="see_more">Виж повече</string>
     <string name="account_save_changes">Запази промените</string>
 
     <string name="podcast_successfully_added">Подкаста е успешно добавен.</string>
@@ -89,6 +90,8 @@
     <string name="trending_filter_header">Избери от списъка или ръчно избери дати.</string>
     <string name="from_date">От дата</string>
     <string name="to_date">До дата</string>
+
+    <string name="trim_silence">Премахни тишината</string>
 
     <string-array name="trendingFilter">
         <item>Избери:</item>

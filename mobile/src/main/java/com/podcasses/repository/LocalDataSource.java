@@ -1,4 +1,4 @@
-package com.podcasses.model.repository;
+package com.podcasses.repository;
 
 import androidx.lifecycle.LiveData;
 

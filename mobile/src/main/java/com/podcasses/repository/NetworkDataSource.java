@@ -1,4 +1,4 @@
-package com.podcasses.model.repository;
+package com.podcasses.repository;
 
 import android.content.Context;
 
@@ -104,7 +104,7 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String podcast, String podcastId, String userId, List<String> ids, IDataCallback<List<Podcast>> callback) {
+    void getPodcasts(String podcast, String podcastId, List<String> userId, List<String> ids, IDataCallback<List<Podcast>> callback) {
         Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, ids);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
@@ -159,6 +159,42 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<List<AccountPodcast>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void getPodcastsFromSubscriptions(String token, IDataCallback<List<Podcast>> callback) {
+        Call<List<String>> subscriptionsCall = apiCallInterface.getSubscriptions("Bearer " + token);
+        subscriptionsCall.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if (response.isSuccessful() && !CollectionUtils.isEmpty(response.body())) {
+                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, response.body(), null);
+                    podcastsCall.enqueue(new Callback<List<Podcast>>() {
+                        @Override
+                        public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                            if (response.isSuccessful()) {
+                                callback.onSuccess(response.body());
+                            } else {
+                                callback.onSuccess(null);
+                                LogErrorResponseUtil.logErrorResponse(response, context);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Podcast>> call, Throwable t) {
+                            callback.onFailure(t);
+                        }
+                    });
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
                 callback.onFailure(t);
             }
         });

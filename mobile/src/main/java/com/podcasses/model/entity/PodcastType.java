@@ -15,7 +15,7 @@ public enum PodcastType {
     TRENDING(4, R.string.trending_podcasts),
     DOWNLOADED(5, R.string.downloaded_podcasts),
     IN_PROGRESS(6, R.string.podcasts_in_progress),
-    NEW_FROM_SUBSCRIBE(7, R.string.podcasts_from_subscribe);
+    FROM_SUBSCRIPTIONS(7, R.string.podcasts_from_subscribe);
 
     private int type;
     private int title;

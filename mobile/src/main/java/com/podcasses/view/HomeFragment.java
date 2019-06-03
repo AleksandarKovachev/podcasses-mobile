@@ -60,7 +60,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         binder.setLifecycleOwner(this);
         binder.setFragmentManager(getChildFragmentManager());
         binder.refreshLayout.setOnRefreshListener(this);
-        binder.setTypes(Arrays.asList(PodcastType.NEW_FROM_SUBSCRIBE.getType(), PodcastType.IN_PROGRESS.getType(), PodcastType.DOWNLOADED.getType()));
+        binder.setTypes(Arrays.asList(PodcastType.FROM_SUBSCRIPTIONS.getType(), PodcastType.IN_PROGRESS.getType(), PodcastType.DOWNLOADED.getType()));
         return binder.getRoot();
     }
 
