@@ -51,8 +51,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
     @Inject
     ApiCallInterface apiCallInterface;
 
-    @Inject
-    SharedPreferencesManager sharedPreferencesManager;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
@@ -85,6 +84,7 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
+        sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         return binding.getRoot();
     }
 

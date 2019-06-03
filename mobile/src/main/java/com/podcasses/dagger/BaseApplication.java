@@ -1,6 +1,7 @@
 package com.podcasses.dagger;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.exoplayer2.database.DatabaseProvider;
@@ -23,9 +24,10 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.Util;
 import com.podcasses.BuildConfig;
+import com.podcasses.manager.DownloadTracker;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
-import com.podcasses.util.DownloadTracker;
 
 import net.gotev.uploadservice.UploadService;
 
@@ -45,6 +47,7 @@ public class BaseApplication extends Application {
     private DatabaseProvider databaseProvider;
     private DownloadManager downloadManager;
     private DownloadTracker downloadTracker;
+    private SharedPreferencesManager sharedPreferencesManager;
     private Cache downloadCache;
     private File downloadDirectory;
 
@@ -70,6 +73,13 @@ public class BaseApplication extends Application {
     public DownloadManager getDownloadManager() {
         initDownloadManager();
         return downloadManager;
+    }
+
+    public SharedPreferencesManager getSharedPreferencesManager() {
+        if (sharedPreferencesManager == null) {
+            sharedPreferencesManager = new SharedPreferencesManager(PreferenceManager.getDefaultSharedPreferences(this));
+        }
+        return sharedPreferencesManager;
     }
 
     public DownloadTracker getDownloadTracker() {

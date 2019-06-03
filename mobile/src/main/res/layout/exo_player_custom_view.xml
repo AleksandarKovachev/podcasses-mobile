@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,12 +22,26 @@
             android:gravity="center" />
 
         <ImageButton
+            android:id="@id/exo_rew"
+            style="@style/ExoMediaButton.Rewind" />
+
+        <ImageButton
             android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play" />
 
         <ImageButton
             android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause" />
+
+        <ImageButton
+            android:id="@id/exo_ffwd"
+            style="@style/ExoMediaButton.FastForward" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/trim_silence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/trim_silence" />
 
     </LinearLayout>
 

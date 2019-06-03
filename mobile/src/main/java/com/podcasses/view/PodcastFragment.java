@@ -71,8 +71,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     @Inject
     ApiCallInterface apiCallInterface;
 
-    @Inject
-    SharedPreferencesManager sharedPreferencesManager;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     private FragmentPodcastBinding binding;
 
@@ -114,6 +113,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         binding.setViewModel(viewModel);
         binding.setPodcastId(id);
         binding.refreshLayout.setOnRefreshListener(this);
+        sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         return binding.getRoot();
     }
 

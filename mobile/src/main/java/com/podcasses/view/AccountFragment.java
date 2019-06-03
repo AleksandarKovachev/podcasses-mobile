@@ -62,8 +62,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     @Inject
     ApiCallInterface apiCallInterface;
 
-    @Inject
-    SharedPreferencesManager sharedPreferencesManager;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
@@ -106,6 +105,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
+        sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         return binding.getRoot();
     }
 

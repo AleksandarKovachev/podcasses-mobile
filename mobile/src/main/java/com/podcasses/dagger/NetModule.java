@@ -12,8 +12,8 @@ import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
 import com.podcasses.manager.SharedPreferencesManager;
-import com.podcasses.model.repository.LocalDataSource;
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.LocalDataSource;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.retrofit.interceptor.AcceptLanguageHeaderInterceptor;
@@ -45,12 +45,6 @@ public class NetModule {
     public NetModule(String baseUrl, String authenticationUrl) {
         this.baseUrl = baseUrl;
         this.authenticationUrl = authenticationUrl;
-    }
-
-    @Provides
-    @Singleton
-    SharedPreferencesManager provideSharedPreferencesManager(Application application) {
-        return new SharedPreferencesManager(PreferenceManager.getDefaultSharedPreferences(application));
     }
 
     @Provides
