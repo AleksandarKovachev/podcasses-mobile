@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
@@ -15,10 +16,11 @@ import com.podcasses.R;
 import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.repository.MainDataRepository;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
@@ -206,6 +208,10 @@ public class AccountViewModel extends BasePodcastViewModel {
 
     public void onEditClick(String accountId) {
         editAccountId.set(accountId);
+    }
+
+    public void onSyncClick(View view, String token, ContentLoadingProgressBar progressBar) {
+        NetworkRequestsUtil.rssFeedSync(apiCallInterface, view.getContext(), token, progressBar);
     }
 
 }

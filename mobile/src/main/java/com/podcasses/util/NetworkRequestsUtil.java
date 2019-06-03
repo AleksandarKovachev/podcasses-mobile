@@ -159,6 +159,32 @@ public class NetworkRequestsUtil {
         return accountResponse;
     }
 
+    public static void rssFeedSync(ApiCallInterface apiCallInterface, Context context, String token, ContentLoadingProgressBar progressBar) {
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            progressBar.setVisibility(View.VISIBLE);
+            Call<Void> call = apiCallInterface.rssFeedSync("Bearer " + token);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    progressBar.setVisibility(View.GONE);
+                    if (response.isSuccessful()) {
+                        Toasty.success(context, context.getString(R.string.successful_response), Toast.LENGTH_SHORT, true).show();
+                    } else {
+                        LogErrorResponseUtil.logErrorResponse(response, context);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    LogErrorResponseUtil.logFailure(t, context);
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+        } else {
+            Toast.makeText(context, context.getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private static int getPreviousLikeStatus(Comment comment) {
         int previousLikeStatus = LikeStatus.DEFAULT.getValue();
         if (comment.isLiked()) {

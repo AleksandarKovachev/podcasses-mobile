@@ -38,167 +38,196 @@
         android:layout_height="match_parent"
         app:srlEnableHeaderTranslationContent="true">
 
-        <androidx.core.widget.NestedScrollView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            tools:context=".view.AccountFragment">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/main"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                tools:context=".view.AccountFragment">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/account_cover_image"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/main"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="fitXY"
-                    app:imageUrl="@{viewModel.coverImage}"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="match_parent">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/account_profile_image"
-                    android:layout_width="128dp"
-                    android:layout_height="128dp"
-                    android:layout_marginStart="@dimen/medium_offset"
-                    app:imageUrl="@{viewModel.profileImage}"
-                    app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="@dimen/small_offset"
-                    android:text="@{viewModel.account.username}"
-                    android:textColor="@color/colorPrimaryText"
-                    android:textSize="@dimen/small_text_size"
-                    app:layout_constraintEnd_toStartOf="@id/account_edit"
-                    app:layout_constraintStart_toEndOf="@id/account_profile_image"
-                    app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/account_edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/medium_offset"
-                    android:layout_marginBottom="@dimen/medium_offset"
-                    android:onClick="@{v -> viewModel.onEditClick(accountId)}"
-                    android:src="@drawable/ic_edit"
-                    android:visibility="@{isMyAccount ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/subscribe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/medium_offset"
-                    android:layout_marginBottom="@dimen/medium_offset"
-                    android:onClick="@{v -> viewModel.subscribeAccount(v, token, accountId)}"
-                    android:text="@string/subscribe"
-                    app:icon="@drawable/ic_record_voice_over"
-                    app:isSubscribed="@{viewModel.isSubscribed}"
-                    app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
-                    app:layout_constraintBottom_toTopOf="@id/account_edit"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:subscribes="@{viewModel.accountSubscribes}" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/materialCardView"
-                    style="@style/Widget.MaterialComponents.CardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/medium_offset"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardCornerRadius="10dp"
-                    app:cardUseCompatPadding="true"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/account_profile_image">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/account_cover_image"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="200dp"
+                        android:scaleType="fitXY"
+                        app:imageUrl="@{viewModel.coverImage}"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/description"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="@dimen/medium_offset"
-                            android:text="@{viewModel.account.description}"
-                            app:layout_constraintTop_toTopOf="parent" />
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/account_profile_image"
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        android:layout_marginStart="@dimen/medium_offset"
+                        app:imageUrl="@{viewModel.profileImage}"
+                        app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/small_offset"
+                        android:text="@{viewModel.account.username}"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="@dimen/small_text_size"
+                        app:layout_constraintEnd_toStartOf="@id/account_edit"
+                        app:layout_constraintStart_toEndOf="@id/account_profile_image"
+                        app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
 
-                </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/account_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/medium_offset"
+                        android:layout_marginBottom="@dimen/medium_offset"
+                        android:onClick="@{v -> viewModel.onEditClick(accountId)}"
+                        android:src="@drawable/ic_edit"
+                        android:visibility="@{isMyAccount ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/podcast_files_card_view"
-                    style="@style/Widget.MaterialComponents.CardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/medium_offset"
-                    android:layout_marginTop="@dimen/medium_offset"
-                    android:layout_marginRight="@dimen/medium_offset"
-                    android:layout_marginBottom="@dimen/medium_offset"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:visibility="gone"
-                    app:cardCornerRadius="10dp"
-                    app:cardUseCompatPadding="true"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/materialCardView">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/subscribe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/medium_offset"
+                        android:layout_marginBottom="@dimen/medium_offset"
+                        android:onClick="@{v -> viewModel.subscribeAccount(v, token, accountId)}"
+                        android:text="@string/subscribe"
+                        app:icon="@drawable/ic_record_voice_over"
+                        app:isSubscribed="@{viewModel.isSubscribed}"
+                        app:layout_constraintBottom_toBottomOf="@id/account_cover_image"
+                        app:layout_constraintBottom_toTopOf="@id/account_edit"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:subscribes="@{viewModel.accountSubscribes}" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView"
+                        style="@style/Widget.MaterialComponents.CardView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/medium_offset"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardCornerRadius="10dp"
+                        app:cardUseCompatPadding="true"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/account_profile_image">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/podcast_files_title"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:padding="@dimen/small_offset"
-                            android:text="@string/podcast_files_title"
-                            android:textSize="@dimen/small_text_size"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            android:layout_height="wrap_content">
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/podcast_files_list"
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/description"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="@dimen/medium_offset"
+                                android:text="@{viewModel.account.description}"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/podcast_files_card_view"
+                        style="@style/Widget.MaterialComponents.CardView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/medium_offset"
+                        android:layout_marginTop="@dimen/medium_offset"
+                        android:layout_marginRight="@dimen/medium_offset"
+                        android:layout_marginBottom="@dimen/medium_offset"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        app:cardCornerRadius="10dp"
+                        app:cardUseCompatPadding="true"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/materialCardView">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/podcast_files_title"
-                            app:setAdapter="@{viewModel.podcastFileAdapter}"
-                            tools:listitem="@layout/item_podcast_file" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            android:layout_height="match_parent">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/podcast_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/medium_offset"
-                    android:clipToPadding="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
-                    app:setAdapter="@{viewModel.podcastAdapter}"
-                    tools:listitem="@layout/item_podcast" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/podcast_files_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="@dimen/small_offset"
+                                android:text="@string/podcast_files_title"
+                                android:textSize="@dimen/small_text_size"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/podcast_files_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/podcast_files_title"
+                                app:setAdapter="@{viewModel.podcastFileAdapter}"
+                                tools:listitem="@layout/item_podcast_file" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/podcast_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/medium_offset"
+                        android:clipToPadding="false"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
+                        app:setAdapter="@{viewModel.podcastAdapter}"
+                        tools:listitem="@layout/item_podcast" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/rss_feed_sync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:layout_marginBottom="@dimen/medium_offset"
+                android:onClick="@{v -> viewModel.onSyncClick(v, token, rssFeedSyncProgress)}"
+                android:src="@drawable/ic_sync"
+                android:visibility="@{isMyAccount &amp;&amp; viewModel.account.rssFeed != null &amp;&amp; viewModel.account.rssFeedVerified == 1 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/rssFeedSyncProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/rss_feed_sync"
+                app:layout_constraintEnd_toEndOf="@id/rss_feed_sync"
+                app:layout_constraintStart_toStartOf="@id/rss_feed_sync"
+                app:layout_constraintTop_toTopOf="@id/rss_feed_sync" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </layout>

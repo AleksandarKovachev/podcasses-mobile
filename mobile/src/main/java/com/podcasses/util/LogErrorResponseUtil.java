@@ -21,13 +21,13 @@ public class LogErrorResponseUtil {
 
     public static void logErrorResponse(Response response, Context context) {
         if (response.errorBody() != null) {
+            Toasty.error(context, context.getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
             try {
                 Log.e("ErrorResponse", String.format("Bad network request with code %1$s and body: %2$s", response.code(), response.errorBody().string()));
             } catch (IOException e) {
                 Log.e("ErrorResponse", "Could not parse error response: ", e);
             }
         }
-        Toasty.error(context, context.getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
     }
 
     public static void logFailure(Throwable throwable, Context context) {

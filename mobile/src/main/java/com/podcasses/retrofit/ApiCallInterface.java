@@ -121,4 +121,7 @@ public interface ApiCallInterface {
     @GET("/podcast/feed/verify")
     Call<String> rssFeedVerify(@Query("url") String url);
 
+    @POST("/podcast/feed/sync")
+    Call<Void> rssFeedSync(@Header("Authorization") String token);
+
 }

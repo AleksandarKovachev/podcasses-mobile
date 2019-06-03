@@ -148,7 +148,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_history_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/notification/ic_sync_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -159,7 +159,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_history" />
+                            <entry key="outputName" value="ic_sync" />
                             <entry key="sourceFile" value="C:\Users\PC\Desktop\playback-speed.svg" />
                           </map>
                         </option>
