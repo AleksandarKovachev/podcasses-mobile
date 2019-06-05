@@ -12,16 +12,15 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.exoplayer2.offline.Download;
+import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
+import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastsPageBinding;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.entity.PodcastType;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.AuthenticationUtil;
-import com.podcasses.manager.DownloadTracker;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.PodcastsPageViewModel;
@@ -29,8 +28,6 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,7 +44,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
 
     private LiveData<ApiResponse> podcasts;
     private LiveData<String> token;
-    private int type;
+    private PodcastTypeEnum type;
 
     public static PodcastsPageFragment newInstance(int type) {
         Bundle args = new Bundle();
@@ -61,7 +58,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        type = getArguments().getInt("type");
+        type = PodcastTypeEnum.getPodcastType(getArguments().getInt("type"));
     }
 
     @Nullable
@@ -80,14 +77,17 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (type == PodcastType.DOWNLOADED.getType()) {
+        if (type == PodcastTypeEnum.DOWNLOADED) {
             getDownloadedPodcasts();
-        } else if (type == PodcastType.HISTORY.getType() || type == PodcastType.LIKED_PODCASTS.getType() || type == PodcastType.FROM_SUBSCRIPTIONS.getType()) {
+        } else if (type == PodcastTypeEnum.HISTORY || type == PodcastTypeEnum.LIKED_PODCASTS
+                || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
             token = AuthenticationUtil.isAuthenticated(this.getContext(), this);
             token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     token.removeObservers(getViewLifecycleOwner());
                     getPodcasts(s, null);
+                } else {
+                    getPodcasts(null, null);
                 }
             });
         }
@@ -96,58 +96,36 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getDownloadedPodcasts() {
-        DownloadTracker downloadTracker = ((BaseApplication) getContext().getApplicationContext()).getDownloadTracker();
-        Collection<Download> downloads = downloadTracker.getAllDownloads();
-        if (downloads.isEmpty()) {
-            return;
-        }
-        List<String> ids = new ArrayList<>();
-        for (Download download : downloads) {
-            if (download.state == Download.STATE_COMPLETED) {
-                ids.add(download.request.id);
-            }
-        }
-        if (!ids.isEmpty()) {
-            podcasts = viewModel.getDownloadedPodcasts(ids);
-        }
-        podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, null));
+        viewModel.getDownloadedPodcasts().observe(this, podcasts -> viewModel.setPodcastsInSimpleAdapter(podcasts));
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
-        if (type == PodcastType.FROM_SUBSCRIPTIONS.getType()) {
-            podcasts = viewModel.getPodcastsFromSubscriptions(token);
+        if (type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
+            podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null);
         } else {
-            podcasts = viewModel.getHistoryPodcasts(token, type == PodcastType.LIKED_PODCASTS.getType() ? 1 : null);
+            podcasts = viewModel.getHistoryPodcasts(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null, type, refreshLayout != null);
         }
         podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        if (token != null && token.getValue() != null) {
-            getPodcasts(token.getValue(), refreshLayout);
-        }
+        getPodcasts(token.getValue(), refreshLayout);
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
         switch (apiResponse.status) {
             case LOADING:
                 break;
+            case DATABASE:
+                setDataFromResponse(apiResponse);
+                break;
             case SUCCESS:
                 liveData.removeObservers(getViewLifecycleOwner());
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                if (apiResponse.data == null) {
-                    break;
-                }
-                if (apiResponse.data instanceof List && ((List) apiResponse.data).get(0) instanceof Podcast) {
-                    List<Podcast> data = (List<Podcast>) apiResponse.data;
-                    if (data.size() > 3) {
-                        data = data.subList(0, 3);
-                    }
-                    viewModel.setPodcastsInSimpleAdapter(data);
-                }
+                setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(getViewLifecycleOwner());
@@ -162,6 +140,19 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
                     refreshLayout.finishRefresh();
                 }
                 break;
+        }
+    }
+
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+        if (apiResponse.data == null || CollectionUtils.isEmpty(((List) apiResponse.data))) {
+            return;
+        }
+        if (((List) apiResponse.data).get(0) instanceof Podcast) {
+            List<Podcast> data = (List<Podcast>) apiResponse.data;
+            if (data.size() > 3) {
+                data = data.subList(0, 3);
+            }
+            viewModel.setPodcastsInSimpleAdapter(data);
         }
     }
 

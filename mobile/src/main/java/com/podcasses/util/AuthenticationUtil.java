@@ -5,13 +5,13 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.authentication.InvalidateToken;
 import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.view.base.AuthenticationTokenTask;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
@@ -23,6 +23,10 @@ public class AuthenticationUtil {
     private static MutableLiveData<String> token = new MutableLiveData<>();
 
     public static LiveData<String> isAuthenticated(Context context, AuthenticationTokenTask authenticationTokenTask) {
+        if (!ConnectivityUtil.checkInternetConnection(context)) {
+            token.setValue(null);
+            return token;
+        }
         AccountManager accountManager = AccountManager.get(context);
         Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
 

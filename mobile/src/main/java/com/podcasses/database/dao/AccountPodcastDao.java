@@ -1,14 +1,14 @@
 package com.podcasses.database.dao;
 
-import com.podcasses.model.entity.AccountPodcast;
-
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.podcasses.model.entity.AccountPodcast;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.
@@ -16,11 +16,11 @@ import androidx.room.Query;
 @Dao
 public interface AccountPodcastDao {
 
-    @Query("SELECT * FROM AccountPodcast WHERE accountId = :accountId AND podcastId = :podcastId")
-    LiveData<AccountPodcast> getAccountPodcast(String accountId, String podcastId);
+    @Query("SELECT * FROM AccountPodcast WHERE podcastId = (:podcastId)")
+    LiveData<AccountPodcast> getAccountPodcast(String podcastId);
 
-    @Query("SELECT * FROM AccountPodcast WHERE accountId = :accountId")
-    LiveData<List<AccountPodcast>> getAccountPodcasts(String accountId);
+    @Query("SELECT * FROM AccountPodcast WHERE podcastId IN (:podcastIds)")
+    LiveData<List<AccountPodcast>> getAccountPodcasts(List<String> podcastIds);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(AccountPodcast... accountPodcast);

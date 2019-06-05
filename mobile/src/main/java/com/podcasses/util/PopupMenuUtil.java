@@ -1,5 +1,6 @@
 package com.podcasses.util;
 
+import android.annotation.SuppressLint;
 import android.view.Gravity;
 import android.view.View;
 
@@ -14,6 +15,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 
 public class PopupMenuUtil {
 
+    @SuppressLint("RestrictedApi")
     public static void podcastPopupMenu(View view, Podcast podcast, ApiCallInterface apiCallInterface, String token) {
         PopupMenu popupOptions = new PopupMenu(view.getContext(), view);
         popupOptions.getMenuInflater()
@@ -36,6 +38,7 @@ public class PopupMenuUtil {
         menuHelper.show();
     }
 
+    @SuppressLint("RestrictedApi")
     public static void commentPopupMenu(View view, Comment comment, ApiCallInterface apiCallInterface, String token) {
         PopupMenu popupOptions = new PopupMenu(view.getContext(), view);
         popupOptions.getMenuInflater()

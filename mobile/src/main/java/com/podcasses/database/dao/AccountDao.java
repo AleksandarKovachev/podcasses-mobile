@@ -1,12 +1,12 @@
 package com.podcasses.database.dao;
 
-import com.podcasses.model.entity.Account;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.podcasses.model.entity.Account;
 
 /**
  * Created by aleksandar.kovachev.
@@ -14,11 +14,11 @@ import androidx.room.Query;
 @Dao
 public interface AccountDao {
 
-    @Query("SELECT * FROM account WHERE id = (:accountId)")
-    LiveData<Account> getAccountById(String accountId);
+    @Query("SELECT * FROM account WHERE isMyAccount = 1")
+    LiveData<Account> getMyAccountData();
 
-    @Query("SELECT * FROM account WHERE username = (:username)")
-    LiveData<Account> getAccountByUsername(String username);
+    @Query("SELECT * FROM account WHERE username = (:username) OR id = (:id)")
+    LiveData<Account> getAccount(String username, String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Account account);

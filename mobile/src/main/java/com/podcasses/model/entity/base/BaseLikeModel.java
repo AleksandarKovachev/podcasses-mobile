@@ -1,4 +1,4 @@
-package com.podcasses.model.base;
+package com.podcasses.model.entity.base;
 
 import com.podcasses.BR;
 

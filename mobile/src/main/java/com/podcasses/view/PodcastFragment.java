@@ -25,6 +25,7 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
+import com.podcasses.constant.LikeStatus;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
 import com.podcasses.manager.SharedPreferencesManager;
@@ -38,7 +39,6 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
-import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.util.NetworkRequestsUtil;
@@ -129,13 +129,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             podcastResponse = viewModel.podcast(this, id, false);
             podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, null));
         }
+        setAccountPodcast(null, false, null);
 
         token.observe(this, s -> {
             if (!Strings.isEmptyOrWhitespace(s)) {
                 JWT jwt = new JWT(s);
                 viewModel.setAccountId(jwt.getSubject());
-                accountPodcastResponse = viewModel.accountPodcasts(this, s, jwt.getSubject(), id, false);
-                accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, null));
+                setAccountPodcast(s, false, null);
             }
         });
 
@@ -161,13 +161,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         podcastResponse = viewModel.podcast(this, id, true);
         podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
-
-        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
-            JWT jwt = new JWT(token.getValue());
-            accountPodcastResponse = viewModel.accountPodcasts(this, token.getValue(), jwt.getSubject(), id, true);
-            accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
-        }
+        setAccountPodcast(token.getValue(), true, refreshLayout);
         commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, refreshLayout));
+    }
+
+    private void setAccountPodcast(String token, boolean isSwipedToRefresh, RefreshLayout refreshLayout) {
+        accountPodcastResponse = viewModel.accountPodcasts(this, token, id, isSwipedToRefresh);
+        accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
     }
 
     @Override
@@ -203,33 +203,15 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         switch (apiResponse.status) {
             case LOADING:
                 break;
+            case DATABASE:
+                setDataFromResponse(apiResponse);
+                break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                if (apiResponse.data instanceof Podcast) {
-                    podcast = (Podcast) apiResponse.data;
-                    setPodcastData();
-                } else if (apiResponse.data instanceof AccountPodcast) {
-                    accountPodcast = (AccountPodcast) apiResponse.data;
-                    binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
-                    binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKE.getValue());
-                    if (podcast != null) {
-                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
-                    }
-                } else if (apiResponse.data instanceof List) {
-                    if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
-                        return;
-                    }
-                    if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                        podcast = ((List<Podcast>) apiResponse.data).get(0);
-                        setPodcastData();
-                    } else {
-                        viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
-                        setAccountComments((List<Comment>) apiResponse.data);
-                    }
-                }
+                setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -238,6 +220,31 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
+        }
+    }
+
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+        if (apiResponse.data instanceof Podcast) {
+            podcast = (Podcast) apiResponse.data;
+            setPodcastData();
+        } else if (apiResponse.data instanceof AccountPodcast) {
+            accountPodcast = (AccountPodcast) apiResponse.data;
+            binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
+            binding.dislikeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.DISLIKE.getValue());
+            if (podcast != null) {
+                podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+            }
+        } else if (apiResponse.data instanceof List) {
+            if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                return;
+            }
+            if (((List) apiResponse.data).get(0) instanceof Podcast) {
+                podcast = ((List<Podcast>) apiResponse.data).get(0);
+                setPodcastData();
+            } else {
+                viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
+                setAccountComments((List<Comment>) apiResponse.data);
+            }
         }
     }
 

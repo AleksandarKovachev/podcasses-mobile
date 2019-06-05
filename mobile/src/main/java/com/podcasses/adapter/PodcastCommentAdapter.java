@@ -3,18 +3,17 @@ package com.podcasses.adapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.podcasses.BR;
-import com.podcasses.R;
-import com.podcasses.model.response.Comment;
-import com.podcasses.viewmodel.PodcastViewModel;
-
-import java.util.List;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.podcasses.BR;
+import com.podcasses.model.response.Comment;
+import com.podcasses.viewmodel.PodcastViewModel;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.

@@ -42,6 +42,8 @@ public class Account {
 
     private int emailVerified;
 
+    private int isMyAccount;
+
     @NonNull
     public String getId() {
         return id;
@@ -161,5 +163,13 @@ public class Account {
 
     public void setEmailVerified(int emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public int getIsMyAccount() {
+        return isMyAccount;
+    }
+
+    public void setIsMyAccount(int isMyAccount) {
+        this.isMyAccount = isMyAccount;
     }
 }

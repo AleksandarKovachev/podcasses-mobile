@@ -12,10 +12,12 @@ import com.google.android.exoplayer2.offline.DownloadManager;
 import com.google.android.exoplayer2.offline.DownloadRequest;
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.util.Util;
+import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.model.entity.Podcast;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.service.AudioDownloadService;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -44,10 +46,6 @@ public class DownloadTracker {
         loadDownloads();
     }
 
-    public Collection<Download> getAllDownloads() {
-        return downloads.values();
-    }
-
     public boolean isDownloaded(String url) {
         Download download = downloads.get(Uri.parse(url));
         return download != null && download.state != Download.STATE_FAILED;
@@ -64,14 +62,16 @@ public class DownloadTracker {
         }
     }
 
-    public void toggleDownload(String url, String id, String name) {
-        Uri uri = Uri.parse(url);
+    public void toggleDownload(MainDataRepository repository, Podcast podcast) {
+        Uri uri = Uri.parse(podcast.getPodcastUrl());
         Download download = downloads.get(uri);
         if (download != null) {
             DownloadService.sendRemoveDownload(context, AudioDownloadService.class, download.request.id, false);
+            repository.deletePodcast(PodcastTypeEnum.DOWNLOADED, podcast.getId());
         } else {
-            DownloadRequest downloadRequest = DownloadHelper.forProgressive(uri).getDownloadRequest(id, Util.getUtf8Bytes(name));
+            DownloadRequest downloadRequest = DownloadHelper.forProgressive(uri).getDownloadRequest(podcast.getId(), Util.getUtf8Bytes(podcast.getTitle()));
             DownloadService.sendAddDownload(context, AudioDownloadService.class, downloadRequest, false);
+            repository.savePodcast(PodcastTypeEnum.DOWNLOADED, podcast);
         }
     }
 

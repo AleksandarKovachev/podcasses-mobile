@@ -150,16 +150,15 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
             case LOADING:
                 refreshLayout.autoRefreshAnimationOnly();
                 break;
+            case DATABASE:
+                setDataFromResponse(apiResponse);
+                break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                podcasts = (List<Podcast>) apiResponse.data;
-                viewModel.setPodcastsInAdapter(podcasts);
-                if (player != null) {
-                    setPlayingStatus(player.getPlayWhenReady());
-                }
+                setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -170,6 +169,14 @@ public class SearchFragment extends BaseFragment implements Player.EventListener
                 break;
             default:
                 break;
+        }
+    }
+
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+        podcasts = (List<Podcast>) apiResponse.data;
+        viewModel.setPodcastsInAdapter(podcasts);
+        if (player != null) {
+            setPlayingStatus(player.getPlayWhenReady());
         }
     }
 

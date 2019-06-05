@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.podcasses.model.entity.PodcastType;
+import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.view.PodcastsPageFragment;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class PodcastsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return PodcastType.getTitle(context, types.get(position));
+        return PodcastTypeEnum.getTitle(context, types.get(position));
     }
 
 }

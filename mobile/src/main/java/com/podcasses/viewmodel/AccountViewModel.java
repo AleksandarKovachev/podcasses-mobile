@@ -16,8 +16,8 @@ import com.podcasses.R;
 import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.util.NetworkRequestsUtil;
@@ -54,15 +54,11 @@ public class AccountViewModel extends BasePodcastViewModel {
         this.apiCallInterface = apiCallInterface;
     }
 
-    public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, @NonNull String username, boolean isSwipedToRefresh) {
-        if (!isSwipedToRefresh && account.getValue() != null && account.getValue().getUsername().equals(username)) {
+    public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, String username, String id, boolean isSwipedToRefresh, boolean isMyAccount) {
+        if (!isSwipedToRefresh && account.getValue() != null && username != null && account.getValue().getUsername().equals(username)) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getAccount(lifecycleOwner, username, isSwipedToRefresh);
-    }
-
-    public LiveData<ApiResponse> account(@NonNull String id) {
-        return repository.getAccountById(id);
+        return repository.getAccount(lifecycleOwner, username, id, isMyAccount, isSwipedToRefresh);
     }
 
     public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
@@ -72,19 +68,19 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.checkAccountSubscribe(accountId);
     }
 
-    public LiveData<ApiResponse> checkAccountSubscribe(@NonNull String token, @NonNull String accountId) {
+    public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
         if (isSubscribed.get() != null) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
         return repository.checkAccountSubscribe(token, accountId);
     }
 
-    public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, String userId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
         this.token = token;
         if (!isSwipedToRefresh && podcastFiles.getValue() != null && !podcastFiles.getValue().isEmpty()) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getPodcastFiles(lifecycleOwner, token, userId, isSwipedToRefresh);
+        return repository.getPodcastFiles(lifecycleOwner, token, isSwipedToRefresh);
     }
 
     @Bindable

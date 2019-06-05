@@ -1,7 +1,7 @@
 package com.podcasses.model.response;
 
 import com.podcasses.BR;
-import com.podcasses.model.base.BaseLikeModel;
+import com.podcasses.model.entity.base.BaseLikeModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

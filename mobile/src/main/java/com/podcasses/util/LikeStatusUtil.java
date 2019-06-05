@@ -1,6 +1,7 @@
 package com.podcasses.util;
 
-import com.podcasses.model.base.BaseLikeModel;
+import com.podcasses.constant.LikeStatus;
+import com.podcasses.model.entity.base.BaseLikeModel;
 
 /**
  * Created by aleksandar.kovachev.

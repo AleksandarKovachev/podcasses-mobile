@@ -128,6 +128,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     } else {
                         getAccountData(s, false, null);
                     }
+                } else {
+                    getAccountData(null, false, null);
                 }
             });
         } else {
@@ -148,6 +150,8 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                     viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
 
                     getAccountData(s, true, null);
+                } else {
+                    getAccountData(null, true, null);
                 }
             });
         }
@@ -202,14 +206,14 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
 
     private void getAccountData(String token, boolean isMyAccount, RefreshLayout refreshLayout) {
         accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, true);
+        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount);
 
         if (isMyAccount) {
-            accountResponse = viewModel.account(this, username, refreshLayout != null);
-            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), accountId, refreshLayout != null);
+            accountResponse = viewModel.account(this, username, null, refreshLayout != null, true);
+            podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
-        } else {
-            accountResponse = viewModel.account(accountId);
+        } else if (accountId != null) {
+            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
             checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
             checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
         }
@@ -222,35 +226,15 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         switch (apiResponse.status) {
             case LOADING:
                 break;
+            case DATABASE:
+                setDataFromResponse(apiResponse, refreshLayout != null);
+                break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                if (apiResponse.data instanceof Account) {
-                    account = (Account) apiResponse.data;
-                    updateTitle();
-                    viewModel.setAccount(account);
-                } else if (apiResponse.data instanceof Integer) {
-                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
-                } else if (apiResponse.data instanceof Boolean) {
-                    viewModel.setIsSubscribed((Boolean) apiResponse.data);
-                } else if (apiResponse.data instanceof List) {
-                    if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
-                        binding.podcastFilesCardView.setVisibility(View.GONE);
-                        return;
-                    }
-                    if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                        viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
-                        if (player != null) {
-                            setPlayingStatus(player.getPlayWhenReady());
-                        }
-                        getAccountPodcasts((List<Podcast>) apiResponse.data);
-                    } else {
-                        viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
-                        binding.podcastFilesCardView.setVisibility(View.VISIBLE);
-                    }
-                }
+                setDataFromResponse(apiResponse, refreshLayout != null);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -262,6 +246,33 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             case FETCHED:
                 liveData.removeObservers(this);
                 break;
+        }
+    }
+
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
+        if (apiResponse.data instanceof Account) {
+            account = (Account) apiResponse.data;
+            updateTitle();
+            viewModel.setAccount(account);
+        } else if (apiResponse.data instanceof Integer) {
+            viewModel.setAccountSubscribes((Integer) apiResponse.data);
+        } else if (apiResponse.data instanceof Boolean) {
+            viewModel.setIsSubscribed((Boolean) apiResponse.data);
+        } else if (apiResponse.data instanceof List) {
+            if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                binding.podcastFilesCardView.setVisibility(View.GONE);
+                return;
+            }
+            if (((List) apiResponse.data).get(0) instanceof Podcast) {
+                viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                if (player != null) {
+                    setPlayingStatus(player.getPlayWhenReady());
+                }
+                getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
+            } else {
+                viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
+                binding.podcastFilesCardView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -298,13 +309,13 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         });
     }
 
-    private void getAccountPodcasts(List<Podcast> podcasts) {
+    private void getAccountPodcasts(List<Podcast> podcasts, boolean isSwipedToRefresh) {
         List<String> podcastIds = new ArrayList<>();
         for (Podcast podcast : podcasts) {
             podcastIds.add(podcast.getId());
         }
 
-        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(token.getValue(), podcastIds);
+        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, token.getValue(), podcastIds, isSwipedToRefresh);
         accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
     }
 
@@ -312,23 +323,30 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         switch (accountPodcastsResponse.status) {
             case LOADING:
                 break;
+            case DATABASE:
+                setAccountPodcastsData(accountPodcastsResponse);
+                break;
             case SUCCESS: {
                 liveData.removeObservers(this);
-                if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
-                    for (Podcast podcast : viewModel.getPodcasts()) {
-                        for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
-                            if (accountPodcast.getPodcastId().equals(podcast.getId())) {
-                                podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
-                            }
-                        }
-                    }
-                }
+                setAccountPodcastsData(accountPodcastsResponse);
                 break;
             }
             case ERROR: {
                 liveData.removeObservers(this);
                 LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
                 break;
+            }
+        }
+    }
+
+    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
+        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
+            for (Podcast podcast : viewModel.getPodcasts()) {
+                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
+                    if (accountPodcast.getPodcastId().equals(podcast.getId())) {
+                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                    }
+                }
             }
         }
     }

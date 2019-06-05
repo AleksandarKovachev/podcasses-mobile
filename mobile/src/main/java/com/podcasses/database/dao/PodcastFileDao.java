@@ -1,14 +1,14 @@
 package com.podcasses.database.dao;
 
-import com.podcasses.model.entity.PodcastFile;
-
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.podcasses.model.entity.PodcastFile;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.
@@ -16,15 +16,15 @@ import androidx.room.Query;
 @Dao
 public interface PodcastFileDao {
 
-    @Query("SELECT * FROM podcastFile WHERE userId = (:userId)")
-    LiveData<List<PodcastFile>> getUserPodcastFiles(String userId);
+    @Query("SELECT * FROM PodcastFile")
+    LiveData<List<PodcastFile>> getPodcastFiles();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(PodcastFile... podcastFiles);
 
-    @Query("DELETE FROM podcastFile WHERE id = (:id)")
+    @Query("DELETE FROM PodcastFile WHERE id = (:id)")
     void deletePodcastFile(String id);
 
-    @Query("DELETE FROM podcastFile")
+    @Query("DELETE FROM PodcastFile")
     void deletePodcastFiles();
 }

@@ -17,16 +17,16 @@ import com.podcasses.BR;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastCommentAdapter;
+import com.podcasses.constant.LikeStatus;
 import com.podcasses.dagger.BaseApplication;
+import com.podcasses.manager.DownloadTracker;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.manager.DownloadTracker;
-import com.podcasses.util.LikeStatus;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.util.PopupMenuUtil;
@@ -67,12 +67,13 @@ public class PodcastViewModel extends BaseViewModel {
     }
 
     public LiveData<ApiResponse> podcast(@NonNull LifecycleOwner lifecycleOwner, @NonNull String podcastId, boolean isSwipedToRefresh) {
-        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, isSwipedToRefresh, false);
+        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, false, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, String accountId, @NonNull String podcastId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token,
+                                                 @NonNull String podcastId, boolean isSwipedToRefresh) {
         this.token = token;
-        return repository.getAccountPodcasts(lifecycleOwner, token, accountId, podcastId, isSwipedToRefresh);
+        return repository.getAccountPodcast(lifecycleOwner, token, podcastId, isSwipedToRefresh);
     }
 
     public LiveData<ApiResponse> comments(@NonNull String podcastId) {
@@ -142,7 +143,7 @@ public class PodcastViewModel extends BaseViewModel {
 
     public void onDownloadButtonClick(View view) {
         DownloadTracker downloadTracker = ((BaseApplication) view.getContext().getApplicationContext()).getDownloadTracker();
-        downloadTracker.toggleDownload(podcast.getValue().getDownloadUrl(), podcast.getValue().getId(), podcast.getValue().getTitle());
+        downloadTracker.toggleDownload(repository, podcast.getValue());
     }
 
     public void onOptionsButtonClick(View view) {

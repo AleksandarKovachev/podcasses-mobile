@@ -13,10 +13,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.podcasses.R;
+import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.entity.PodcastType;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.model.response.ApiResponse;
@@ -60,7 +60,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         binder.setLifecycleOwner(this);
         binder.setFragmentManager(getChildFragmentManager());
         binder.refreshLayout.setOnRefreshListener(this);
-        binder.setTypes(Arrays.asList(PodcastType.FROM_SUBSCRIPTIONS.getType(), PodcastType.IN_PROGRESS.getType(), PodcastType.DOWNLOADED.getType()));
+        binder.setTypes(Arrays.asList(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(), PodcastTypeEnum.IN_PROGRESS.getType(), PodcastTypeEnum.DOWNLOADED.getType()));
         return binder.getRoot();
     }
 
@@ -84,7 +84,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void getTrendingPodcasts(RefreshLayout refreshLayout, TrendingFilter trendingFilter) {
-        trendingPodcasts = viewModel.trendingPodcasts(trendingFilter);
+        trendingPodcasts = viewModel.trendingPodcasts(this, trendingFilter, refreshLayout != null);
         trendingPodcasts.observe(this, apiResponse -> consumeResponse(apiResponse, trendingPodcasts, refreshLayout));
     }
 
@@ -92,14 +92,15 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         switch (apiResponse.status) {
             case LOADING:
                 break;
+            case DATABASE:
+                setDataFromResponse(apiResponse);
+                break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                if (apiResponse.data instanceof List) {
-                    viewModel.setTrendingPodcastsInAdapter((List<Podcast>) apiResponse.data);
-                }
+                setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -108,6 +109,12 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
                 }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
+        }
+    }
+
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+        if (apiResponse.data instanceof List) {
+            viewModel.setTrendingPodcastsInAdapter((List<Podcast>) apiResponse.data);
         }
     }
 

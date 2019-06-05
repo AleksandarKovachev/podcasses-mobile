@@ -6,11 +6,14 @@ import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
+import com.podcasses.database.dao.PodcastTypeDao;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.entity.PodcastType;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -29,36 +32,61 @@ public class LocalDataSource {
 
     private PodcastFileDao podcastFileDao;
 
+    private PodcastTypeDao podcastTypeDao;
+
     @Inject
-    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao) {
+    public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao,
+                           PodcastFileDao podcastFileDao, PodcastTypeDao podcastTypeDao) {
         this.podcastDao = podcastDao;
         this.accountDao = accountDao;
         this.accountPodcastDao = accountPodcastDao;
         this.podcastFileDao = podcastFileDao;
+        this.podcastTypeDao = podcastTypeDao;
     }
 
-    LiveData<List<Podcast>> getUserPodcasts(String userId) {
-        return podcastDao.getUserPodcasts(userId);
+    LiveData<List<Podcast>> getPodcasts(Integer type) {
+        return podcastDao.getPodcasts(type);
     }
 
     LiveData<Podcast> getPodcastById(String podcastId) {
         return podcastDao.getPodcastById(podcastId);
     }
 
-    void insertPodcasts(Podcast... podcasts) {
-        Executors.newSingleThreadExecutor().execute(() -> podcastDao.insertAll(podcasts));
+    void insertPodcasts(Integer type, Podcast... podcasts) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            for (Podcast podcast : podcasts) {
+                podcastDao.insertAll(podcast);
+                if (podcastTypeDao.getPodcastType(podcast.getId(), type) == null) {
+                    PodcastType podcastType = new PodcastType();
+                    podcastType.setCreatedTimestamp(new Date());
+                    podcastType.setPodcastId(podcast.getId());
+                    podcastType.setPodcastType(type);
+                    podcastTypeDao.insertAll(podcastType);
+                }
+            }
+        });
     }
 
-    void deleteAllPodcasts() {
-        Executors.newSingleThreadExecutor().execute(() -> podcastDao.deleteAll());
+    void deletePodcast(Integer podcastType, String podcastId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            podcastTypeDao.deletePodcastType(podcastType, podcastId);
+            podcastDao.deletePodcasts();
+        });
     }
 
-    LiveData<Account> getAccountById(String accountId) {
-        return accountDao.getAccountById(accountId);
+    void deletePodcastsByType(Integer podcastType) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            podcastTypeDao.deletePodcastType(podcastType);
+            podcastDao.deletePodcasts();
+        });
     }
 
-    LiveData<Account> getAccountByUsername(String username) {
-        return accountDao.getAccountByUsername(username);
+    LiveData<Account> getMyAccountData() {
+        return accountDao.getMyAccountData();
+    }
+
+    LiveData<Account> getAccount(String username, String id) {
+        return accountDao.getAccount(username, id);
     }
 
     void insertAccount(Account account) {
@@ -66,12 +94,12 @@ public class LocalDataSource {
                 accountDao.insert(account));
     }
 
-    LiveData<AccountPodcast> getAccountPodcast(String accountId, String podcastId) {
-        return accountPodcastDao.getAccountPodcast(accountId, podcastId);
+    LiveData<List<AccountPodcast>> getAccountPodcasts(List<String> podcastIds) {
+        return accountPodcastDao.getAccountPodcasts(podcastIds);
     }
 
-    LiveData<List<AccountPodcast>> getAccountPodcasts(String accountId) {
-        return accountPodcastDao.getAccountPodcasts(accountId);
+    LiveData<AccountPodcast> getAccountPodcast(String podcastId) {
+        return accountPodcastDao.getAccountPodcast(podcastId);
     }
 
     void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
@@ -79,23 +107,20 @@ public class LocalDataSource {
                 accountPodcastDao.insertAll(accountPodcasts));
     }
 
-    LiveData<List<PodcastFile>> getUserPodcastFiles(String userId) {
-        return podcastFileDao.getUserPodcastFiles(userId);
+    LiveData<List<PodcastFile>> getPodcastFiles() {
+        return podcastFileDao.getPodcastFiles();
     }
 
     void insertPodcastFiles(PodcastFile... podcastFiles) {
-        Executors.newSingleThreadExecutor().execute(() ->
-                podcastFileDao.insertAll(podcastFiles));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            podcastFileDao.deletePodcastFiles();
+            podcastFileDao.insertAll(podcastFiles);
+        });
     }
 
     void deletePodcastFile(String id) {
         Executors.newSingleThreadExecutor().execute(() ->
                 podcastFileDao.deletePodcastFile(id));
-    }
-
-    void deletePodcastFiles() {
-        Executors.newSingleThreadExecutor().execute(() ->
-                podcastFileDao.deletePodcastFiles());
     }
 
 }

@@ -1,45 +1,60 @@
 package com.podcasses.model.entity;
 
-import android.content.Context;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
-import com.podcasses.R;
+import com.podcasses.database.DateConverter;
+
+import java.util.Date;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public enum PodcastType {
+@Entity
+public class PodcastType {
 
-    MY_PODCASTS(1, R.string.my_podcasts),
-    HISTORY(2, R.string.history),
-    LIKED_PODCASTS(3, R.string.liked_podcasts),
-    TRENDING(4, R.string.trending_podcasts),
-    DOWNLOADED(5, R.string.downloaded_podcasts),
-    IN_PROGRESS(6, R.string.podcasts_in_progress),
-    FROM_SUBSCRIPTIONS(7, R.string.podcasts_from_subscribe);
+    @PrimaryKey(autoGenerate = true)
+    private Integer id;
 
-    private int type;
-    private int title;
+    @ForeignKey(entity = Podcast.class, parentColumns = "id", childColumns = "id")
+    private String podcastId;
 
-    PodcastType(int type, int title) {
-        this.type = type;
-        this.title = title;
+    private Integer podcastType;
+
+    @TypeConverters({DateConverter.class})
+    private Date createdTimestamp;
+
+    public Integer getId() {
+        return id;
     }
 
-    public int getType() {
-        return type;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public int getTitle() {
-        return title;
+    public String getPodcastId() {
+        return podcastId;
     }
 
-    public static String getTitle(Context context, int type) {
-        for (PodcastType podcastType : values()) {
-            if (podcastType.getType() == type) {
-                return context.getString(podcastType.getTitle());
-            }
-        }
-        return null;
+    public void setPodcastId(String podcastId) {
+        this.podcastId = podcastId;
     }
 
+    public Integer getPodcastType() {
+        return podcastType;
+    }
+
+    public void setPodcastType(Integer podcastType) {
+        this.podcastType = podcastType;
+    }
+
+    public Date getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Date createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
+    }
 }

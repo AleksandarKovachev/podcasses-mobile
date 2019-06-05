@@ -1,14 +1,14 @@
 package com.podcasses.database.dao;
 
-import com.podcasses.model.entity.Podcast;
-
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.podcasses.model.entity.Podcast;
+
+import java.util.List;
 
 /**
  * Created by aleksandar.kovachev.
@@ -16,16 +16,19 @@ import androidx.room.Query;
 @Dao
 public interface PodcastDao {
 
-    @Query("SELECT * FROM podcast WHERE userId = (:userId)")
-    LiveData<List<Podcast>> getUserPodcasts(String userId);
+    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp")
+    LiveData<List<Podcast>> getPodcasts(Integer type);
 
-    @Query("SELECT * FROM podcast WHERE id = (:podcastId)")
+    @Query("SELECT * FROM Podcast WHERE id = (:podcastId)")
     LiveData<Podcast> getPodcastById(String podcastId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Podcast... podcasts);
 
-    @Query("DELETE FROM podcast")
-    void deleteAll();
+    @Query("DELETE FROM Podcast WHERE id = (:id)")
+    void deletePodcast(String id);
+
+    @Query("DELETE FROM Podcast WHERE id NOT IN (SELECT podcastId FROM PODCASTTYPE)")
+    void deletePodcasts();
 
 }

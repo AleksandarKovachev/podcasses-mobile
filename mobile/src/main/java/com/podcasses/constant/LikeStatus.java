@@ -1,4 +1,4 @@
-package com.podcasses.util;
+package com.podcasses.constant;
 
 /**
  * Created by aleksandar.kovachev.

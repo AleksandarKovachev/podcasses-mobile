@@ -36,8 +36,8 @@ public class HomeViewModel extends BasePodcastViewModel {
         return repository.getLanguages();
     }
 
-    public LiveData<ApiResponse> trendingPodcasts(TrendingFilter filter) {
-        return repository.getTrendingPodcasts(filter);
+    public LiveData<ApiResponse> trendingPodcasts(LifecycleOwner lifecycleOwner, TrendingFilter filter, boolean isSwipedToRefresh) {
+        return repository.getTrendingPodcasts(lifecycleOwner, filter, isSwipedToRefresh);
     }
 
     public MutableLiveData<TrendingFilter> getTrendingFilterMutableLiveData() {

@@ -13,8 +13,8 @@ import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
-import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.PopupMenuUtil;
 
@@ -44,19 +44,19 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast,
-                                          String podcastId, String userId, boolean isSwipedToRefresh, boolean saveData) {
+                                          String podcastId, String userId, boolean isSwipedToRefresh, boolean isMyAccount) {
         if (!isSwipedToRefresh && podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isSwipedToRefresh, saveData);
+        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isMyAccount, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accountPodcasts(String token, List<String> podcastIds) {
+    public LiveData<ApiResponse> accountPodcasts(LifecycleOwner lifecycleOwner, String token, List<String> podcastIds, boolean isSwipedToRefresh) {
         this.token = token;
         if (podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getAccountPodcasts(token, podcastIds);
+        return repository.getAccountPodcasts(lifecycleOwner, token, podcastIds, isSwipedToRefresh);
     }
 
     public PodcastAdapter getTrendingPodcastAdapter() {

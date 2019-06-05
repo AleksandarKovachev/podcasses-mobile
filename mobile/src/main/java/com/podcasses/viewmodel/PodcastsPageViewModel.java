@@ -1,7 +1,10 @@
 package com.podcasses.viewmodel;
 
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 
+import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -18,16 +21,17 @@ public class PodcastsPageViewModel extends BasePodcastViewModel {
         super(repository, apiCallInterface);
     }
 
-    public LiveData<ApiResponse> getHistoryPodcasts(String token, Integer likeStatus) {
-        return repository.getHistoryPodcasts(token, likeStatus);
+    public LiveData<ApiResponse> getHistoryPodcasts(LifecycleOwner lifecycleOwner, String token, Integer likeStatus,
+                                                    PodcastTypeEnum podcastTypeEnum, boolean isSwipedToRefresh) {
+        return repository.getHistoryPodcasts(lifecycleOwner, token, likeStatus, podcastTypeEnum, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> getDownloadedPodcasts(List<String> ids) {
-        return repository.getDownloadedPodcasts(ids);
+    public LiveData<List<Podcast>> getDownloadedPodcasts() {
+        return repository.getPodcasts(PodcastTypeEnum.DOWNLOADED);
     }
 
-    public LiveData<ApiResponse> getPodcastsFromSubscriptions(String token) {
-        return repository.getPodcastsFromSubscribtions(token);
+    public LiveData<ApiResponse> getPodcastsFromSubscriptions(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
+        return repository.getPodcastsFromSubscriptions(lifecycleOwner, token, isSwipedToRefresh);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.podcasses.dagger;
 
 import android.app.Application;
-import android.preference.PreferenceManager;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.room.Room;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -11,7 +13,7 @@ import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
-import com.podcasses.manager.SharedPreferencesManager;
+import com.podcasses.database.dao.PodcastTypeDao;
 import com.podcasses.repository.LocalDataSource;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -23,8 +25,6 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -138,8 +138,9 @@ public class NetModule {
 
     @Singleton
     @Provides
-    LocalDataSource provideLocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao) {
-        return new LocalDataSource(podcastDao, accountDao, accountPodcastDao, podcastFileDao);
+    LocalDataSource provideLocalDataSource(PodcastDao podcastDao, AccountDao accountDao,
+                                           AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao, PodcastTypeDao podcastTypeDao) {
+        return new LocalDataSource(podcastDao, accountDao, accountPodcastDao, podcastFileDao, podcastTypeDao);
     }
 
     @Singleton
@@ -164,6 +165,12 @@ public class NetModule {
     @Provides
     PodcastFileDao providePodcastFileDao(AppDatabase appDatabase) {
         return appDatabase.podcastFileDao();
+    }
+
+    @Singleton
+    @Provides
+    PodcastTypeDao providePodcastTypeDao(AppDatabase appDatabase) {
+        return appDatabase.podcastTypeDao();
     }
 
 }

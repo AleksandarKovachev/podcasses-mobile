@@ -3,6 +3,7 @@ package com.podcasses.model.response;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.podcasses.model.response.ApiResponse.Status.DATABASE;
 import static com.podcasses.model.response.ApiResponse.Status.ERROR;
 import static com.podcasses.model.response.ApiResponse.Status.FETCHED;
 import static com.podcasses.model.response.ApiResponse.Status.LOADING;
@@ -43,12 +44,17 @@ public class ApiResponse {
         return  new ApiResponse(FETCHED, null, null);
     }
 
+    public static ApiResponse database(Object data) {
+        return new ApiResponse(DATABASE, data, null);
+    }
+
     public enum Status {
 
         LOADING,
         SUCCESS,
         ERROR,
-        FETCHED
+        FETCHED,
+        DATABASE
 
     }
 }

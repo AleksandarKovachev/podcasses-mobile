@@ -12,7 +12,7 @@ import androidx.room.TypeConverters;
 
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
-import com.podcasses.model.base.BaseLikeModel;
+import com.podcasses.model.entity.base.BaseLikeModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,8 +27,6 @@ public class Podcast extends BaseLikeModel {
     @NonNull
     @PrimaryKey
     private String id;
-
-    private int type;
 
     private String title;
 
@@ -80,14 +78,6 @@ public class Podcast extends BaseLikeModel {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getTitle() {
