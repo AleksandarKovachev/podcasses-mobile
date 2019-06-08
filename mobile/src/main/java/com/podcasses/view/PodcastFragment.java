@@ -28,7 +28,6 @@ import com.podcasses.R;
 import com.podcasses.constant.LikeStatus;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
-import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
@@ -71,8 +70,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     @Inject
     ApiCallInterface apiCallInterface;
 
-    private SharedPreferencesManager sharedPreferencesManager;
-
     private FragmentPodcastBinding binding;
 
     private PodcastViewModel viewModel;
@@ -113,7 +110,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         binding.setViewModel(viewModel);
         binding.setPodcastId(id);
         binding.refreshLayout.setOnRefreshListener(this);
-        sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         return binding.getRoot();
     }
 
@@ -174,8 +170,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            FragmentCallback fragmentCallback = (FragmentCallback) context;
-            binder = fragmentCallback.getBinder();
+            binder = ((FragmentCallback) context).getBinder();
         } catch (ClassCastException e) {
             Log.e(getTag(), "Activity (Context) must implement FragmentCallback");
             throw new RuntimeException();
@@ -187,10 +182,25 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         playingPodcastId = service.getPodcastId();
         setPlayingStatus(playWhenReady);
 
-        if (playbackState == Player.STATE_IDLE) {
-            binding.playButton.setSelected(false);
-        } else if (!sharedPreferencesManager.isPodcastViewed(id)) {
-            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, id);
+        if (playbackState == Player.STATE_READY) {
+            if (accountPodcast == null || accountPodcast.getViewTimestamp() == null) {
+                LiveData<ApiResponse> accountPodcastResponse =
+                        NetworkRequestsUtil.sendPodcastViewRequest(getContext(), apiCallInterface, token.getValue(), id);
+                accountPodcastResponse.observe(this, response -> {
+                    switch (response.status) {
+                        case SUCCESS:
+                            accountPodcastResponse.removeObservers(this);
+                            accountPodcast = (AccountPodcast) response.data;
+                            viewModel.saveAccountPodcast(accountPodcast);
+                            break;
+                        case ERROR:
+                            accountPodcastResponse.removeObservers(this);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
         }
     }
 
@@ -311,7 +321,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LikeStatusUtil.updateLikeStatus(viewModel.getPodcast(),
-                            likeStatus, accountPodcast != null ? accountPodcast.getLikeStatus() : likeStatus);
+                            likeStatus, accountPodcast != null ? accountPodcast.getLikeStatus() : LikeStatus.DEFAULT.getValue());
                     accountPodcast = response.body();
                     if (likeStatus == LikeStatus.LIKE.getValue()) {
                         binding.likeButton.setSelected(accountPodcast.getLikeStatus() == likeStatus);

@@ -20,6 +20,7 @@ import com.podcasses.adapter.PodcastCommentAdapter;
 import com.podcasses.constant.LikeStatus;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.manager.DownloadTracker;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.CommentRequest;
@@ -67,7 +68,7 @@ public class PodcastViewModel extends BaseViewModel {
     }
 
     public LiveData<ApiResponse> podcast(@NonNull LifecycleOwner lifecycleOwner, @NonNull String podcastId, boolean isSwipedToRefresh) {
-        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, false, isSwipedToRefresh);
+        return repository.getPodcasts(lifecycleOwner, null, podcastId, null, false, isSwipedToRefresh, 0);
     }
 
     public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token,
@@ -83,6 +84,10 @@ public class PodcastViewModel extends BaseViewModel {
     public LiveData<ApiResponse> accountComments(@NonNull String token, @NonNull List<String> commentIds) {
         this.token = token;
         return repository.getAccountComments(token, commentIds);
+    }
+
+    public void saveAccountPodcast(AccountPodcast accountPodcast) {
+        repository.saveAccountPodcast(accountPodcast);
     }
 
     @Bindable

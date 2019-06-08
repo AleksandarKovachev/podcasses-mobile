@@ -10,25 +10,13 @@ import javax.inject.Singleton;
 @Singleton
 public class SharedPreferencesManager {
 
-    public static final String PLAYBACK_SPEED = "playback_speed";
-    public static final String TRIM_SILENCE = "trim_silence";
+    private static final String PLAYBACK_SPEED = "playback_speed";
+    private static final String TRIM_SILENCE = "trim_silence";
 
     private SharedPreferences sharedPreferences;
 
     public SharedPreferencesManager(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
-    }
-
-    public String getString(String key, String defaultValue) {
-        return sharedPreferences.getString(key, defaultValue);
-    }
-
-    public void setViewedPodcast(String podcastId) {
-        sharedPreferences.edit().putBoolean(podcastId, true).apply();
-    }
-
-    public boolean isPodcastViewed(String podcastId) {
-        return sharedPreferences.getBoolean(podcastId, false);
     }
 
     public float getPlaybackSpeed() {
@@ -39,7 +27,7 @@ public class SharedPreferencesManager {
         sharedPreferences.edit().putFloat(PLAYBACK_SPEED, playbackSpeed).apply();
     }
 
-    public boolean isTrimSilince() {
+    public boolean isTrimSilence() {
         return sharedPreferences.getBoolean(TRIM_SILENCE, false);
     }
 

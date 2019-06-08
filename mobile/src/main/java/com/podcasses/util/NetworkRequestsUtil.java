@@ -16,7 +16,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.material.button.MaterialButton;
 import com.podcasses.R;
 import com.podcasses.constant.LikeStatus;
-import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
@@ -24,6 +23,7 @@ import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountRequest;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 
@@ -81,18 +81,38 @@ public class NetworkRequestsUtil {
         });
     }
 
-    public static void sendPodcastViewRequest(ApiCallInterface apiCallInterface, SharedPreferencesManager sharedPreferencesManager, String podcastId) {
-        Call<Void> call = apiCallInterface.podcastView(podcastId);
-        call.enqueue(new Callback<Void>() {
+    public static LiveData<ApiResponse> sendPodcastViewRequest(Context context, ApiCallInterface apiCallInterface, String token, String podcastId) {
+        MutableLiveData<ApiResponse> accountPodcastResponse = new MutableLiveData<>(ApiResponse.loading());
+        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setPodcastId(podcastId);
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
+        call.enqueue(new Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    accountPodcastResponse.setValue(ApiResponse.success(response.body()));
+                } else {
+                    accountPodcastResponse.setValue(ApiResponse.error(null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                accountPodcastResponse.setValue(ApiResponse.error(t));
+                LogErrorResponseUtil.logFailure(t, context);
+            }
+        });
+
+        apiCallInterface.podcastView(podcastId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                sharedPreferencesManager.setViewedPodcast(podcastId);
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
             }
         });
+        return accountPodcastResponse;
     }
 
     public static void rssFeedVerify(ApiCallInterface apiCallInterface, String rssFeed,
