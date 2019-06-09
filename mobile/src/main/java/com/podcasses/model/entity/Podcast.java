@@ -17,6 +17,7 @@ import com.podcasses.model.entity.base.BaseLikeModel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by aleksandar.kovachev.
@@ -267,4 +268,16 @@ public class Podcast extends BaseLikeModel {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Podcast)) return false;
+        Podcast podcast = (Podcast) o;
+        return getId().equals(podcast.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

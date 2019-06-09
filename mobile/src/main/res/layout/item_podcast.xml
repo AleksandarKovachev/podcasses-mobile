@@ -16,13 +16,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_offset"
+        android:layout_marginStart="@dimen/medium_offset"
+        android:layout_marginTop="@dimen/extra_small_offset"
+        android:layout_marginEnd="@dimen/medium_offset"
         android:onClick="@{() -> viewModel.onPodcastClick(position)}">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/podcast_image"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:scaleType="fitCenter"
             app:imageUrl='@{viewModel.getPodcastAt(position).imageUrl}'
             app:layout_constraintBottom_toBottomOf="parent"
@@ -43,14 +45,13 @@
             android:id="@+id/podcast_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_offset"
+            android:layout_marginEnd="@dimen/small_offset"
             android:ellipsize="end"
             android:maxLines="3"
-            android:paddingStart="@dimen/small_offset"
-            android:paddingEnd="@dimen/small_offset"
-            android:paddingBottom="@dimen/small_offset"
             android:text="@{viewModel.getPodcastAt(position).title}"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/play_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/podcast_image"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -58,58 +59,13 @@
             android:id="@+id/podcast_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.onAccountClick(position)}"
-            android:paddingStart="@dimen/small_offset"
-            android:paddingEnd="@dimen/small_offset"
-            android:paddingBottom="5dp"
-            android:text="@{viewModel.getPodcastAt(position).username}"
-            app:layout_constraintBottom_toTopOf="@id/podcast_date"
-            app:layout_constraintStart_toEndOf="@id/podcast_image" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/podcast_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/small_offset"
-            android:paddingEnd="@dimen/small_offset"
-            android:text="@{viewModel.getPodcastAt(position).podcastDate}"
-            app:layout_constraintBottom_toBottomOf="@id/podcast_image"
-            app:layout_constraintStart_toEndOf="@id/podcast_image" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/play_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="@dimen/medium_offset"
-            android:background="?selectableItemBackgroundBorderless"
-            android:onClick="@{() -> viewModel.onPlayButtonClick(position)}"
-            android:scaleType="fitCenter"
-            android:src="@drawable/play_pause"
-            app:layout_constraintEnd_toStartOf="@id/options_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:playPauseStatus='@{viewModel.playingIndex}'
-            app:position='@{position}' />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/options_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:onClick="@{v -> viewModel.onOptionsButtonClick(v, position)}"
-            android:src="@drawable/ic_more_options"
-            app:layout_constraintBottom_toBottomOf="@id/play_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/podcast_views"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_offset"
             android:layout_marginEnd="@dimen/small_offset"
-            android:text="@{String.valueOf(viewModel.getPodcastAt(position).views)}"
+            android:onClick="@{() -> viewModel.onAccountClick(position)}"
+            android:text="@{viewModel.getPodcastAt(position).username}"
             app:layout_constraintBottom_toBottomOf="@id/podcast_image"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -22,16 +22,16 @@ public class PodcastsPageViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> getHistoryPodcasts(LifecycleOwner lifecycleOwner, String token, Integer likeStatus,
-                                                    PodcastTypeEnum podcastTypeEnum, boolean isSwipedToRefresh) {
-        return repository.getHistoryPodcasts(lifecycleOwner, token, likeStatus, podcastTypeEnum, isSwipedToRefresh);
+                                                    PodcastTypeEnum podcastTypeEnum, boolean isSwipedToRefresh, int page) {
+        return repository.getHistoryPodcasts(lifecycleOwner, token, likeStatus, podcastTypeEnum, isSwipedToRefresh, page);
     }
 
-    public LiveData<List<Podcast>> getDownloadedPodcasts() {
-        return repository.getPodcasts(PodcastTypeEnum.DOWNLOADED);
+    public LiveData<List<Podcast>> getDownloadedPodcasts(int page) {
+        return repository.getPodcasts(PodcastTypeEnum.DOWNLOADED, page);
     }
 
-    public LiveData<ApiResponse> getPodcastsFromSubscriptions(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
-        return repository.getPodcastsFromSubscriptions(lifecycleOwner, token, isSwipedToRefresh);
+    public LiveData<ApiResponse> getPodcastsFromSubscriptions(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh, int page) {
+        return repository.getPodcastsFromSubscriptions(lifecycleOwner, token, isSwipedToRefresh, page);
     }
 
 }

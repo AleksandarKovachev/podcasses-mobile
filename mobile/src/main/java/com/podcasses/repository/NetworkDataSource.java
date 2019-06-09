@@ -42,7 +42,7 @@ class NetworkDataSource {
         } else {
             call = apiCallInterface.accountById(id);
         }
-        
+
         call.enqueue(new Callback<Account>() {
             @Override
             public void onResponse(Call<Account> call, Response<Account> response) {
@@ -101,8 +101,8 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String podcast, String podcastId, List<String> userId, List<String> ids, IDataCallback<List<Podcast>> callback) {
-        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, ids);
+    void getPodcasts(String podcast, String podcastId, List<String> userId, List<String> ids, int page, IDataCallback<List<Podcast>> callback) {
+        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, ids, page);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
@@ -121,8 +121,8 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String token, Integer likeStatus, IDataCallback<List<Podcast>> callback) {
-        Call<List<AccountPodcast>> accountPodcastsCall = apiCallInterface.accountPodcasts("Bearer " + token, likeStatus);
+    void getPodcasts(String token, Integer likeStatus, int page, IDataCallback<List<Podcast>> callback) {
+        Call<List<AccountPodcast>> accountPodcastsCall = apiCallInterface.accountPodcasts("Bearer " + token, likeStatus, page);
         accountPodcastsCall.enqueue(new Callback<List<AccountPodcast>>() {
             @Override
             public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {
@@ -131,7 +131,7 @@ class NetworkDataSource {
                     for (AccountPodcast accountPodcast : response.body()) {
                         podcastIds.add(accountPodcast.getPodcastId());
                     }
-                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, null, podcastIds);
+                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, null, podcastIds, page);
                     podcastsCall.enqueue(new Callback<List<Podcast>>() {
                         @Override
                         public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
@@ -161,13 +161,13 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcastsFromSubscriptions(String token, IDataCallback<List<Podcast>> callback) {
+    void getPodcastsFromSubscriptions(String token, int page, IDataCallback<List<Podcast>> callback) {
         Call<List<String>> subscriptionsCall = apiCallInterface.getSubscriptions("Bearer " + token);
         subscriptionsCall.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (response.isSuccessful() && !CollectionUtils.isEmpty(response.body())) {
-                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, response.body(), null);
+                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, response.body(), null, page);
                     podcastsCall.enqueue(new Callback<List<Podcast>>() {
                         @Override
                         public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {

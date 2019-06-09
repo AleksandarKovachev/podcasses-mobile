@@ -63,15 +63,6 @@ public class CustomViewBindings {
         }
     }
 
-    @BindingAdapter(value = {"playPauseStatus", "position"}, requireAll = false)
-    public static void playPauseStatus(View view, Integer position, Integer playingIndex) {
-        if (position == null || position == -1 || playingIndex == -1) {
-            view.setSelected(false);
-        } else {
-            view.setSelected(position.equals(playingIndex));
-        }
-    }
-
     @BindingAdapter(value = {"isSubscribed"})
     public static void isSubscribed(View view, boolean isSubscribed) {
         int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);

@@ -1,9 +1,6 @@
 package com.podcasses.view;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,35 +8,28 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
-import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
-import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.ApiResponse;
-import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LogErrorResponseUtil;
-import com.podcasses.util.NetworkRequestsUtil;
 import com.podcasses.view.base.BaseFragment;
-import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.AccountViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -47,6 +37,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,15 +45,10 @@ import javax.inject.Inject;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountFragment extends BaseFragment implements Player.EventListener, OnRefreshListener {
+public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
-
-    @Inject
-    ApiCallInterface apiCallInterface;
-
-    private SharedPreferencesManager sharedPreferencesManager;
 
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
@@ -75,19 +61,14 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     private LiveData<ApiResponse> podcasts;
     private LiveData<ApiResponse> podcastFiles;
 
-    private String playingPodcastId;
-    private IBinder binder;
-    private AudioPlayerService service;
-    private SimpleExoPlayer player;
-
     private Account account;
-    private String username;
     private static String accountId;
-    private static int instanceCount;
+
+    private boolean isMyAccount = false;
+    private int page = 0;
 
     static AccountFragment newInstance(int instance, String openedAccountId) {
         accountId = openedAccountId;
-        instanceCount = instance;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         AccountFragment fragment = new AccountFragment();
@@ -105,7 +86,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
-        sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         return binding.getRoot();
     }
 
@@ -113,90 +93,25 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (accountId != null) {
-            binding.setAccountId(accountId);
-            viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-            viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
-            token = AuthenticationUtil.isAuthenticated(getContext(), this);
-            token.observe(this, s -> {
-                if (!Strings.isEmptyOrWhitespace(s)) {
-                    token.removeObservers(this);
-                    binding.setToken(s);
-                    JWT jwt = new JWT(s);
-                    if (accountId.equals(jwt.getSubject())) {
-                        binding.setIsMyAccount(true);
-                        getAccountData(s, true, null);
-                    } else {
-                        getAccountData(s, false, null);
-                    }
-                } else {
-                    getAccountData(null, false, null);
-                }
-            });
+            setAccountImages();
+            setAuthenticationToken(false);
         } else {
-            binding.setIsMyAccount(true);
-            token = AuthenticationUtil.isAuthenticated(getContext(), this);
-            token.observe(this, s -> {
-                if (!Strings.isEmptyOrWhitespace(s)) {
-                    token.removeObservers(this);
-                    JWT jwt = new JWT(s);
-                    accountId = jwt.getSubject();
-                    binding.setAccountId(accountId);
-                    binding.setInstance(instanceCount);
-                    binding.setFragmentManager(getChildFragmentManager());
-                    username = jwt.getClaim(KeycloakToken.PREFERRED_USERNAME_CLAIMS).asString();
-                    binding.setToken(s);
-
-                    viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-                    viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
-
-                    getAccountData(s, true, null);
-                } else {
-                    getAccountData(null, true, null);
-                }
-            });
+            setAuthenticationToken(true);
         }
 
         setPodcastClick();
         setAccountClick();
         setAccountEditClick();
-
-        service = ((AudioPlayerService.LocalBinder) binder).getService();
-        player = service.getPlayerInstance();
-
-        if (player != null) {
-            playingPodcastId = service.getPodcastId();
-            player.addListener(this);
-            setPlayingStatus(player.getPlayWhenReady());
-        }
+        setInfiniteScrollListener();
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        getAccountData(null, false, refreshLayout);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            FragmentCallback fragmentCallback = (FragmentCallback) context;
-            binder = fragmentCallback.getBinder();
-        } catch (ClassCastException e) {
-            Log.e(getTag(), "Activity (Context) must implement FragmentCallback");
-            throw new RuntimeException();
+        page = 0;
+        if (token == null || token.getValue() == null || token.getValue() != null && new JWT(token.getValue()).isExpired(new Date().getTime())) {
+            setAuthenticationToken(false);
         }
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcastId = service.getPodcastId();
-        setPlayingStatus(playWhenReady);
-
-        if (playbackState == Player.STATE_IDLE) {
-            viewModel.setPlayingIndex(-1);
-        } else if (!sharedPreferencesManager.isPodcastViewed(playingPodcastId)) {
-            NetworkRequestsUtil.sendPodcastViewRequest(apiCallInterface, sharedPreferencesManager, playingPodcastId);
-        }
+        getAccountData(null, refreshLayout);
     }
 
     void updateTitle() {
@@ -204,12 +119,53 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
-    private void getAccountData(String token, boolean isMyAccount, RefreshLayout refreshLayout) {
+    private void setAuthenticationToken(boolean additionalData) {
+        token = AuthenticationUtil.isAuthenticated(getContext(), this);
+        token.observe(this, s -> {
+            if (!Strings.isEmptyOrWhitespace(s)) {
+                token.removeObservers(this);
+                JWT jwt = new JWT(s);
+                binding.setToken(s);
+                if (accountId == null) {
+                    accountId = jwt.getSubject();
+                }
+                binding.setAccountId(accountId);
+
+                setAccountAdditionalData(jwt, additionalData);
+                getAccountData(s, null);
+            } else {
+                getAccountData(null, null);
+            }
+        });
+    }
+
+    private void setAccountAdditionalData(JWT jwt, boolean setAccountImages) {
+        if (setAccountImages) {
+            binding.setIsMyAccount(true);
+            isMyAccount = true;
+            setAccountImages();
+        } else {
+            if (accountId.equals(jwt.getSubject())) {
+                binding.setIsMyAccount(true);
+                isMyAccount = true;
+            }
+        }
+    }
+
+    private void setAccountImages() {
+        viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
+        viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
+    }
+
+    private void getAccountData(String token, RefreshLayout refreshLayout) {
+        if (accountId == null) {
+            isMyAccount = true;
+        }
         accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount);
+        loadPodcasts(isMyAccount, refreshLayout);
 
         if (isMyAccount) {
-            accountResponse = viewModel.account(this, username, null, refreshLayout != null, true);
+            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, true);
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else if (accountId != null) {
@@ -217,7 +173,6 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
             checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
         }
-        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
         accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
     }
@@ -232,11 +187,13 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
+                    viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
                 setDataFromResponse(apiResponse, refreshLayout != null);
                 break;
             case ERROR:
+                viewModel.setIsLoading(false);
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
@@ -244,6 +201,7 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
             case FETCHED:
+                viewModel.setIsLoading(false);
                 liveData.removeObservers(this);
                 break;
         }
@@ -259,15 +217,13 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         } else if (apiResponse.data instanceof Boolean) {
             viewModel.setIsSubscribed((Boolean) apiResponse.data);
         } else if (apiResponse.data instanceof List) {
+            viewModel.setIsLoading(false);
             if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                 binding.podcastFilesCardView.setVisibility(View.GONE);
                 return;
             }
             if (((List) apiResponse.data).get(0) instanceof Podcast) {
                 viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
-                if (player != null) {
-                    setPlayingStatus(player.getPlayWhenReady());
-                }
                 getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
             } else {
                 viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
@@ -351,20 +307,21 @@ public class AccountFragment extends BaseFragment implements Player.EventListene
         }
     }
 
-    private void setPlayingStatus(boolean playingStatus) {
-        if (!playingStatus) {
-            viewModel.setPlayingIndex(-1);
-            return;
-        }
-        if (playingPodcastId != null && !CollectionUtils.isEmpty(viewModel.getPodcasts())) {
-            int i;
-            for (i = 0; i < viewModel.getPodcasts().size(); i++) {
-                if (playingPodcastId.equals(viewModel.getPodcasts().get(i).getId())) {
-                    break;
+    private void setInfiniteScrollListener() {
+        binding.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                if (!viewModel.getIsLoading()) {
+                    ++page;
+                    viewModel.setIsLoading(true);
+                    loadPodcasts(isMyAccount, null);
                 }
             }
-            viewModel.setPlayingIndex(i);
-        }
+        });
+    }
+
+    private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
+        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
+        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
     }
 
 }

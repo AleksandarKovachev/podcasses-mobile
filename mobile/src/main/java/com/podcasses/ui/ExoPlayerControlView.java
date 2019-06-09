@@ -69,7 +69,7 @@ public class ExoPlayerControlView extends PlayerControlView implements AdapterVi
         speeds = Arrays.asList(getResources().getStringArray(R.array.speed_values));
 
         playbackSpeed = sharedPreferencesManager.getPlaybackSpeed();
-        trimSilence = sharedPreferencesManager.isTrimSilince();
+        trimSilence = sharedPreferencesManager.isTrimSilence();
 
         AppCompatSpinner playerSpeed = findViewById(R.id.player_speed);
         if (playerSpeed != null) {

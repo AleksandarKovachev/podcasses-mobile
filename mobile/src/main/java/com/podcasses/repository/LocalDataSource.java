@@ -44,8 +44,8 @@ public class LocalDataSource {
         this.podcastTypeDao = podcastTypeDao;
     }
 
-    LiveData<List<Podcast>> getPodcasts(Integer type) {
-        return podcastDao.getPodcasts(type);
+    LiveData<List<Podcast>> getPodcasts(Integer type, int page) {
+        return podcastDao.getPodcasts(type, page * 10);
     }
 
     LiveData<Podcast> getPodcastById(String podcastId) {

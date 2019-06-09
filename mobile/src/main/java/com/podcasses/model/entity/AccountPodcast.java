@@ -1,10 +1,10 @@
 package com.podcasses.model.entity;
 
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import java.util.Date;
 
 /**
  * Created by aleksandar.kovachev.
@@ -25,6 +25,10 @@ public class AccountPodcast {
     private long timeIndex;
 
     private int markAsPlayed;
+
+    private Date likeTimestamp;
+
+    private Date viewTimestamp;
 
     private Date createdTimestamp;
 
@@ -78,6 +82,22 @@ public class AccountPodcast {
 
     public void setMarkAsPlayed(int markAsPlayed) {
         this.markAsPlayed = markAsPlayed;
+    }
+
+    public Date getLikeTimestamp() {
+        return likeTimestamp;
+    }
+
+    public void setLikeTimestamp(Date likeTimestamp) {
+        this.likeTimestamp = likeTimestamp;
+    }
+
+    public Date getViewTimestamp() {
+        return viewTimestamp;
+    }
+
+    public void setViewTimestamp(Date viewTimestamp) {
+        this.viewTimestamp = viewTimestamp;
     }
 
     public Date getCreatedTimestamp() {

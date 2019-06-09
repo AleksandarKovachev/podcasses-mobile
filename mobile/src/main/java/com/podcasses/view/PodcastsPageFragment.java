@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
@@ -42,9 +43,14 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
 
     private PodcastsPageViewModel viewModel;
 
+    private FragmentPodcastsPageBinding binder;
     private LiveData<ApiResponse> podcasts;
     private LiveData<String> token;
     private PodcastTypeEnum type;
+
+    private int page = 0;
+    private int visibleThreshold = 5;
+    private int lastVisibleItem, totalItemCount;
 
     public static PodcastsPageFragment newInstance(int type) {
         Bundle args = new Bundle();
@@ -65,7 +71,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentPodcastsPageBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_podcasts_page, container, false);
+        binder = DataBindingUtil.inflate(inflater, R.layout.fragment_podcasts_page, container, false);
         binder.setLifecycleOwner(getViewLifecycleOwner());
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PodcastsPageViewModel.class);
@@ -93,23 +99,26 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         }
         setPodcastClick();
         setAccountClick();
+        setPodcastScrollListener();
     }
 
     private void getDownloadedPodcasts() {
-        viewModel.getDownloadedPodcasts().observe(this, podcasts -> viewModel.setPodcastsInSimpleAdapter(podcasts));
+        viewModel.getDownloadedPodcasts(page).observe(this, podcasts -> viewModel.setPodcastsInAdapter(podcasts));
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
         if (type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
-            podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null);
+            podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null, page);
         } else {
-            podcasts = viewModel.getHistoryPodcasts(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null, type, refreshLayout != null);
+            podcasts = viewModel.getHistoryPodcasts(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null,
+                    type, refreshLayout != null, page);
         }
         podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        page = 0;
         getPodcasts(token.getValue(), refreshLayout);
     }
 
@@ -123,19 +132,23 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             case SUCCESS:
                 liveData.removeObservers(getViewLifecycleOwner());
                 if (refreshLayout != null) {
+                    viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
                 setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(getViewLifecycleOwner());
+                viewModel.setIsLoading(false);
                 if (refreshLayout != null) {
+                    viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
             case FETCHED:
                 liveData.removeObservers(getViewLifecycleOwner());
+                viewModel.setIsLoading(false);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
@@ -144,15 +157,18 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+        viewModel.setIsLoading(false);
         if (apiResponse.data == null || CollectionUtils.isEmpty(((List) apiResponse.data))) {
             return;
         }
         if (((List) apiResponse.data).get(0) instanceof Podcast) {
             List<Podcast> data = (List<Podcast>) apiResponse.data;
-            if (data.size() > 3) {
-                data = data.subList(0, 3);
+            if (type == PodcastTypeEnum.DOWNLOADED || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS || type == PodcastTypeEnum.IN_PROGRESS) {
+                if (data.size() > 3) {
+                    data = data.subList(0, 3);
+                }
             }
-            viewModel.setPodcastsInSimpleAdapter(data);
+            viewModel.setPodcastsInAdapter(data);
         }
     }
 
@@ -172,6 +188,18 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
                 if (viewModel.getSelectedAccount().get() != null) {
                     fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
                     viewModel.getSelectedAccount().set(null);
+                }
+            }
+        });
+    }
+
+    private void setPodcastScrollListener() {
+        binder.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                if (!viewModel.getIsLoading()) {
+                    ++page;
+                    viewModel.setIsLoading(true);
+                    getPodcasts(token.getValue(), null);
                 }
             }
         });

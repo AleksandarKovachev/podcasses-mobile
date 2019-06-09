@@ -16,8 +16,8 @@ import java.util.List;
 @Dao
 public interface PodcastDao {
 
-    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp")
-    LiveData<List<Podcast>> getPodcasts(Integer type);
+    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp LIMIT (:page), 10")
+    LiveData<List<Podcast>> getPodcasts(Integer type, int page);
 
     @Query("SELECT * FROM Podcast WHERE id = (:podcastId)")
     LiveData<Podcast> getPodcastById(String podcastId);

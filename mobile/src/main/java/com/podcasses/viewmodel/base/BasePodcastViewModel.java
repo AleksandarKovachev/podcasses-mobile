@@ -3,12 +3,13 @@ package com.podcasses.viewmodel.base;
 import android.view.View;
 
 import androidx.databinding.Bindable;
+import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
-import androidx.databinding.ObservableInt;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
@@ -18,8 +19,7 @@ import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.PopupMenuUtil;
 
-import org.greenrobot.eventbus.EventBus;
-
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,13 +27,11 @@ import java.util.List;
  */
 public abstract class BasePodcastViewModel extends BaseViewModel {
 
-    private ObservableInt playingIndex = new ObservableInt(-1);
     private MutableLiveData<List<Podcast>> podcasts = new MutableLiveData<>();
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
     private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, this);
-    private PodcastAdapter simplePodcastAdapter = new PodcastAdapter(R.layout.item_simple_podcast, this);
 
     private ApiCallInterface apiCallInterface;
     private String token;
@@ -43,12 +41,12 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         this.apiCallInterface = apiCallInterface;
     }
 
-    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast,
-                                          String podcastId, String userId, boolean isSwipedToRefresh, boolean isMyAccount) {
-        if (!isSwipedToRefresh && podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
+    public LiveData<ApiResponse> podcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId,
+                                          String userId, boolean isSwipedToRefresh, boolean isMyAccount, int page) {
+        if (!isSwipedToRefresh && podcasts.getValue() != null && !podcasts.getValue().isEmpty() && page == 0) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isMyAccount, isSwipedToRefresh);
+        return repository.getPodcasts(lifecycleOwner, podcast, podcastId, userId, isMyAccount, isSwipedToRefresh, page);
     }
 
     public LiveData<ApiResponse> accountPodcasts(LifecycleOwner lifecycleOwner, String token, List<String> podcastIds, boolean isSwipedToRefresh) {
@@ -72,18 +70,19 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         return podcastAdapter;
     }
 
+    public void clearPodcastsInAdapter() {
+        this.podcasts.setValue(Collections.emptyList());
+        this.podcastAdapter.setPodcasts(this.podcasts.getValue());
+    }
+
     public void setPodcastsInAdapter(List<Podcast> podcasts) {
-        this.podcasts.setValue(podcasts);
-        this.podcastAdapter.setPodcasts(podcasts);
-    }
-
-    public PodcastAdapter getSimplePodcastAdapter() {
-        return simplePodcastAdapter;
-    }
-
-    public void setPodcastsInSimpleAdapter(List<Podcast> podcasts) {
-        this.podcasts.setValue(podcasts);
-        this.simplePodcastAdapter.setPodcasts(podcasts);
+        if (CollectionUtils.isEmpty(this.podcasts.getValue())) {
+            this.podcasts.setValue(podcasts);
+        } else {
+            podcasts.removeAll(this.podcasts.getValue());
+            this.podcasts.getValue().addAll(podcasts);
+        }
+        this.podcastAdapter.setPodcasts(this.podcasts.getValue());
     }
 
     public MutableLiveData<Podcast> getSelectedPodcast() {
@@ -103,10 +102,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         selectedAccount.set(podcasts.getValue().get(index).getUserId());
     }
 
-    public void onPlayButtonClick(Integer index) {
-        EventBus.getDefault().post(podcasts.getValue().get(index));
-    }
-
     public List<Podcast> getPodcasts() {
         return podcasts.getValue();
     }
@@ -116,16 +111,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
             return podcasts.getValue().get(index);
         }
         return null;
-    }
-
-    @Bindable
-    public Integer getPlayingIndex() {
-        return playingIndex.get();
-    }
-
-    public void setPlayingIndex(Integer playingIndex) {
-        this.playingIndex.set(playingIndex);
-        notifyPropertyChanged(BR.playingIndex);
     }
 
     public void onOptionsButtonClick(View view, Integer position) {
