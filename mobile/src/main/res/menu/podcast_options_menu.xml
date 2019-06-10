@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/markAsPlayed"
+        android:id="@+id/navigation_share"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_share"
+        android:title="@string/title_share" />
+
+    <item
+        android:id="@+id/navigation_mark_as_played"
         android:checkable="true"
         android:icon="@drawable/ic_mark_as_played"
         android:title="@string/mark_as_played" />
 
     <item
-        android:id="@+id/report"
+        android:id="@+id/navigation_report"
         android:icon="@drawable/ic_report"
         android:title="@string/report" />
 

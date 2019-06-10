@@ -49,7 +49,6 @@
         android:id="@+id/time_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/play_pause">
@@ -68,7 +67,7 @@
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@id/exo_progress"
             android:layout_width="0dp"
-            android:layout_height="26dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             app:unplayed_color="@color/colorAccent" />
 

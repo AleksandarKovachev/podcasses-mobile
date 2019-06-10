@@ -1,12 +1,14 @@
 <resources>
 
     <style name="DarkAppTheme" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="android:windowContentOverlay">@null</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorPrimaryInverse">@android:color/black</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
 
         <item name="rte_ToolbarButton">@style/RTE_ToolbarButton</item>
         <item name="rte_ToolbarSpinner">@style/RTE_ToolbarSpinnerDark</item>
@@ -17,7 +19,8 @@
         <item name="rte_icToolbarBold">@drawable/selector_ic_toolbar_bold_dark</item>
         <item name="rte_icToolbarItalic">@drawable/selector_ic_toolbar_italic_dark</item>
         <item name="rte_icToolbarUnderline">@drawable/selector_ic_toolbar_underline_dark</item>
-        <item name="rte_icToolbarStrikethrough">@drawable/selector_ic_toolbar_strikethrough_dark</item>
+        <item name="rte_icToolbarStrikethrough">@drawable/selector_ic_toolbar_strikethrough_dark
+        </item>
         <item name="rte_icToolbarSuperscript">@drawable/selector_ic_toolbar_superscript_dark</item>
         <item name="rte_icToolbarSubscript">@drawable/selector_ic_toolbar_subscript_dark</item>
         <item name="rte_icToolbarAlignLeft">@drawable/selector_ic_toolbar_align_left_dark</item>
@@ -44,7 +47,6 @@
         <item name="android:textColorPrimaryInverse">@android:color/white</item>
         <item name="android:alwaysDrawnWithCache">true</item>
     </style>
-
 
 
 </resources>

@@ -5,6 +5,7 @@
     <string name="title_home">Начало</string>
     <string name="title_history">История</string>
     <string name="title_account">Акаунт</string>
+    <string name="title_share">Сподели</string>
 
     <string name="title_upload">Качи</string>
     <string name="title_search">Търси подкаст</string>
@@ -33,6 +34,7 @@
     <string name="podcast_comments">Коментари</string>
     <string name="podcast_add">Добави подкаст</string>
     <string name="podcast_add_comment">Добави коментар</string>
+    <string name="podcast_views">Слушания: </string>
 
     <string name="history">История</string>
     <string name="liked_podcasts">Харесани подкасти</string>
@@ -92,6 +94,7 @@
     <string name="to_date">До дата</string>
 
     <string name="trim_silence">Премахни тишината</string>
+    <string name="share_text">Сподели подкаста с:</string>
 
     <string-array name="trendingFilter">
         <item>Избери:</item>

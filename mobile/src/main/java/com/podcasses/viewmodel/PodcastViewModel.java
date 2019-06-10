@@ -71,10 +71,9 @@ public class PodcastViewModel extends BaseViewModel {
         return repository.getPodcasts(lifecycleOwner, null, podcastId, null, false, isSwipedToRefresh, 0);
     }
 
-    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token,
-                                                 @NonNull String podcastId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, @NonNull String podcastId) {
         this.token = token;
-        return repository.getAccountPodcast(lifecycleOwner, token, podcastId, isSwipedToRefresh);
+        return repository.getAccountPodcast(lifecycleOwner, token, podcastId);
     }
 
     public LiveData<ApiResponse> comments(@NonNull String podcastId) {
@@ -149,10 +148,6 @@ public class PodcastViewModel extends BaseViewModel {
     public void onDownloadButtonClick(View view) {
         DownloadTracker downloadTracker = ((BaseApplication) view.getContext().getApplicationContext()).getDownloadTracker();
         downloadTracker.toggleDownload(repository, podcast.getValue());
-    }
-
-    public void onOptionsButtonClick(View view) {
-        PopupMenuUtil.podcastPopupMenu(view, podcast.getValue(), apiCallInterface, token);
     }
 
     public void setPodcast(Podcast podcast) {

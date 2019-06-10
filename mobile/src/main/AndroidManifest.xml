@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -66,6 +67,18 @@
             android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.podcasses"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider"
+                tools:replace="android:resource" />
+        </provider>
     </application>
 
 </manifest>

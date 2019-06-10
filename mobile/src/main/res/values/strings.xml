@@ -5,6 +5,7 @@
     <string name="title_home">Home</string>
     <string name="title_history">History</string>
     <string name="title_account">Account</string>
+    <string name="title_share">Share</string>
 
     <string name="title_upload">Upload</string>
     <string name="title_search">Search podcast</string>
@@ -33,6 +34,7 @@
     <string name="podcast_comments">Comments</string>
     <string name="podcast_add">Add podcast</string>
     <string name="podcast_add_comment">Add a comment</string>
+    <string name="podcast_views">Views: </string>
 
     <string name="history">History</string>
     <string name="liked_podcasts">Liked</string>
@@ -92,6 +94,7 @@
     <string name="to_date">To date</string>
 
     <string name="trim_silence">Trim silence</string>
+    <string name="share_text">Share the podcast with:</string>
 
     <string-array name="trendingFilter">
         <item>Choose:</item>

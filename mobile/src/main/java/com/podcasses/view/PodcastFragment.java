@@ -2,17 +2,29 @@ package com.podcasses.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
@@ -38,6 +50,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
+import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LikeStatusUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.util.NetworkRequestsUtil;
@@ -45,9 +58,10 @@ import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 import com.podcasses.viewmodel.PodcastViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -62,7 +76,7 @@ import retrofit2.Response;
 /**
  * Created by aleksandar.kovachev.
  */
-public class PodcastFragment extends BaseFragment implements Player.EventListener, OnRefreshListener {
+public class PodcastFragment extends BaseFragment implements Player.EventListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -109,7 +123,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PodcastViewModel.class);
         binding.setViewModel(viewModel);
         binding.setPodcastId(id);
-        binding.refreshLayout.setOnRefreshListener(this);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -120,23 +137,23 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         viewModel.setPodcastImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PODCAST_IMAGE + id);
 
         if (podcast != null) {
-            setPodcastData();
+            viewModel.setPodcast(podcast);
         } else {
             podcastResponse = viewModel.podcast(this, id, false);
-            podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, null));
+            podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse));
         }
-        setAccountPodcast(null, false, null);
+        setAccountPodcast(null);
 
         token.observe(this, s -> {
             if (!Strings.isEmptyOrWhitespace(s)) {
                 JWT jwt = new JWT(s);
                 viewModel.setAccountId(jwt.getSubject());
-                setAccountPodcast(s, false, null);
+                setAccountPodcast(s);
             }
         });
 
         commentsResponse = viewModel.comments(id);
-        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, null));
+        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse));
 
         binding.likeButton.setOnClickListener(onLikeClickListener);
         binding.dislikeButton.setOnClickListener(onDislikeClickListener);
@@ -154,16 +171,38 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     }
 
     @Override
-    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        podcastResponse = viewModel.podcast(this, id, true);
-        podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse, refreshLayout));
-        setAccountPodcast(token.getValue(), true, refreshLayout);
-        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse, refreshLayout));
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.podcast_options_menu, menu);
     }
 
-    private void setAccountPodcast(String token, boolean isSwipedToRefresh, RefreshLayout refreshLayout) {
-        accountPodcastResponse = viewModel.accountPodcasts(this, token, id, isSwipedToRefresh);
-        accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse, refreshLayout));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_share:
+                Uri bmpUri = getLocalBitmapUri(binding.podcastImage);
+                if (bmpUri != null) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("*/*");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, podcast.getTitle());
+                    intent.putExtra(Intent.EXTRA_TEXT, podcast.getTitle() + "\n\n" + podcast.getDescription());
+                    intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+                    startActivity(Intent.createChooser(intent, getString(R.string.share_text)));
+                } else {
+                    Toasty.error(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
+                }
+                break;
+            case R.id.navigation_mark_as_played:
+                NetworkRequestsUtil.sendMarkAsPlayedRequest(item, getContext(), apiCallInterface, podcast, token.getValue());
+                break;
+            case R.id.navigation_report:
+                DialogUtil.createReportDialog(getContext(), podcast.getId(), apiCallInterface, token.getValue(), true);
+                break;
+        }
+        return true;
     }
 
     @Override
@@ -204,12 +243,12 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         }
     }
 
-    void updateTitle() {
-        if (podcast != null && getActivity() != null)
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast.getTitle());
+    private void setAccountPodcast(String token) {
+        accountPodcastResponse = viewModel.accountPodcasts(this, token, id);
+        accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse));
     }
 
-    private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
+    private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData) {
         switch (apiResponse.status) {
             case LOADING:
                 break;
@@ -218,16 +257,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 break;
             case SUCCESS:
                 liveData.removeObservers(this);
-                if (refreshLayout != null) {
-                    refreshLayout.finishRefresh();
-                }
                 setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
-                if (refreshLayout != null) {
-                    refreshLayout.finishRefresh();
-                }
                 LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
         }
@@ -236,7 +269,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
         if (apiResponse.data instanceof Podcast) {
             podcast = (Podcast) apiResponse.data;
-            setPodcastData();
+            viewModel.setPodcast(podcast);
         } else if (apiResponse.data instanceof AccountPodcast) {
             accountPodcast = (AccountPodcast) apiResponse.data;
             binding.likeButton.setSelected(accountPodcast.getLikeStatus() == LikeStatus.LIKE.getValue());
@@ -250,7 +283,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             }
             if (((List) apiResponse.data).get(0) instanceof Podcast) {
                 podcast = ((List<Podcast>) apiResponse.data).get(0);
-                setPodcastData();
+                viewModel.setPodcast(podcast);
             } else {
                 viewModel.setPodcastCommentsInAdapter((List<Comment>) apiResponse.data);
                 setAccountComments((List<Comment>) apiResponse.data);
@@ -361,9 +394,30 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         });
     }
 
-    private void setPodcastData() {
-        updateTitle();
-        viewModel.setPodcast(podcast);
+    private Uri getLocalBitmapUri(ImageView imageView) {
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp;
+        if (drawable instanceof BitmapDrawable) {
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        Uri bmpUri = null;
+        try {
+            File file = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            if (Build.VERSION.SDK_INT >= 24) {
+                bmpUri = FileProvider.getUriForFile(getContext(), "com.podcasses", file);
+            } else {
+                bmpUri = Uri.fromFile(file);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
+
 
 }

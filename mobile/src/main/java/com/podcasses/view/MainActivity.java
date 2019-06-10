@@ -133,20 +133,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.app_navigation, menu);
         binder.searchView.setMenuItem(menu.findItem(R.id.navigation_search));
-        return true;
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.navigation_home:
-                fragNavController.switchTab(INDEX_HOME);
-                break;
-            case R.id.navigation_account:
-                fragNavController.switchTab(INDEX_ACCOUNT);
-                break;
-        }
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -161,8 +148,25 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.navigation_logout:
                 handleLogout();
                 break;
+            case R.id.navigation_share:
+            case R.id.navigation_mark_as_played:
+            case R.id.navigation_report:
+                return super.onOptionsItemSelected(item);
             default:
                 return fragNavController.popFragment();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.navigation_home:
+                fragNavController.switchTab(INDEX_HOME);
+                break;
+            case R.id.navigation_account:
+                fragNavController.switchTab(INDEX_ACCOUNT);
+                break;
         }
         return true;
     }
@@ -338,12 +342,14 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private void setTitle(@Nullable Fragment fragment) {
-        if (fragment instanceof SearchFragment || fragment instanceof PodcastFragment || fragment instanceof AccountFragment) {
+        if (!(fragment instanceof PodcastFragment)) {
+            setSupportActionBar(binder.toolbar);
+            getSupportActionBar().show();
+        }
+        if (fragment instanceof SearchFragment || fragment instanceof AccountFragment) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             if (fragment instanceof SearchFragment) {
                 ((SearchFragment) fragment).updateTitle();
-            } else if (fragment instanceof PodcastFragment) {
-                ((PodcastFragment) fragment).updateTitle();
             } else {
                 ((AccountFragment) fragment).updateTitle();
             }
