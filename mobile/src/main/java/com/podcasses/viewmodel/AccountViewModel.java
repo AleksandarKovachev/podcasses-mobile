@@ -83,6 +83,10 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getPodcastFiles(lifecycleOwner, token, isSwipedToRefresh);
     }
 
+    public void saveAccount(Account account) {
+        repository.saveAccount(account);
+    }
+
     @Bindable
     public Account getAccount() {
         return account.getValue();

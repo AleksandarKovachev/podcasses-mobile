@@ -63,6 +63,10 @@ public class MainDataRepository {
         localDataSource.insertAccountPodcasts(accountPodcast);
     }
 
+    public void saveAccount(Account account) {
+        localDataSource.insertAccount(account);
+    }
+
     public LiveData<List<Podcast>> getPodcasts(PodcastTypeEnum type, int page) {
         return localDataSource.getPodcasts(type.getType(), page);
     }
@@ -209,17 +213,12 @@ public class MainDataRepository {
         return podcastFilesResponse;
     }
 
-    public LiveData<ApiResponse> getAccountPodcast(LifecycleOwner lifecycleOwner, String token, String podcastId, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> getAccountPodcast(LifecycleOwner lifecycleOwner, String token, String podcastId) {
         MutableLiveData<ApiResponse> accountPodcastResponse = new MutableLiveData<>(ApiResponse.loading());
 
-        if (!isSwipedToRefresh) {
-            fetchAccountPodcastOnLocalDatabase(lifecycleOwner, podcastId, accountPodcastResponse);
-        }
-
+        fetchAccountPodcastOnLocalDatabase(lifecycleOwner, podcastId, accountPodcastResponse);
         if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
             fetchAccountPodcastOnNetwork(token, accountPodcastResponse, podcastId);
-        } else if (isSwipedToRefresh) {
-            accountPodcastResponse.setValue(ApiResponse.error(new ConnectException()));
         }
 
         return accountPodcastResponse;
@@ -325,7 +324,9 @@ public class MainDataRepository {
 
                 if (account != null) {
                     account.setIsMyAccount(isMyAccount ? 1 : 0);
-                    localDataSource.insertAccount(account);
+                    if (isMyAccount) {
+                        localDataSource.insertAccount(account);
+                    }
                 }
             }
 

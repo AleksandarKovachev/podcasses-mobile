@@ -26,7 +26,7 @@ public class PopupMenuUtil {
         popupOptions.getMenu().getItem(0).setChecked(podcast.isMarkAsPlayed());
         popupOptions.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.markAsPlayed:
+                case R.id.navigation_mark_as_played:
                     NetworkRequestsUtil.sendMarkAsPlayedRequest(item, view.getContext(), apiCallInterface, podcast, token);
                     break;
                 case R.id.report:

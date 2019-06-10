@@ -2,15 +2,12 @@ package com.podcasses.viewmodel.base;
 
 import android.view.View;
 
-import androidx.databinding.Bindable;
-import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.CollectionUtils;
-import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Podcast;
@@ -51,9 +48,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
 
     public LiveData<ApiResponse> accountPodcasts(LifecycleOwner lifecycleOwner, String token, List<String> podcastIds, boolean isSwipedToRefresh) {
         this.token = token;
-        if (podcasts.getValue() != null && !podcasts.getValue().isEmpty()) {
-            return new MutableLiveData<>(ApiResponse.fetched());
-        }
         return repository.getAccountPodcasts(lifecycleOwner, token, podcastIds, isSwipedToRefresh);
     }
 

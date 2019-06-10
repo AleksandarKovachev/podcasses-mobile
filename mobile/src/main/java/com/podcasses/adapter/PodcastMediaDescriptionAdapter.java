@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.Player;
@@ -53,6 +54,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
         Glide.with(context)
                 .asBitmap()
                 .load(podcastImageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

@@ -65,7 +65,7 @@ public class Podcast extends BaseLikeModel {
 
     private String username;
 
-    private boolean markAsPlayed;
+    private boolean markAsPlayed = false;
 
     @TypeConverters({DateConverter.class})
     private Date createdTimestamp;
@@ -262,9 +262,9 @@ public class Podcast extends BaseLikeModel {
 
     public Spanned getPodcastDescription() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT);
+            return Html.fromHtml(description.replaceAll("\\\n", "<br/>"), Html.FROM_HTML_MODE_COMPACT);
         } else {
-            return Html.fromHtml(description);
+            return Html.fromHtml(description.replaceAll("\\\n", "<br/>"));
         }
     }
 
