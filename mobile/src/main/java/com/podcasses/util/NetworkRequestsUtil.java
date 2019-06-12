@@ -81,9 +81,11 @@ public class NetworkRequestsUtil {
         });
     }
 
-    public static LiveData<ApiResponse> sendPodcastViewRequest(Context context, ApiCallInterface apiCallInterface, String token, String podcastId) {
+    public static LiveData<ApiResponse> sendPodcastViewRequest(Context context, ApiCallInterface apiCallInterface,
+                                                               String token, String podcastId, long timeIndex, boolean isNewView) {
         MutableLiveData<ApiResponse> accountPodcastResponse = new MutableLiveData<>(ApiResponse.loading());
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setTimeIndex(timeIndex);
         accountPodcastRequest.setPodcastId(podcastId);
         Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
         call.enqueue(new Callback<AccountPodcast>() {
@@ -103,15 +105,17 @@ public class NetworkRequestsUtil {
             }
         });
 
-        apiCallInterface.podcastView(podcastId).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-            }
+        if (isNewView) {
+            apiCallInterface.podcastView(podcastId).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                }
+            });
+        }
         return accountPodcastResponse;
     }
 

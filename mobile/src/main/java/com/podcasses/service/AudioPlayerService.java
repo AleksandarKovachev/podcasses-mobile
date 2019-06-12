@@ -1,7 +1,6 @@
 package com.podcasses.service;
 
 import android.app.Notification;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +12,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleService;
+import androidx.lifecycle.LiveData;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
@@ -26,11 +27,32 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastMediaDescriptionAdapter;
 import com.podcasses.dagger.BaseApplication;
+import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.response.ApiResponse;
+import com.podcasses.repository.MainDataRepository;
+import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.util.AuthenticationUtil;
+import com.podcasses.util.ConnectivityUtil;
+import com.podcasses.util.NetworkRequestsUtil;
+
+import java.util.Date;
+
+import javax.inject.Inject;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class AudioPlayerService extends Service {
+public class AudioPlayerService extends LifecycleService implements Player.EventListener {
+
+    @Inject
+    MainDataRepository mainDataRepository;
+
+    @Inject
+    ApiCallInterface apiCallInterface;
+
+    private LiveData<String> token;
+    private LiveData<ApiResponse> accountPodcastLiveData;
+    private AccountPodcast accountPodcast;
 
     private final IBinder binder = new LocalBinder();
     private SimpleExoPlayer player;
@@ -50,6 +72,8 @@ public class AudioPlayerService extends Service {
         super.onCreate();
         final Context context = this;
 
+        ((BaseApplication) getApplication()).getAppComponent().inject(this);
+
         player = ExoPlayerFactory.newSimpleInstance(context, new DefaultTrackSelector());
         mediaSession = new MediaSessionCompat(context, this.getClass().getName());
         mediaSession.setActive(true);
@@ -62,6 +86,7 @@ public class AudioPlayerService extends Service {
         });
 
         mediaSessionConnector.setPlayer(player);
+        player.addListener(this);
     }
 
     @Override
@@ -107,13 +132,41 @@ public class AudioPlayerService extends Service {
             playerNotificationManager.setUseNavigationActions(false);
             playerNotificationManager.setUseNavigationActionsInCompactView(false);
             playerNotificationManager.setPlayer(player);
+
+            token = AuthenticationUtil.isAuthenticated(this, null);
+            token.observe(this, t -> {
+                accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, t, podcastId);
+                accountPodcastLiveData.observe(this, a -> {
+                    switch (a.status) {
+                        case DATABASE:
+                            accountPodcast = (AccountPodcast) a.data;
+                            if (accountPodcast != null) {
+                                player.seekTo(accountPodcast.getTimeIndex());
+                            }
+                            break;
+                        case SUCCESS:
+                            accountPodcastLiveData.removeObservers(this);
+                            if (a.data != null) {
+                                accountPodcast = (AccountPodcast) a.data;
+                                player.seekTo(accountPodcast.getTimeIndex());
+                            }
+                            break;
+                        case ERROR:
+                            accountPodcastLiveData.removeObservers(this);
+                            break;
+                    }
+                });
+            });
         }
-        return START_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         if (player != null) {
+            if (player.getCurrentPosition() != 0) {
+                saveTimeIndex();
+            }
             if (playerNotificationManager != null) {
                 playerNotificationManager.setPlayer(null);
             }
@@ -124,9 +177,17 @@ public class AudioPlayerService extends Service {
         super.onDestroy();
     }
 
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (player.getCurrentPosition() != 0) {
+            saveTimeIndex();
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        super.onBind(intent);
         return binder;
     }
 
@@ -157,4 +218,35 @@ public class AudioPlayerService extends Service {
                 .build();
     }
 
+    private void saveTimeIndex() {
+        if (ConnectivityUtil.checkInternetConnection(this)) {
+            LiveData<ApiResponse> accountPodcastResponse =
+                    NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
+                            token != null ? token.getValue() : null, podcastId,
+                            player.getCurrentPosition(), true);
+            accountPodcastResponse.observe(this, response -> {
+                switch (response.status) {
+                    case SUCCESS:
+                        accountPodcastResponse.removeObservers(this);
+                        accountPodcast = (AccountPodcast) response.data;
+                        mainDataRepository.saveAccountPodcast(accountPodcast);
+                        break;
+                    case ERROR:
+                        accountPodcastResponse.removeObservers(this);
+                        break;
+                    default:
+                        break;
+                }
+            });
+        } else {
+            if (accountPodcast == null) {
+                accountPodcast = new AccountPodcast();
+                accountPodcast.setPodcastId(podcastId);
+                accountPodcast.setViewTimestamp(new Date());
+                accountPodcast.setCreatedTimestamp(new Date());
+            }
+            accountPodcast.setTimeIndex(player.getCurrentPosition());
+            mainDataRepository.saveAccountPodcast(accountPodcast);
+        }
+    }
 }

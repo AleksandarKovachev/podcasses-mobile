@@ -224,7 +224,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         if (playbackState == Player.STATE_READY) {
             if (accountPodcast == null || accountPodcast.getViewTimestamp() == null) {
                 LiveData<ApiResponse> accountPodcastResponse =
-                        NetworkRequestsUtil.sendPodcastViewRequest(getContext(), apiCallInterface, token.getValue(), id);
+                        NetworkRequestsUtil.sendPodcastViewRequest(getContext(), apiCallInterface, token.getValue(), id, 0, true);
                 accountPodcastResponse.observe(this, response -> {
                     switch (response.status) {
                         case SUCCESS:

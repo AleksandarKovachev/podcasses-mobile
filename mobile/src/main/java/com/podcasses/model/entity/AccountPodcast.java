@@ -12,12 +12,12 @@ import java.util.Date;
 @Entity
 public class AccountPodcast {
 
-    @NonNull
-    @PrimaryKey
     private Long id;
 
     private String accountId;
 
+    @NonNull
+    @PrimaryKey
     private String podcastId;
 
     private int likeStatus;

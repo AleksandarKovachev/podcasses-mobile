@@ -213,7 +213,7 @@
                     android:id="@+id/downloads"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="@dimen/small_offset"
                     android:text="@{`` + viewModel.podcast.downloads}"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@id/podcast_date"

@@ -66,7 +66,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.22.1'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha01'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha03'
 
     // Android Jetpack
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
@@ -128,8 +128,8 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     wearApp project(':wear')
     implementation 'com.google.android.gms:play-services-wearable:16.0.1'
 }

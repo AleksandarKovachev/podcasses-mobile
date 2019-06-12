@@ -34,6 +34,7 @@ public class AuthenticationUtil {
             if (authenticationTokenTask != null) {
                 authenticationTokenTask.startAuthenticationActivity(token);
             }
+            token.setValue(null);
         } else {
             String authToken = accountManager.peekAuthToken(accounts[0], AUTH_TOKEN_TYPE);
             if (KeycloakToken.isValidToken(authToken)) {
