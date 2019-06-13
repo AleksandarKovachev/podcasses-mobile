@@ -48,6 +48,10 @@ public class LocalDataSource {
         return podcastDao.getPodcasts(type, page * 10);
     }
 
+    LiveData<List<Podcast>> getPodcastsInProgress(int page) {
+        return podcastDao.getPodcastsInProgress(page * 10);
+    }
+
     LiveData<Podcast> getPodcastById(String podcastId) {
         return podcastDao.getPodcastById(podcastId);
     }

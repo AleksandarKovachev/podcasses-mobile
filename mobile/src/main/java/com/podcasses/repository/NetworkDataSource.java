@@ -8,6 +8,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.request.AccountPodcastType;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
@@ -121,8 +122,9 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String token, Integer likeStatus, int page, IDataCallback<List<Podcast>> callback) {
-        Call<List<AccountPodcast>> accountPodcastsCall = apiCallInterface.accountPodcasts("Bearer " + token, likeStatus, page);
+    void getPodcasts(String token, String podcastType, Integer likeStatus, int page, IDataCallback<List<Podcast>> callback) {
+        Call<List<AccountPodcast>> accountPodcastsCall = apiCallInterface.accountPodcasts("Bearer " + token,
+                podcastType, null, likeStatus, page);
         accountPodcastsCall.enqueue(new Callback<List<AccountPodcast>>() {
             @Override
             public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {
@@ -238,7 +240,8 @@ class NetworkDataSource {
     }
 
     void getAccountPodcasts(String token, List<String> podcastIds, IDataCallback<List<AccountPodcast>> callback) {
-        Call<List<AccountPodcast>> call = apiCallInterface.accountPodcasts("Bearer " + token, podcastIds);
+        Call<List<AccountPodcast>> call = apiCallInterface.accountPodcasts("Bearer " + token,
+                AccountPodcastType.ID.name(), podcastIds, null, null);
         call.enqueue(new Callback<List<AccountPodcast>>() {
             @Override
             public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {

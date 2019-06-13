@@ -83,11 +83,10 @@ public interface ApiCallInterface {
     @GET("/account/podcast/{podcastId}")
     Call<AccountPodcast> accountPodcast(@Header("Authorization") String token, @Path("podcastId") String podcastId);
 
-    @GET("/account/podcasts")
-    Call<List<AccountPodcast>> accountPodcasts(@Header("Authorization") String token, @Query("id") List<String> ids);
-
     @GET("/account/podcast")
     Call<List<AccountPodcast>> accountPodcasts(@Header("Authorization") String token,
+                                               @Query("type") String type,
+                                               @Query("id") List<String> ids,
                                                @Query("likeStatus") Integer likeStatus,
                                                @Query("page") Integer page);
 

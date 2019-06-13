@@ -49,8 +49,6 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     private PodcastTypeEnum type;
 
     private int page = 0;
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
 
     public static PodcastsPageFragment newInstance(int type) {
         Bundle args = new Bundle();
@@ -86,7 +84,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         if (type == PodcastTypeEnum.DOWNLOADED) {
             getDownloadedPodcasts();
         } else if (type == PodcastTypeEnum.HISTORY || type == PodcastTypeEnum.LIKED_PODCASTS
-                || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
+                || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS || type == PodcastTypeEnum.IN_PROGRESS) {
             token = AuthenticationUtil.isAuthenticated(this.getContext(), this);
             token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
@@ -110,7 +108,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         if (type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
             podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null, page);
         } else {
-            podcasts = viewModel.getHistoryPodcasts(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null,
+            podcasts = viewModel.getPodcastsByType(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null,
                     type, refreshLayout != null, page);
         }
         podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
@@ -163,7 +161,9 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         }
         if (((List) apiResponse.data).get(0) instanceof Podcast) {
             List<Podcast> data = (List<Podcast>) apiResponse.data;
-            if (type == PodcastTypeEnum.DOWNLOADED || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS || type == PodcastTypeEnum.IN_PROGRESS) {
+            if (type == PodcastTypeEnum.DOWNLOADED ||
+                    type == PodcastTypeEnum.FROM_SUBSCRIPTIONS ||
+                    type == PodcastTypeEnum.IN_PROGRESS) {
                 if (data.size() > 3) {
                     data = data.subList(0, 3);
                 }

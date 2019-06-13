@@ -16,8 +16,11 @@ import java.util.List;
 @Dao
 public interface PodcastDao {
 
-    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp LIMIT (:page), 10")
+    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp DESC LIMIT (:page), 10")
     LiveData<List<Podcast>> getPodcasts(Integer type, int page);
+
+    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN AccountPodcast AS accountPodcast ON podcast.id = accountPodcast.podcastId WHERE accountPodcast.timeIndex > 0 AND accountPodcast.markAsPlayed = 0 ORDER BY accountPodcast.viewTimestamp DESC LIMIT (:page), 10")
+    LiveData<List<Podcast>> getPodcastsInProgress(int page);
 
     @Query("SELECT * FROM Podcast WHERE id = (:podcastId)")
     LiveData<Podcast> getPodcastById(String podcastId);
