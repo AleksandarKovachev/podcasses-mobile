@@ -61,6 +61,25 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/display_name_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/display_name_input"
+                        android:padding="@dimen/medium_offset"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/username_input_layout"
+                        app:layout_constraintVertical_bias="0">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/display_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/password_input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -68,7 +87,7 @@
                         android:padding="@dimen/medium_offset"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/username_input_layout"
+                        app:layout_constraintTop_toBottomOf="@+id/display_name_input_layout"
                         app:passwordToggleEnabled="true">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -100,25 +119,14 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/login"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/medium_offset"
-                        android:layout_marginEnd="@dimen/medium_offset"
-                        android:text="@string/login_input"
-                        android:textAllCaps="false"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/email_input_layout" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/close"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_close"
                 app:backgroundTint="@color/colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/materialCardView"
@@ -126,7 +134,19 @@
                 app:layout_constraintTop_toTopOf="@+id/materialCardView" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/login_input"
+                android:id="@+id/login"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/medium_offset"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:text="@string/login_input"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/register_input" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/register_input"
                 style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
@@ -140,48 +160,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialCardView"
-                app:layout_constraintVertical_bias="1" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/or_text_field"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/medium_offset"
-                android:text="@string/or_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/login_input" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/facebook_login"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:text="@string/login_with_facebook"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/facebook_color_button"
-                app:cornerRadius="@dimen/large_offset"
-                app:icon="@drawable/ic_facebook"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/or_text_field"
-                app:layout_constraintVertical_bias="1" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/google_login"
-                style="@style/Widget.MaterialComponents.Button.Icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:text="@string/login_with_google"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/google_color_button"
-                app:cornerRadius="@dimen/large_offset"
-                app:icon="@drawable/ic_google"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/facebook_login"
                 app:layout_constraintVertical_bias="1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
