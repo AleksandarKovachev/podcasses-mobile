@@ -16,20 +16,34 @@ public interface AuthenticationCallInterface {
 
     String KEYCLOAK_URL = BuildConfig.KEYCLOAK_URL;
 
+    String CLIENT_ID = BuildConfig.KEYCLOAK_CLIENT_ID;
+
+    String CLIENT_SECRET = BuildConfig.KEYCLOAK_CLIENT_SECRET;
+
+    String FACEBOOK_ISSUER = "facebook";
+
+    String GOOGLE_ISSUER = "google";
+
     String ACCESS_TOKEN_GRANT_TYPE = "password";
 
-    String CLIENT_ID = "android-app";
+    String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
 
-    String CLIENT_SECRET = "28f75581-188f-4d46-a6e2-2f1f841e5f62";
+    String TOKEN_EXCHANGE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:token-exchange";
 
     String TOKEN_TYPE = "Bearer ";
 
     @POST("token")
     @FormUrlEncoded
-    Call<KeycloakToken> grantNewAccessToken(
-            @Field("username") String username,
-            @Field("password") String password,
-            @Field("grant_type") String grantType
+    Call<KeycloakToken> accessToken(@Field("username") String username,
+                                    @Field("password") String password,
+                                    @Field("grant_type") String grantType
+    );
+
+    @POST("token")
+    @FormUrlEncoded
+    Call<KeycloakToken> refreshToken(@Field("client_id") String clientId,
+                                     @Field("refresh_token") String refreshToken,
+                                     @Field("grant_type") String grantType
     );
 
     @POST("logout")
@@ -38,6 +52,15 @@ public interface AuthenticationCallInterface {
                       @Field("client_id") String clientId,
                       @Field("client_secret") String clientSecret,
                       @Field("refresh_token") String refreshToken
+    );
+
+    @POST("token")
+    @FormUrlEncoded
+    Call<KeycloakToken> tokenExchange(@Field("client_id") String clientId,
+                                      @Field("client_secret") String clientSecret,
+                                      @Field("grant_type") String grantType,
+                                      @Field("subject_issuer") String issuer,
+                                      @Field("subject_token") String token
     );
 
 }

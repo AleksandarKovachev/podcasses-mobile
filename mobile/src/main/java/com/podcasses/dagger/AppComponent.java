@@ -10,13 +10,13 @@ import com.podcasses.view.HomeFragment;
 import com.podcasses.view.MainActivity;
 import com.podcasses.view.PodcastFragment;
 import com.podcasses.view.PodcastsPageFragment;
+import com.podcasses.view.RegistrationActivity;
 import com.podcasses.view.SearchFragment;
 import com.podcasses.view.UploadFragment;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
-import dagger.android.support.AndroidSupportInjectionModule;
 
 /**
  * Created by aleksandar.kovachev.
@@ -49,4 +49,5 @@ public interface AppComponent {
 
     void inject(AudioPlayerService service);
 
+    void inject(RegistrationActivity registrationActivity);
 }

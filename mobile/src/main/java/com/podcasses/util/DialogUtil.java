@@ -45,6 +45,7 @@ public class DialogUtil {
 
     public static ProgressDialog getProgressDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle(R.string.loading);
         progressDialog.setCancelable(false);
         return progressDialog;
     }

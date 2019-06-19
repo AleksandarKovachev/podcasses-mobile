@@ -13,10 +13,9 @@
     <string name="title_logout">Изход</string>
 
     <string name="username_input">Потребителско име</string>
+    <string name="display_name_input">Име за показване</string>
     <string name="password_input">Парола</string>
     <string name="email_input">Имейл</string>
-    <string name="login_with_facebook">Вход с Facebook</string>
-    <string name="login_with_google">Вход с Google</string>
     <string name="login_input">Вход</string>
     <string name="or_text">или</string>
     <string name="forgot_password">Забравена парола?</string>
@@ -95,6 +94,8 @@
 
     <string name="trim_silence">Премахни тишината</string>
     <string name="share_text">Сподели подкаста с:</string>
+
+    <string name="loading">Зареждане…</string>
 
     <string-array name="trendingFilter">
         <item>Избери:</item>

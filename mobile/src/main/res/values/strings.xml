@@ -13,10 +13,9 @@
     <string name="title_logout">Logout</string>
 
     <string name="username_input">Username</string>
+    <string name="display_name_input">Display name</string>
     <string name="password_input">Password</string>
     <string name="email_input">Email</string>
-    <string name="login_with_facebook">Log in with Facebook</string>
-    <string name="login_with_google">Log in with Google</string>
     <string name="login_input">Login</string>
     <string name="or_text">or</string>
     <string name="forgot_password">Forgot password?</string>
@@ -95,6 +94,12 @@
 
     <string name="trim_silence">Trim silence</string>
     <string name="share_text">Share the podcast with:</string>
+
+    <string name="loading">Loading…</string>
+
+    <string name="facebook_app_id" translatable="false">302696717277253</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb302696717277253</string>
+    <string name="google_web_client_id" translatable="false">478441231698-19toqhduh91mfltt43203hfrtr2im6q1.apps.googleusercontent.com</string>
 
     <string-array name="trendingFilter">
         <item>Choose:</item>

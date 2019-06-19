@@ -5,7 +5,4 @@
     <color name="colorPrimaryLight">#4f5b62</color>
     <color name="colorPrimaryDark">#000a12</color>
     <color name="colorPrimaryText">#ffffff</color>
-
-    <color name="google_color_button">#E02F2F</color>
-    <color name="facebook_color_button">#45619d</color>
 </resources>

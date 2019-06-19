@@ -26,13 +26,8 @@ public class KeycloakToken {
     private String refreshToken;
 
     public static boolean isValidToken(String accessToken) {
-        if(Strings.isEmptyOrWhitespace(accessToken)) {
-            return false;
-        }
-        if(new JWT(accessToken).getExpiresAt().before(new Date())) {
-            return false;
-        }
-        return true;
+        return !Strings.isEmptyOrWhitespace(accessToken) &&
+                !new JWT(accessToken).getExpiresAt().before(new Date());
     }
 
     public String getAccessToken() {
