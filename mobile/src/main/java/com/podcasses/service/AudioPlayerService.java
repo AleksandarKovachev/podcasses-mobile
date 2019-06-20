@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 
+import com.google.android.exoplayer2.DefaultControlDispatcher;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -125,6 +126,13 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                         }
                     }
             );
+            playerNotificationManager.setControlDispatcher(new DefaultControlDispatcher() {
+                @Override
+                public boolean dispatchStop(Player player, boolean reset) {
+                    saveTimeIndex();
+                    return super.dispatchStop(player, reset);
+                }
+            });
             playerNotificationManager.setSmallIcon(R.drawable.ic_iconfinder_podcast_287666_white);
             playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
             playerNotificationManager.setUseStopAction(true);
@@ -164,9 +172,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     @Override
     public void onDestroy() {
         if (player != null) {
-            if (player.getCurrentPosition() != 0) {
-                saveTimeIndex();
-            }
+            saveTimeIndex();
             if (playerNotificationManager != null) {
                 playerNotificationManager.setPlayer(null);
             }
@@ -179,9 +185,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if (player.getCurrentPosition() != 0) {
-            saveTimeIndex();
-        }
+        saveTimeIndex();
     }
 
     @Nullable
@@ -219,6 +223,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     }
 
     private void saveTimeIndex() {
+        if (player.getCurrentPosition() == 0) {
+            return;
+        }
         if (ConnectivityUtil.checkInternetConnection(this)) {
             LiveData<ApiResponse> accountPodcastResponse =
                     NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
