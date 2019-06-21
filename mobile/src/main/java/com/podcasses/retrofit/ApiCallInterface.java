@@ -12,8 +12,10 @@ import com.podcasses.model.request.AccountRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastReportRequest;
+import com.podcasses.model.request.UserRegistrationRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
+import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
@@ -44,6 +46,9 @@ public interface ApiCallInterface {
 
     @POST("/keycloak/account")
     Call<Account> account(@Header("Authorization") String token, @Body AccountRequest accountRequest);
+
+    @POST("/keycloak/registration")
+    Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 
     @GET("/account/subscribes/{accountById}")
     Call<Integer> accountSubscribes(@Path("accountById") String accountId);

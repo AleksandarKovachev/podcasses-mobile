@@ -21,7 +21,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.Task;
 import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
@@ -32,7 +35,6 @@ import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -92,6 +94,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(getString(R.string.google_web_client_id))
+                        .requestScopes(
+                                new Scope(Scopes.PROFILE),
+                                new Scope(Scopes.PLUS_ME),
+                                new Scope(Scopes.EMAIL),
+                                new Scope(Scopes.OPEN_ID))
                         .requestProfile()
                         .requestEmail()
                         .build());
@@ -102,7 +109,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_REGISTRATION) {
+        if (requestCode == RC_REGISTRATION && resultCode == RESULT_OK) {
+            String username = data.getStringExtra("username");
+            String password = data.getStringExtra("password");
+            loginWithCredentials(username, password);
         } else if (requestCode == RC_GOOGLE_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -145,12 +155,20 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private View.OnClickListener loginClickListener = v -> {
+        if (Strings.isEmptyOrWhitespace(binder.username.getText().toString()) ||
+                Strings.isEmptyOrWhitespace(binder.password.getText().toString())) {
+            return;
+        }
+        loginWithCredentials(binder.username.getText().toString(), binder.password.getText().toString());
+    };
+
+    private void loginWithCredentials(String username, String password) {
         Call<KeycloakToken> authToken = authenticationCall.accessToken(
-                Objects.requireNonNull(binder.username.getText()).toString(),
-                Objects.requireNonNull(binder.password.getText()).toString(),
+                username,
+                password,
                 AuthenticationCallInterface.ACCESS_TOKEN_GRANT_TYPE);
         consumeAuthTokenResponse(authToken);
-    };
+    }
 
     private void consumeAuthTokenResponse(Call<KeycloakToken> authToken) {
         progressDialog.show();
