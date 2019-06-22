@@ -34,4 +34,7 @@ public interface PodcastDao {
     @Query("DELETE FROM Podcast WHERE id NOT IN (SELECT podcastId FROM PODCASTTYPE)")
     void deletePodcasts();
 
+    @Query("DELETE FROM Podcast")
+    void deleteAll();
+
 }

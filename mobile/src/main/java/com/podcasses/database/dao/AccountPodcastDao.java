@@ -25,4 +25,7 @@ public interface AccountPodcastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(AccountPodcast... accountPodcast);
 
+    @Query("DELETE FROM AccountPodcast")
+    void deleteAll();
+
 }

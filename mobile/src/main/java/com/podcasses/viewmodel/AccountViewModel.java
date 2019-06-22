@@ -55,6 +55,10 @@ public class AccountViewModel extends BasePodcastViewModel {
         this.apiCallInterface = apiCallInterface;
     }
 
+    public void removeAllLocalData() {
+        repository.removeAllLocalData();
+    }
+
     public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, String username, String id, boolean isSwipedToRefresh, boolean isMyAccount) {
         if (!isSwipedToRefresh && account.getValue() != null && username != null && account.getValue().getUsername().equals(username)) {
             return new MutableLiveData<>(ApiResponse.fetched());

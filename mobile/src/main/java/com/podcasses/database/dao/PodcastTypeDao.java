@@ -25,4 +25,7 @@ public interface PodcastTypeDao {
     @Query("DELETE FROM PodcastType WHERE podcastType = (:type) AND podcastId = (:podcastId)")
     void deletePodcastType(Integer type, String podcastId);
 
+    @Query("DELETE FROM PodcastType")
+    void deleteAll();
+
 }

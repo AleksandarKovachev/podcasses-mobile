@@ -23,4 +23,7 @@ public interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Account account);
 
+    @Query("DELETE FROM Account")
+    void deleteAll();
+
 }

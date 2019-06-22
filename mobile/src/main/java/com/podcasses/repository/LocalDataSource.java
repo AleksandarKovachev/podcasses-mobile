@@ -127,4 +127,14 @@ public class LocalDataSource {
                 podcastFileDao.deletePodcastFile(id));
     }
 
+    void removeAllLocalData() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            accountDao.deleteAll();
+            podcastTypeDao.deleteAll();
+            podcastDao.deleteAll();
+            podcastFileDao.deletePodcastFiles();
+            accountPodcastDao.deleteAll();
+        });
+    }
+
 }

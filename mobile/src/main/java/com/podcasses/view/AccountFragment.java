@@ -440,6 +440,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         return new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
+                viewModel.removeAllLocalData();
                 accountManager.removeAccount(account, null, null);
                 Toast.makeText(getContext(), getString(R.string.successful_logout), Toast.LENGTH_SHORT).show();
             }

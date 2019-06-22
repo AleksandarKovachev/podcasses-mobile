@@ -55,6 +55,10 @@ public class MainDataRepository {
         countries = new MutableLiveData<>();
     }
 
+    public void removeAllLocalData() {
+        localDataSource.removeAllLocalData();
+    }
+
     public void savePodcast(PodcastTypeEnum podcastType, Podcast podcast) {
         localDataSource.insertPodcasts(podcastType.getType(), podcast);
     }
