@@ -9,6 +9,7 @@
 
     <string name="title_upload">Качи</string>
     <string name="title_search">Търси подкаст</string>
+    <string name="title_settings">Настройки</string>
     <string name="title_dark_theme">Тъмна тема</string>
     <string name="title_logout">Изход</string>
 
@@ -21,7 +22,6 @@
     <string name="forgot_password">Забравена парола?</string>
     <string name="register">Регистрация</string>
 
-    <string name="subscribe">Абониране</string>
     <string name="podcast_files_title">Непубликувани качени подкаст файлове</string>
 
     <string name="trending_header">Популярни</string>
@@ -43,6 +43,8 @@
     <string name="podcasts_in_progress">Недовършени</string>
     <string name="podcasts_from_subscribe">Нови</string>
 
+    <string name="account_subscribes">Абонати</string>
+    <string name="account_podcasts">Подкасти</string>
     <string name="account_first_name">Първо име</string>
     <string name="account_last_name">Последно име</string>
     <string name="account_email">Имейл</string>

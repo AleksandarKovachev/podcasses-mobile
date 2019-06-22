@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_search_white"
-        android:title="@string/title_search"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/navigation_upload"
         android:icon="@drawable/ic_headset_white"
         android:title="@string/title_upload"
@@ -18,7 +12,7 @@
         android:id="@+id/navigation_history"
         android:icon="@drawable/ic_history"
         android:title="@string/title_history"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/navigation_logout"

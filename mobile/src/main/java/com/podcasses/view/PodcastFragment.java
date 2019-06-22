@@ -130,6 +130,23 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         return binding.getRoot();
     }
 
+    void updateActionBar() {
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+            ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+            setHasOptionsMenu(true);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            getActivity().invalidateOptionsMenu();
+        }
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

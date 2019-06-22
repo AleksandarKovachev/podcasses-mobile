@@ -40,7 +40,8 @@ public class AccountViewModel extends BasePodcastViewModel {
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<String> coverImage = new ObservableField<>();
-    private ObservableField<Integer> accountSubscribes = new ObservableField<>();
+    private ObservableField<Integer> accountPodcasts = new ObservableField<>(0);
+    private ObservableField<Integer> accountSubscribes = new ObservableField<>(0);
     private ObservableField<Boolean> isSubscribed = new ObservableField();
     private ObservableField<String> editAccountId = new ObservableField<>();
 
@@ -62,17 +63,24 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
-        if (accountSubscribes.get() != null) {
+        if (accountSubscribes.get() != 0) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.checkAccountSubscribe(accountId);
+        return repository.getAccountSubscribesCount(accountId);
+    }
+
+    public LiveData<ApiResponse> accountPodcastsCount(@NonNull String accountId) {
+        if (accountPodcasts.get() != 0) {
+            return new MutableLiveData<>(ApiResponse.fetched());
+        }
+        return repository.getAccountPodcastsCount(accountId);
     }
 
     public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
         if (isSubscribed.get() != null) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.checkAccountSubscribe(token, accountId);
+        return repository.getAccountSubscribesCount(token, accountId);
     }
 
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
@@ -103,8 +111,13 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     @Bindable
-    public Integer getAccountSubscribes() {
-        return accountSubscribes.get();
+    public String getAccountPodcasts() {
+        return accountPodcasts.get().toString();
+    }
+
+    @Bindable
+    public String getAccountSubscribes() {
+        return accountSubscribes.get().toString();
     }
 
     @Bindable
@@ -175,6 +188,11 @@ public class AccountViewModel extends BasePodcastViewModel {
     public void setAccountSubscribes(Integer accountSubscribes) {
         this.accountSubscribes.set(accountSubscribes);
         notifyPropertyChanged(BR.accountSubscribes);
+    }
+
+    public void setAccountPodcasts(Integer accountPodcasts) {
+        this.accountPodcasts.set(accountPodcasts);
+        notifyPropertyChanged(BR.accountPodcasts);
     }
 
     public void subscribeAccount(View view, String token, String accountId) {

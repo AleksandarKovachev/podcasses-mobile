@@ -24,153 +24,209 @@
             type="java.lang.Boolean" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:srlEnableHeaderTranslationContent="true">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            tools:context=".view.MainActivity"
-            tools:ignore="MergeRootFrame">
+            android:layout_height="match_parent">
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/appbar"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:fitsSystemWindows="true"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-                <com.google.android.material.appbar.CollapsingToolbarLayout
-                    android:id="@+id/toolbar_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
-                    app:collapsedTitleGravity="center"
-                    app:contentScrim="?attr/colorPrimary"
-                    app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                    app:title="@{viewModel.account.username}"
-                    app:toolbarId="@+id/toolbar">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/account_cover_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        app:imageUrl="@{viewModel.coverImage}"
-                        app:layout_collapseMode="parallax" />
-
-                    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
-                    <!--android:id="@+id/account_edit"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginEnd="@dimen/medium_offset"-->
-                    <!--android:layout_marginBottom="@dimen/medium_offset"-->
-                    <!--android:onClick="@{v -> viewModel.onEditClick(accountId)}"-->
-                    <!--android:src="@drawable/ic_edit"-->
-                    <!--android:visibility="@{isMyAccount ? View.VISIBLE : View.GONE}"-->
-                    <!--app:layout_anchor="@id/account_cover_image" />-->
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_gravity="top"
-                        android:background="@drawable/scrim_header"
-                        android:fitsSystemWindows="true" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_gravity="bottom"
-                        android:background="@drawable/scrim" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/mark_as_played"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        android:padding="@dimen/medium_offset"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_iconfinder_check_circle_outline_326568"
-                        android:visibility="@{viewModel.podcast.markAsPlayed ? View.VISIBLE : View.GONE}" />
-
-                    <androidx.appcompat.widget.Toolbar
-                        android:id="@+id/toolbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:background="@android:color/transparent"
-                        app:layout_collapseMode="pin"
-                        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/account_profile_image"
-                android:layout_width="128dp"
-                android:layout_height="128dp"
-                android:layout_marginStart="@dimen/medium_offset"
-                app:imageUrl="@{viewModel.profileImage}"
-                app:layout_anchor="@id/appbar"
-                app:layout_anchorGravity="bottom|center_horizontal" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nested_scroll_view"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="72dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:fitsSystemWindows="true"
+                tools:context=".view.MainActivity"
+                tools:ignore="MergeRootFrame">
 
-                <com.scwang.smartrefresh.layout.SmartRefreshLayout
-                    android:id="@+id/refreshLayout"
+                <com.google.android.material.appbar.AppBarLayout
+                    android:id="@+id/appbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:fitsSystemWindows="true"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                    <com.google.android.material.appbar.CollapsingToolbarLayout
+                        android:id="@+id/toolbar_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fitsSystemWindows="true"
+                        app:collapsedTitleGravity="center"
+                        app:contentScrim="?attr/colorPrimary"
+                        app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+                        app:title="@{viewModel.account.username}"
+                        app:toolbarId="@+id/toolbar">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/account_cover_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            app:imageUrl="@{viewModel.coverImage}"
+                            app:layout_collapseMode="parallax" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:layout_gravity="top"
+                            android:background="@drawable/scrim_header"
+                            android:fitsSystemWindows="true" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/scrim" />
+
+                        <androidx.appcompat.widget.Toolbar
+                            android:id="@+id/toolbar"
+                            android:layout_width="match_parent"
+                            android:layout_height="?attr/actionBarSize"
+                            android:background="@android:color/transparent"
+                            app:layout_collapseMode="pin"
+                            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+                    </com.google.android.material.appbar.CollapsingToolbarLayout>
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/account_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/medium_offset"
+                    android:onClick="@{v -> viewModel.onEditClick(accountId)}"
+                    android:src="@drawable/ic_edit"
+                    android:visibility="@{isMyAccount ? View.VISIBLE : View.GONE}"
+                    app:fabSize="auto"
+                    app:layout_anchor="@id/appbar"
+                    app:layout_anchorGravity="bottom|right|end" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/subscribe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/medium_offset"
+                    android:onClick="@{v -> viewModel.subscribeAccount(v, token, accountId)}"
+                    android:src="@drawable/ic_record_voice_over"
+                    android:visibility="@{isMyAccount ? View.GONE : View.VISIBLE}"
+                    app:fabSize="auto"
+                    app:isSubscribed="@{viewModel.isSubscribed}"
+                    app:layout_anchor="@id/appbar"
+                    app:layout_anchorGravity="bottom|right|end" />
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/nested_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:srlEnableHeaderTranslationContent="true">
+                    android:clipToPadding="false"
+                    android:paddingBottom="72dp"
+                    app:behavior_overlapTop="64dp"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/main"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!--<com.google.android.material.button.MaterialButton-->
-                        <!--android:id="@+id/subscribe"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginEnd="@dimen/medium_offset"-->
-                        <!--android:layout_marginBottom="@dimen/medium_offset"-->
-                        <!--android:onClick="@{v -> viewModel.subscribeAccount(v, token, accountId)}"-->
-                        <!--android:text="@string/subscribe"-->
-                        <!--app:icon="@drawable/ic_record_voice_over"-->
-                        <!--app:isSubscribed="@{viewModel.isSubscribed}"-->
-                        <!--app:layout_constraintBottom_toBottomOf="@id/account_cover_image"-->
-                        <!--app:layout_constraintBottom_toTopOf="@id/account_edit"-->
-                        <!--app:layout_constraintRight_toRightOf="parent"-->
-                        <!--app:subscribes="@{viewModel.accountSubscribes}" />-->
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/account_profile_image"
+                            android:layout_width="128dp"
+                            android:layout_height="128dp"
+                            android:layout_marginStart="@dimen/medium_offset"
+                            app:imageUrl="@{viewModel.profileImage}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/materialCardView"
+                            android:id="@+id/user_info_card_view"
                             style="@style/Widget.MaterialComponents.CardView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/medium_offset"
-                            android:clickable="true"
-                            android:focusable="true"
                             app:cardCornerRadius="10dp"
                             app:cardUseCompatPadding="true"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toBottomOf="@id/account_profile_image">
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/description"
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:padding="@dimen/medium_offset"
-                                android:text="@{viewModel.account.description}"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:layout_height="match_parent">
 
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/username"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/medium_offset"
+                                    android:gravity="center_horizontal"
+                                    android:text="@{viewModel.account.username}"
+                                    android:textSize="@dimen/medium_text_size"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/podcasts_count_view_group"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/medium_offset"
+                                    android:background="?android:attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:orientation="vertical"
+                                    app:layout_constraintEnd_toStartOf="@id/subscribes_count_view_group"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/username">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="@{viewModel.accountPodcasts}" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/account_podcasts" />
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/subscribes_count_view_group"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/medium_offset"
+                                    android:background="?android:attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:orientation="vertical"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/podcasts_count_view_group"
+                                    app:layout_constraintTop_toBottomOf="@id/username">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:text="@{viewModel.accountSubscribes}" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/account_subscribes" />
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/description"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:padding="@dimen/medium_offset"
+                                    android:text="@{viewModel.account.description}"
+                                    app:layout_constraintTop_toBottomOf="@id/subscribes_count_view_group" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
                         </com.google.android.material.card.MaterialCardView>
 
                         <com.google.android.material.card.MaterialCardView
@@ -189,7 +245,7 @@
                             app:cardUseCompatPadding="true"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/materialCardView">
+                            app:layout_constraintTop_toBottomOf="@id/user_info_card_view">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
@@ -243,32 +299,32 @@
                             app:layout_constraintTop_toBottomOf="@id/podcast_list" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.scwang.smartrefresh.layout.SmartRefreshLayout>
-            </androidx.core.widget.NestedScrollView>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                </androidx.core.widget.NestedScrollView>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/rss_feed_sync"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/medium_offset"
-            android:layout_marginBottom="@dimen/medium_offset"
-            android:onClick="@{v -> viewModel.onSyncClick(v, token, rssFeedSyncProgress)}"
-            android:src="@drawable/ic_sync"
-            android:visibility="@{isMyAccount &amp;&amp; viewModel.account.rssFeed != null &amp;&amp; viewModel.account.rssFeedVerified == 1 ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/rss_feed_sync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:layout_marginBottom="@dimen/medium_offset"
+                android:onClick="@{v -> viewModel.onSyncClick(v, token, rssFeedSyncProgress)}"
+                android:src="@drawable/ic_sync"
+                android:visibility="@{isMyAccount &amp;&amp; viewModel.account.rssFeed != null &amp;&amp; viewModel.account.rssFeedVerified == 1 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.core.widget.ContentLoadingProgressBar
-            android:id="@+id/rssFeedSyncProgress"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/rss_feed_sync"
-            app:layout_constraintEnd_toEndOf="@id/rss_feed_sync"
-            app:layout_constraintStart_toStartOf="@id/rss_feed_sync"
-            app:layout_constraintTop_toTopOf="@id/rss_feed_sync" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/rssFeedSyncProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/rss_feed_sync"
+                app:layout_constraintEnd_toEndOf="@id/rss_feed_sync"
+                app:layout_constraintStart_toStartOf="@id/rss_feed_sync"
+                app:layout_constraintTop_toTopOf="@id/rss_feed_sync" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </layout>

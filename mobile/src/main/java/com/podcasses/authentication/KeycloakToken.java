@@ -4,8 +4,6 @@ import com.auth0.android.jwt.JWT;
 import com.google.android.gms.common.util.Strings;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
  * Created by aleksandar.kovachev.
  */
@@ -27,7 +25,7 @@ public class KeycloakToken {
 
     public static boolean isValidToken(String accessToken) {
         return !Strings.isEmptyOrWhitespace(accessToken) &&
-                !new JWT(accessToken).getExpiresAt().before(new Date());
+                !new JWT(accessToken).isExpired(0);
     }
 
     public String getAccessToken() {

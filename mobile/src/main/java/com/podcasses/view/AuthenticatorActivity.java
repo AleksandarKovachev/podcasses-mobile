@@ -178,7 +178,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 progressDialog.dismiss();
                 if (response.body() != null) {
                     JWT jwt = new JWT(response.body().getAccessToken());
-                    String username = jwt.getSubject();
+                    String username = jwt.getClaim("preferred_username").asString();
                     Account account = addOrFindAccount(username, binder.password.getText().toString());
                     accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, response.body().getAccessToken());
                     accountManager.setUserData(account, REFRESH_TOKEN, response.body().getRefreshToken());

@@ -62,7 +62,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
         FragmentPodcastsPageBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_podcasts_page, container, false);
         binding.setLifecycleOwner(this);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
-        updateTitle();
+        updateActionBar();
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
@@ -87,8 +87,9 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
         podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
     }
 
-    void updateTitle() {
+    void updateActionBar() {
         if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast);
         }
     }

@@ -17,6 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.google.gson.Gson;
 import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
@@ -26,11 +33,9 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
-import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
-import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.DialogUtil;
@@ -47,18 +52,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;

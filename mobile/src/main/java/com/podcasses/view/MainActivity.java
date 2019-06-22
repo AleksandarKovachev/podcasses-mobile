@@ -1,7 +1,5 @@
 package com.podcasses.view;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +9,6 @@ import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +26,6 @@ import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.FragNavTransactionOptions;
 import com.ncapdevi.fragnav.tabhistory.UniqueTabHistoryStrategy;
 import com.podcasses.R;
-import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.MainActivityBinding;
 import com.podcasses.model.entity.Podcast;
@@ -46,13 +42,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
-import static com.podcasses.authentication.AccountAuthenticator.REFRESH_TOKEN;
-
 public class MainActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
         BaseFragment.FragmentNavigation,
@@ -63,9 +52,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int INDEX_HOME = FragNavController.TAB1;
     private static final int INDEX_ACCOUNT = FragNavController.TAB2;
-    private static final int INDEX_UPLOAD = FragNavController.TAB3;
-    private static final int INDEX_HISTORY = FragNavController.TAB4;
-    public static final int FRAGMENTS_COUNT = 4;
+    public static final int FRAGMENTS_COUNT = 2;
 
     @Inject
     AuthenticationCallInterface authenticationCall;
@@ -131,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.app_navigation, menu);
+        getMenuInflater().inflate(R.menu.home_navigation, menu);
         binder.searchView.setMenuItem(menu.findItem(R.id.navigation_search));
         return super.onCreateOptionsMenu(menu);
     }
@@ -140,14 +127,8 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_upload:
-                fragNavController.switchTab(INDEX_UPLOAD);
-                break;
             case R.id.navigation_history:
-                fragNavController.switchTab(INDEX_HISTORY);
-                break;
             case R.id.navigation_logout:
-                handleLogout();
-                break;
             case R.id.navigation_share:
             case R.id.navigation_mark_as_played:
             case R.id.navigation_report:
@@ -155,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 return fragNavController.popFragment();
         }
-        return true;
     }
 
     @Override
@@ -184,10 +164,6 @@ public class MainActivity extends AppCompatActivity implements
                 return HomeFragment.newInstance(0);
             case INDEX_ACCOUNT:
                 return AccountFragment.newInstance(0, null);
-            case INDEX_UPLOAD:
-                return UploadFragment.newInstance(0);
-            case INDEX_HISTORY:
-                return HistoryFragment.newInstance(0);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }
@@ -222,34 +198,6 @@ public class MainActivity extends AppCompatActivity implements
         if (!fragNavController.popFragment()) {
             super.onBackPressed();
         }
-    }
-
-    private void handleLogout() {
-        AccountManager accountManager = AccountManager.get(this);
-        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
-        if (accounts.length != 0) {
-            String authToken = accountManager.peekAuthToken(accounts[0], AUTH_TOKEN_TYPE);
-            String refreshToken = accountManager.getUserData(accounts[0], REFRESH_TOKEN);
-            authenticationCall.logout(AuthenticationCallInterface.TOKEN_TYPE + authToken,
-                    AuthenticationCallInterface.CLIENT_ID,
-                    AuthenticationCallInterface.CLIENT_SECRET,
-                    refreshToken).enqueue(logoutRequest(accounts[0], accountManager));
-        }
-    }
-
-    private Callback<Void> logoutRequest(Account account, AccountManager accountManager) {
-        return new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                accountManager.removeAccount(account, null, null);
-                Toast.makeText(MainActivity.this, getString(R.string.successful_logout), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(MainActivity.this, getString(R.string.error_response), Toast.LENGTH_SHORT).show();
-            }
-        };
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -342,20 +290,23 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     private void setTitle(@Nullable Fragment fragment) {
-        if (!(fragment instanceof PodcastFragment)) {
+        if (!(fragment instanceof PodcastFragment) && !(fragment instanceof AccountFragment)) {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().hide();
+            }
             setSupportActionBar(binder.toolbar);
             getSupportActionBar().show();
         }
-        if (fragment instanceof SearchFragment || fragment instanceof AccountFragment) {
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            if (fragment instanceof SearchFragment) {
-                ((SearchFragment) fragment).updateTitle();
-            } else {
-                ((AccountFragment) fragment).updateTitle();
-            }
-        } else {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (fragment instanceof PodcastFragment) {
+            ((PodcastFragment) fragment).updateActionBar();
         }
+        if (fragment instanceof AccountFragment) {
+            ((AccountFragment) fragment).updateActionBar();
+        }
+        if (fragment instanceof SearchFragment) {
+            ((SearchFragment) fragment).updateActionBar();
+        }
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     @Override

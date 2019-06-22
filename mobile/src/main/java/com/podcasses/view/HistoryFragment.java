@@ -14,7 +14,6 @@ import com.podcasses.R;
 import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHistoryBinding;
-import com.podcasses.model.entity.PodcastType;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.HistoryViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;

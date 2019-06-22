@@ -1,9 +1,14 @@
 package com.podcasses.view;
 
+import android.accounts.AccountManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +24,7 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
+import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
@@ -26,6 +32,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -37,10 +44,16 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
+import static com.podcasses.authentication.AccountAuthenticator.REFRESH_TOKEN;
 
 /**
  * Created by aleksandar.kovachev.
@@ -50,6 +63,9 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
+
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
 
@@ -57,6 +73,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> accountSubscribesResponse;
+    private LiveData<ApiResponse> accountPodcastsCounteResponse;
     private LiveData<ApiResponse> checkAccountSubscribeResponse;
     private LiveData<ApiResponse> podcasts;
     private LiveData<ApiResponse> podcastFiles;
@@ -86,7 +103,28 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        setHasOptionsMenu(true);
         return binding.getRoot();
+    }
+
+    void updateActionBar() {
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+            ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+            setHasOptionsMenu(true);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            getActivity().invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -106,17 +144,35 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.account_navigation, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_upload:
+                fragmentNavigation.pushFragment(UploadFragment.newInstance(fragmentCount + 1));
+                break;
+            case R.id.navigation_history:
+                fragmentNavigation.pushFragment(HistoryFragment.newInstance(fragmentCount + 1));
+                break;
+            case R.id.navigation_logout:
+                handleLogout();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         page = 0;
-        if (token == null || token.getValue() == null || token.getValue() != null && new JWT(token.getValue()).isExpired(new Date().getTime())) {
+        if (token == null || token.getValue() == null || new JWT(token.getValue()).isExpired(0)) {
             setAuthenticationToken(false);
         }
         getAccountData(null, refreshLayout);
-    }
-
-    void updateTitle() {
-        if (account != null && getActivity() != null)
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(account.getUsername());
     }
 
     private void setAuthenticationToken(boolean additionalData) {
@@ -161,7 +217,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         if (accountId == null) {
             isMyAccount = true;
         }
-        accountSubscribesResponse = viewModel.accountSubscribes(accountId);
         loadPodcasts(isMyAccount, refreshLayout);
 
         if (isMyAccount) {
@@ -174,7 +229,50 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
         }
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
-        accountSubscribesResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountSubscribesResponse, refreshLayout));
+
+        if (accountId != null) {
+            accountSubscribesResponse = viewModel.accountSubscribes(accountId);
+            accountPodcastsCounteResponse = viewModel.accountPodcastsCount(accountId);
+            accountSubscribesResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountSubscribesResponse, true));
+            accountPodcastsCounteResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountPodcastsCounteResponse, false));
+        }
+    }
+
+    private void consumeIntegerResponse(ApiResponse apiResponse, LiveData liveData, boolean isSubscribes) {
+        switch (apiResponse.status) {
+            case LOADING:
+                break;
+            case DATABASE:
+                if (apiResponse.data == null) {
+                    return;
+                }
+                if (isSubscribes) {
+                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
+                } else {
+                    viewModel.setAccountPodcasts((Integer) apiResponse.data);
+                }
+                break;
+            case SUCCESS:
+                if (apiResponse.data == null) {
+                    return;
+                }
+                liveData.removeObservers(this);
+                if (isSubscribes) {
+                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
+                } else {
+                    viewModel.setAccountPodcasts((Integer) apiResponse.data);
+                }
+                break;
+            case ERROR:
+                viewModel.setIsLoading(false);
+                liveData.removeObservers(this);
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
+                break;
+            case FETCHED:
+                viewModel.setIsLoading(false);
+                liveData.removeObservers(this);
+                break;
+        }
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -210,10 +308,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
         if (apiResponse.data instanceof Account) {
             account = (Account) apiResponse.data;
-            updateTitle();
             viewModel.setAccount(account);
-        } else if (apiResponse.data instanceof Integer) {
-            viewModel.setAccountSubscribes((Integer) apiResponse.data);
         } else if (apiResponse.data instanceof Boolean) {
             boolean isSubscribed = (boolean) apiResponse.data;
             viewModel.setIsSubscribed(isSubscribed);
@@ -326,6 +421,34 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
         podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
         podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+    }
+
+    private void handleLogout() {
+        AccountManager accountManager = AccountManager.get(getContext());
+        android.accounts.Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        if (accounts.length != 0) {
+            String authToken = accountManager.peekAuthToken(accounts[0], AUTH_TOKEN_TYPE);
+            String refreshToken = accountManager.getUserData(accounts[0], REFRESH_TOKEN);
+            authenticationCallInterface.logout(AuthenticationCallInterface.TOKEN_TYPE + authToken,
+                    AuthenticationCallInterface.CLIENT_ID,
+                    AuthenticationCallInterface.CLIENT_SECRET,
+                    refreshToken).enqueue(logoutRequest(accounts[0], accountManager));
+        }
+    }
+
+    private Callback<Void> logoutRequest(android.accounts.Account account, AccountManager accountManager) {
+        return new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                accountManager.removeAccount(account, null, null);
+                Toast.makeText(getContext(), getString(R.string.successful_logout), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT).show();
+            }
+        };
     }
 
 }

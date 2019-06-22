@@ -19,7 +19,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView"
+                android:id="@+id/description_card_view"
                 style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -90,9 +90,9 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_close"
                 app:backgroundTint="@color/colorPrimary"
-                app:layout_constraintBottom_toTopOf="@+id/materialCardView"
+                app:layout_constraintBottom_toTopOf="@+id/description_card_view"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+                app:layout_constraintTop_toTopOf="@+id/description_card_view" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/login_input"
@@ -105,10 +105,10 @@
                 android:textSize="@dimen/small_text_size"
                 app:backgroundTint="@android:color/holo_blue_dark"
                 app:cornerRadius="@dimen/large_offset"
-                app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
+                app:layout_constraintBottom_toBottomOf="@+id/description_card_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                app:layout_constraintTop_toBottomOf="@+id/description_card_view"
                 app:layout_constraintVertical_bias="1" />
 
             <com.google.android.material.button.MaterialButton
@@ -120,7 +120,7 @@
                 android:text="@string/forgot_password"
                 android:textAllCaps="false"
                 app:layout_constraintEnd_toStartOf="@id/register"
-                app:layout_constraintStart_toStartOf="@id/materialCardView"
+                app:layout_constraintStart_toStartOf="@id/description_card_view"
                 app:layout_constraintTop_toBottomOf="@+id/login_input" />
 
             <com.google.android.material.button.MaterialButton
@@ -131,7 +131,7 @@
                 android:layout_marginTop="@dimen/medium_offset"
                 android:text="@string/register"
                 android:textAllCaps="false"
-                app:layout_constraintEnd_toEndOf="@id/materialCardView"
+                app:layout_constraintEnd_toEndOf="@id/description_card_view"
                 app:layout_constraintStart_toEndOf="@id/forgot_password"
                 app:layout_constraintTop_toBottomOf="@+id/login_input" />
 
@@ -149,8 +149,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/small_offset"
-                app:layout_constraintEnd_toEndOf="@id/materialCardView"
-                app:layout_constraintStart_toStartOf="@id/materialCardView"
+                app:layout_constraintEnd_toEndOf="@id/description_card_view"
+                app:layout_constraintStart_toStartOf="@id/description_card_view"
                 app:layout_constraintTop_toBottomOf="@+id/or_text_field" />
 
             <com.google.android.gms.common.SignInButton
@@ -159,8 +159,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/small_offset"
                 app:buttonSize="wide"
-                app:layout_constraintEnd_toEndOf="@id/materialCardView"
-                app:layout_constraintStart_toStartOf="@id/materialCardView"
+                app:layout_constraintEnd_toEndOf="@id/description_card_view"
+                app:layout_constraintStart_toStartOf="@id/description_card_view"
                 app:layout_constraintTop_toBottomOf="@+id/facebook_login" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

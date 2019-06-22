@@ -15,7 +15,6 @@ import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
-import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
@@ -50,14 +49,17 @@ public interface ApiCallInterface {
     @POST("/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 
-    @GET("/account/subscribes/{accountById}")
-    Call<Integer> accountSubscribes(@Path("accountById") String accountId);
+    @GET("/account/subscribes/{accountId}")
+    Call<Integer> accountSubscribes(@Path("accountId") String accountId);
 
-    @GET("/account/subscribe/{accountById}")
-    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountById") String accountId);
+    @GET("/podcast/count/{accountId}")
+    Call<Integer> accountPodcastsCount(@Path("accountId") String accountId);
 
-    @POST("/account/subscribe/{accountById}")
-    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountById") String accountId);
+    @GET("/account/subscribe/{accountId}")
+    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+
+    @POST("/account/subscribe/{accountId}")
+    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
 
     @GET("/podcast")
     Call<List<Podcast>> podcast(

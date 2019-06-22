@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
@@ -68,13 +67,6 @@ public class CustomViewBindings {
         int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);
         int defaultColor = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
         view.getBackground().setColorFilter(isSubscribed ? selectedColor : defaultColor, PorterDuff.Mode.MULTIPLY);
-    }
-
-    @BindingAdapter(value = {"subscribes"})
-    public static void subscribes(View view, Integer subscribes) {
-        if (subscribes != null) {
-            ((AppCompatButton) view).setText(((AppCompatButton) view).getText() + " " + subscribes);
-        }
     }
 
     @BindingAdapter(value = {"isLiked"})

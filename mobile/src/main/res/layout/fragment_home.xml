@@ -38,7 +38,7 @@
                 tools:context=".view.AccountFragment">
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/materialCardView"
+                    android:id="@+id/description_card_view"
                     style="@style/Widget.MaterialComponents.CardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                     android:padding="@dimen/small_offset"
                     android:text="@string/trending_header"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/materialCardView" />
+                    app:layout_constraintTop_toBottomOf="@id/description_card_view" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/trending_filter_button"

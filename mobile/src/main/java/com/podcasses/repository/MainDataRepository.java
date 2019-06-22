@@ -83,7 +83,9 @@ public class MainDataRepository {
         }
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            fetchAccountOnNetwork(accountResponse, username, id, isMyAccount);
+            if (id != null || username != null) {
+                fetchAccountOnNetwork(accountResponse, username, id, isMyAccount);
+            }
         } else if (isSwipedToRefresh) {
             accountResponse.setValue(ApiResponse.error(new ConnectException()));
         }
@@ -91,7 +93,7 @@ public class MainDataRepository {
         return accountResponse;
     }
 
-    public LiveData<ApiResponse> checkAccountSubscribe(String accountId) {
+    public LiveData<ApiResponse> getAccountSubscribesCount(String accountId) {
         MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
@@ -111,7 +113,27 @@ public class MainDataRepository {
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
+    public LiveData<ApiResponse> getAccountPodcastsCount(String accountId) {
+        MutableLiveData<ApiResponse> accountPodcastsCountResponse = new MutableLiveData<>(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getAccountPodcastsCount(accountId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    accountPodcastsCountResponse.setValue(ApiResponse.success(data));
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    accountPodcastsCountResponse.setValue(ApiResponse.error(error));
+                }
+            });
+        } else {
+            accountPodcastsCountResponse.setValue(ApiResponse.error(new ConnectException()));
+        }
+        return accountPodcastsCountResponse;
+    }
+
+    public LiveData<ApiResponse> getAccountSubscribesCount(String token, String accountId) {
         MutableLiveData<ApiResponse> checkAccountSubscribeResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
@@ -338,6 +360,9 @@ public class MainDataRepository {
     }
 
     private void fetchAccountOnLocalDatabase(LifecycleOwner lifecycleOwner, MutableLiveData<ApiResponse> accountResponse, String username, String id, boolean isMyAccount) {
+        if (!isMyAccount && id == null || !isMyAccount && username == null) {
+            return;
+        }
         LiveData<Account> accountLiveData;
         if (isMyAccount) {
             accountLiveData = localDataSource.getMyAccountData();

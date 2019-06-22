@@ -82,6 +82,26 @@ class NetworkDataSource {
         });
     }
 
+    void getAccountPodcastsCount(String accountId, IDataCallback<Integer> callback) {
+        Call<Integer> call = apiCallInterface.accountPodcastsCount(accountId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
     void checkAccountSubscribe(String token, String accountId, IDataCallback<Integer> callback) {
         Call<Integer> call = apiCallInterface.checkAccountSubscribe("Bearer " + token, accountId);
         call.enqueue(new Callback<Integer>() {
