@@ -118,7 +118,7 @@ public class UploadFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        token = AuthenticationUtil.isAuthenticated(getContext(), this);
+        token = AuthenticationUtil.getAuthenticationToken(getContext());
         RTApi rtApi = new RTApi(getContext(), new RTProxyImpl((Activity) getContext()), new RTMediaFactoryImpl(getContext(), true));
         rtManager = new RTManager(rtApi, savedInstanceState);
 

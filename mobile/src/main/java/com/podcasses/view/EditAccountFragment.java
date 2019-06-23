@@ -62,7 +62,7 @@ public class EditAccountFragment extends BaseFragment {
         binder.setLifecycleOwner(this);
         binder.setViewModel(viewModel);
         binder.updateAccountBtn.setOnClickListener(updateAccountClickListener);
-        token = AuthenticationUtil.isAuthenticated(getContext(), this);
+        token = AuthenticationUtil.getAuthenticationToken(getContext());
         return binder.getRoot();
     }
 

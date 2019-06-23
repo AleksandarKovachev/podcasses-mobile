@@ -141,29 +141,34 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
             playerNotificationManager.setUseNavigationActionsInCompactView(false);
             playerNotificationManager.setPlayer(player);
 
-            token = AuthenticationUtil.isAuthenticated(this, null);
-            token.observe(this, t -> {
-                accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, t, podcastId);
-                accountPodcastLiveData.observe(this, a -> {
-                    switch (a.status) {
-                        case DATABASE:
+            token = AuthenticationUtil.getAuthenticationToken(this);
+            if (token == null) {
+                accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, null, podcastId);
+            } else {
+                token.observe(this, t -> accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, t, podcastId));
+            }
+            accountPodcastLiveData.observe(this, a -> {
+                switch (a.status) {
+                    case DATABASE:
+                        if (token == null) {
+                            accountPodcastLiveData.removeObservers(this);
+                        }
+                        accountPodcast = (AccountPodcast) a.data;
+                        if (accountPodcast != null) {
+                            player.seekTo(accountPodcast.getTimeIndex());
+                        }
+                        break;
+                    case SUCCESS:
+                        accountPodcastLiveData.removeObservers(this);
+                        if (a.data != null) {
                             accountPodcast = (AccountPodcast) a.data;
-                            if (accountPodcast != null) {
-                                player.seekTo(accountPodcast.getTimeIndex());
-                            }
-                            break;
-                        case SUCCESS:
-                            accountPodcastLiveData.removeObservers(this);
-                            if (a.data != null) {
-                                accountPodcast = (AccountPodcast) a.data;
-                                player.seekTo(accountPodcast.getTimeIndex());
-                            }
-                            break;
-                        case ERROR:
-                            accountPodcastLiveData.removeObservers(this);
-                            break;
-                    }
-                });
+                            player.seekTo(accountPodcast.getTimeIndex());
+                        }
+                        break;
+                    case ERROR:
+                        accountPodcastLiveData.removeObservers(this);
+                        break;
+                }
             });
         }
         return super.onStartCommand(intent, flags, startId);
@@ -227,33 +232,48 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
             return;
         }
         if (ConnectivityUtil.checkInternetConnection(this)) {
-            LiveData<ApiResponse> accountPodcastResponse =
-                    NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
-                            token != null ? token.getValue() : null, podcastId,
-                            player.getCurrentPosition(), true);
-            accountPodcastResponse.observe(this, response -> {
-                switch (response.status) {
-                    case SUCCESS:
-                        accountPodcastResponse.removeObservers(this);
-                        accountPodcast = (AccountPodcast) response.data;
-                        mainDataRepository.saveAccountPodcast(accountPodcast);
-                        break;
-                    case ERROR:
-                        accountPodcastResponse.removeObservers(this);
-                        break;
-                    default:
-                        break;
-                }
-            });
-        } else {
-            if (accountPodcast == null) {
-                accountPodcast = new AccountPodcast();
-                accountPodcast.setPodcastId(podcastId);
-                accountPodcast.setViewTimestamp(new Date());
-                accountPodcast.setCreatedTimestamp(new Date());
+            if (token == null) {
+                saveLocalAccountPodcast();
+            } else {
+                sendAccountPodcastToServer();
             }
-            accountPodcast.setTimeIndex(player.getCurrentPosition());
-            mainDataRepository.saveAccountPodcast(accountPodcast);
+        } else {
+            saveLocalAccountPodcast();
         }
+    }
+
+    private void sendAccountPodcastToServer() {
+        LiveData<ApiResponse> accountPodcastResponse =
+                NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
+                        token.getValue(), podcastId,
+                        player.getCurrentPosition(),
+                        accountPodcast == null || accountPodcast.getViewTimestamp() == null);
+        accountPodcastResponse.observe(this, response -> {
+            switch (response.status) {
+                case SUCCESS:
+                    accountPodcastResponse.removeObservers(this);
+                    accountPodcast = (AccountPodcast) response.data;
+                    mainDataRepository.saveAccountPodcast(accountPodcast);
+                    break;
+                case ERROR:
+                    accountPodcastResponse.removeObservers(this);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private void saveLocalAccountPodcast() {
+        if (accountPodcast == null) {
+            accountPodcast = new AccountPodcast();
+            accountPodcast.setPodcastId(podcastId);
+            accountPodcast.setCreatedTimestamp(new Date());
+        }
+        if (accountPodcast.getViewTimestamp() == null) {
+            accountPodcast.setViewTimestamp(new Date());
+        }
+        accountPodcast.setTimeIndex(player.getCurrentPosition());
+        mainDataRepository.saveAccountPodcast(accountPodcast);
     }
 }

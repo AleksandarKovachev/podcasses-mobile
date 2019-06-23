@@ -85,15 +85,18 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             getDownloadedPodcasts();
         } else if (type == PodcastTypeEnum.HISTORY || type == PodcastTypeEnum.LIKED_PODCASTS
                 || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS || type == PodcastTypeEnum.IN_PROGRESS) {
-            token = AuthenticationUtil.isAuthenticated(this.getContext(), this);
-            token.observe(getViewLifecycleOwner(), s -> {
-                if (!Strings.isEmptyOrWhitespace(s)) {
-                    token.removeObservers(getViewLifecycleOwner());
-                    getPodcasts(s, null);
-                } else {
-                    getPodcasts(null, null);
-                }
-            });
+
+            token = AuthenticationUtil.getAuthenticationToken(this.getContext());
+            if (token != null) {
+                token.observe(getViewLifecycleOwner(), s -> {
+                    if (!Strings.isEmptyOrWhitespace(s)) {
+                        token.removeObservers(getViewLifecycleOwner());
+                        getPodcasts(s, null);
+                    } else {
+                        getPodcasts(null, null);
+                    }
+                });
+            }
         }
         setPodcastClick();
         setAccountClick();

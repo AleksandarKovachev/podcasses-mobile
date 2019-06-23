@@ -13,6 +13,9 @@
     <string name="title_dark_theme">Dark theme</string>
     <string name="title_logout">Logout</string>
 
+    <string name="not_authenticated">Not authenticated!</string>
+    <string name="click_to_authenticate">Click to authenticate</string>
+
     <string name="username_input">Username</string>
     <string name="display_name_input">Display name</string>
     <string name="password_input">Password</string>

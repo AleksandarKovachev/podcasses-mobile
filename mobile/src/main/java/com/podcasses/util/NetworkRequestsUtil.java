@@ -37,7 +37,8 @@ import retrofit2.Response;
  */
 public class NetworkRequestsUtil {
 
-    public static void sendMarkAsPlayedRequest(MenuItem item, Context context, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
+    public static MutableLiveData<AccountPodcast> sendMarkAsPlayedRequest(MenuItem item, Context context, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
+        MutableLiveData<AccountPodcast> accountPodcast = new MutableLiveData<>();
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
         accountPodcastRequest.setMarkAsPlayed(podcast.isMarkAsPlayed() ? 0 : 1);
@@ -46,6 +47,7 @@ public class NetworkRequestsUtil {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    accountPodcast.setValue(response.body());
                     item.setChecked(response.body().getMarkAsPlayed() == 1);
                     podcast.setMarkAsPlayed(response.body().getMarkAsPlayed() == 1);
                 }
@@ -53,9 +55,11 @@ public class NetworkRequestsUtil {
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
+                accountPodcast.setValue(null);
                 Toasty.error(context, context.getString(R.string.error_response), Toast.LENGTH_SHORT, true).show();
             }
         });
+        return accountPodcast;
     }
 
     public static void sendAccountCommentRequest(Context context, ApiCallInterface apiCallInterface, String token, Comment comment, AccountCommentRequest accountCommentRequest) {
@@ -106,17 +110,21 @@ public class NetworkRequestsUtil {
         });
 
         if (isNewView) {
-            apiCallInterface.podcastView(podcastId).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                }
-            });
+            sendPodcastViewRequest(apiCallInterface, podcastId);
         }
         return accountPodcastResponse;
+    }
+
+    public static void sendPodcastViewRequest(ApiCallInterface apiCallInterface, String podcastId) {
+        apiCallInterface.podcastView(podcastId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
     }
 
     public static void rssFeedVerify(ApiCallInterface apiCallInterface, String rssFeed,

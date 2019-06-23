@@ -1,43 +1,21 @@
 package com.podcasses.view.base;
 
-import android.accounts.AccountManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
-
-import com.podcasses.R;
-import com.podcasses.authentication.AccountAuthenticator;
-import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
-import com.podcasses.model.request.AccountPodcastRequest;
-import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.view.AuthenticatorActivity;
-
-import es.dmoral.toasty.Toasty;
-import retrofit2.Call;
-import retrofit2.Response;
-
-import static android.app.Activity.RESULT_OK;
-import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
 /**
  * Created by aleksandar.kovachev.
  */
-public class BaseFragment extends Fragment implements AuthenticationTokenTask {
+public class BaseFragment extends Fragment {
 
     public static final String ARGS_INSTANCE = "com.podcasses.argsInstance";
 
     protected FragmentNavigation fragmentNavigation;
     protected int fragmentCount;
-
-    private MutableLiveData<String> token;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,24 +32,6 @@ public class BaseFragment extends Fragment implements AuthenticationTokenTask {
         if (context instanceof FragmentNavigation) {
             fragmentNavigation = (FragmentNavigation) context;
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 22) {
-            token.setValue(data.getStringExtra(AccountManager.KEY_AUTHTOKEN));
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
-    public void startAuthenticationActivity(MutableLiveData<String> token) {
-        this.token = token;
-        Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-        intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
-        startActivityForResult(intent, 22);
     }
 
     public interface FragmentNavigation {

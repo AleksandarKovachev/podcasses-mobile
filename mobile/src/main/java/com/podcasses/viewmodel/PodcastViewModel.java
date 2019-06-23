@@ -71,7 +71,7 @@ public class PodcastViewModel extends BaseViewModel {
         return repository.getPodcasts(lifecycleOwner, null, podcastId, null, false, isSwipedToRefresh, 0);
     }
 
-    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, @NonNull String token, @NonNull String podcastId) {
+    public LiveData<ApiResponse> accountPodcasts(@NonNull LifecycleOwner lifecycleOwner, String token, @NonNull String podcastId) {
         this.token = token;
         return repository.getAccountPodcast(lifecycleOwner, token, podcastId);
     }

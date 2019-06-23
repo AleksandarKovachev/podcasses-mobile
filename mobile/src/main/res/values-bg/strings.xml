@@ -13,6 +13,9 @@
     <string name="title_dark_theme">Тъмна тема</string>
     <string name="title_logout">Изход</string>
 
+    <string name="not_authenticated">Не сте влязъл във вашия профил!</string>
+    <string name="click_to_authenticate">Натиснете за да влезете или да създадете такъв</string>
+
     <string name="username_input">Потребителско име</string>
     <string name="display_name_input">Име за показване</string>
     <string name="password_input">Парола</string>
