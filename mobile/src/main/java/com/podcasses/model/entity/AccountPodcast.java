@@ -26,6 +26,8 @@ public class AccountPodcast {
 
     private int markAsPlayed;
 
+    private Date markAsPlayedTimestamp;
+
     private Date likeTimestamp;
 
     private Date viewTimestamp;
@@ -82,6 +84,14 @@ public class AccountPodcast {
 
     public void setMarkAsPlayed(int markAsPlayed) {
         this.markAsPlayed = markAsPlayed;
+    }
+
+    public Date getMarkAsPlayedTimestamp() {
+        return markAsPlayedTimestamp;
+    }
+
+    public void setMarkAsPlayedTimestamp(Date markAsPlayedTimestamp) {
+        this.markAsPlayedTimestamp = markAsPlayedTimestamp;
     }
 
     public Date getLikeTimestamp() {

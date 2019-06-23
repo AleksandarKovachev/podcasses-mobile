@@ -12,14 +12,18 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
 import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.HomeViewModel;
@@ -27,6 +31,7 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,7 +65,10 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         binder.setLifecycleOwner(this);
         binder.setFragmentManager(getChildFragmentManager());
         binder.refreshLayout.setOnRefreshListener(this);
-        binder.setTypes(Arrays.asList(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(), PodcastTypeEnum.IN_PROGRESS.getType(), PodcastTypeEnum.DOWNLOADED.getType()));
+        binder.setTypes(Arrays.asList(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(),
+                PodcastTypeEnum.IN_PROGRESS.getType(),
+                PodcastTypeEnum.DOWNLOADED.getType(),
+                PodcastTypeEnum.MARK_AS_PLAYED.getType()));
         return binder.getRoot();
     }
 
@@ -93,14 +101,14 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             case LOADING:
                 break;
             case DATABASE:
-                setDataFromResponse(apiResponse);
+                setDataFromResponse(apiResponse, refreshLayout != null);
                 break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                setDataFromResponse(apiResponse);
+                setDataFromResponse(apiResponse, refreshLayout != null);
                 break;
             case ERROR:
                 liveData.removeObservers(this);
@@ -112,9 +120,62 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         }
     }
 
-    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
         if (apiResponse.data instanceof List) {
             viewModel.setTrendingPodcastsInAdapter((List<Podcast>) apiResponse.data);
+            getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
+        }
+    }
+
+    private void getAccountPodcasts(List<Podcast> podcasts, boolean isSwipedToRefresh) {
+        List<String> podcastIds = new ArrayList<>();
+        for (Podcast podcast : podcasts) {
+            podcastIds.add(podcast.getId());
+        }
+
+        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
+        if (token == null) {
+            LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, null, podcastIds, isSwipedToRefresh);
+            accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+        } else {
+            token.observe(this, s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, s, podcastIds, isSwipedToRefresh);
+                    accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+                }
+            });
+        }
+    }
+
+    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
+        switch (accountPodcastsResponse.status) {
+            case LOADING:
+                break;
+            case DATABASE:
+                setAccountPodcastsData(accountPodcastsResponse);
+                break;
+            case SUCCESS: {
+                liveData.removeObservers(this);
+                setAccountPodcastsData(accountPodcastsResponse);
+                break;
+            }
+            case ERROR: {
+                liveData.removeObservers(this);
+                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
+                break;
+            }
+        }
+    }
+
+    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
+        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
+            for (Podcast podcast : viewModel.getPodcasts()) {
+                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
+                    if (accountPodcast.getPodcastId().equals(podcast.getId())) {
+                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                    }
+                }
+            }
         }
     }
 

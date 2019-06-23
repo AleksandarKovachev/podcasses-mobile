@@ -83,9 +83,11 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         super.onViewCreated(view, savedInstanceState);
         if (type == PodcastTypeEnum.DOWNLOADED) {
             getDownloadedPodcasts();
-        } else if (type == PodcastTypeEnum.HISTORY || type == PodcastTypeEnum.LIKED_PODCASTS
-                || type == PodcastTypeEnum.FROM_SUBSCRIPTIONS || type == PodcastTypeEnum.IN_PROGRESS) {
-
+        } else if (type == PodcastTypeEnum.HISTORY ||
+                type == PodcastTypeEnum.LIKED_PODCASTS ||
+                type == PodcastTypeEnum.FROM_SUBSCRIPTIONS ||
+                type == PodcastTypeEnum.IN_PROGRESS ||
+                type == PodcastTypeEnum.MARK_AS_PLAYED) {
             token = AuthenticationUtil.getAuthenticationToken(this.getContext());
             if (token != null) {
                 token.observe(getViewLifecycleOwner(), s -> {
@@ -96,6 +98,8 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
                         getPodcasts(null, null);
                     }
                 });
+            } else {
+                getPodcasts(null, null);
             }
         }
         setPodcastClick();
@@ -120,7 +124,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         page = 0;
-        getPodcasts(token.getValue(), refreshLayout);
+        getPodcasts(token == null ? null : token.getValue(), refreshLayout);
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -166,7 +170,8 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             List<Podcast> data = (List<Podcast>) apiResponse.data;
             if (type == PodcastTypeEnum.DOWNLOADED ||
                     type == PodcastTypeEnum.FROM_SUBSCRIPTIONS ||
-                    type == PodcastTypeEnum.IN_PROGRESS) {
+                    type == PodcastTypeEnum.IN_PROGRESS ||
+                    type == PodcastTypeEnum.MARK_AS_PLAYED) {
                 if (data.size() > 3) {
                     data = data.subList(0, 3);
                 }

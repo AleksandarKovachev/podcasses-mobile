@@ -257,7 +257,7 @@ public class MainDataRepository {
             fetchAccountPodcastsOnLocalDatabase(lifecycleOwner, accountPodcastsResponse, podcastIds);
         }
 
-        if (ConnectivityUtil.checkInternetConnection(context)) {
+        if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
             fetchAccountPodcastsOnNetwork(token, podcastIds, accountPodcastsResponse);
         } else if (isSwipedToRefresh) {
             accountPodcastsResponse.setValue(ApiResponse.error(new ConnectException()));

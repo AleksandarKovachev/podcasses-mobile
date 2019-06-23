@@ -408,8 +408,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
     }
 
-    private void consumeAccountPodcasts(ApiResponse
-                                                accountPodcastsResponse, LiveData<ApiResponse> liveData) {
+    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
         switch (accountPodcastsResponse.status) {
             case LOADING:
                 break;
