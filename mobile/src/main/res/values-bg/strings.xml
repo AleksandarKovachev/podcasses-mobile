@@ -79,6 +79,7 @@
     <string name="successfully_added_comment">Успешно добавен коментар.</string>
     <string name="successful_response">Успешна заявка.</string>
     <string name="successful_report">Успешно подаден сигнал.</string>
+    <string name="successfully_authenticated">Успешно оторизиране</string>
     <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
 
     <string name="error_invalid_rss_feed">Невалиден RSS Feed</string>

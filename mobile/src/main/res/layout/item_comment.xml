@@ -37,6 +37,7 @@
             android:paddingStart="@dimen/medium_offset"
             android:paddingEnd="@dimen/medium_offset"
             android:text="@{viewModel.getCommentAt(position).username}"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             android:textSize="@dimen/extra_small_text_size"
             app:layout_constraintEnd_toStartOf="@drawable/like_button"
             app:layout_constraintStart_toEndOf="@id/account_image"
@@ -108,8 +109,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_more_options"
             android:onClick="@{v -> viewModel.commentOptions(v, position)}"
+            android:src="@drawable/ic_more_options"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -151,18 +151,24 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             } else {
                 setAuthenticationToken(true);
             }
-
-            setPodcastClick();
-            setAccountClick();
-            setAccountEditClick();
-            setInfiniteScrollListener();
         }
+        setPodcastClick();
+        setAccountClick();
+        setAccountEditClick();
+        setInfiniteScrollListener();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 22) {
+        if (resultCode == RESULT_OK && requestCode == 22 &&
+                data.getStringExtra(AccountManager.KEY_AUTHTOKEN) != null) {
+            if (token == null) {
+                token = new MutableLiveData<>();
+            }
             token.setValue(data.getStringExtra(AccountManager.KEY_AUTHTOKEN));
+            binding.notAuthenticatedView.setVisibility(View.GONE);
+            binding.refreshLayout.setVisibility(View.VISIBLE);
+            setAuthenticationToken(true);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -442,7 +448,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setInfiniteScrollListener() {
         binding.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+            if (scrollY >= (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
                 if (!viewModel.getIsLoading()) {
                     ++page;
                     viewModel.setIsLoading(true);

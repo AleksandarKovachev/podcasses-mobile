@@ -79,6 +79,7 @@
     <string name="successfully_added_comment">Successfully added comment.</string>
     <string name="successful_response">Successful request.</string>
     <string name="successful_report">Successful sent report.</string>
+    <string name="successfully_authenticated">Successfully authenticated</string>
     <string name="error_response">Something went wrong. Please try again!</string>
 
     <string name="error_invalid_rss_feed">Invalid RSS Feed</string>

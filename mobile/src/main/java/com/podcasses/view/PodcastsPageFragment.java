@@ -203,7 +203,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
 
     private void setPodcastScrollListener() {
         binder.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+            if (scrollY >= (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
                 if (!viewModel.getIsLoading()) {
                     ++page;
                     viewModel.setIsLoading(true);

@@ -31,6 +31,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="@{viewModel.getPodcastFileAt(position).fileName}"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             android:textSize="@dimen/extra_small_text_size"
             app:layout_constraintEnd_toStartOf="@id/podcast_file_delete"
             app:layout_constraintStart_toStartOf="parent"

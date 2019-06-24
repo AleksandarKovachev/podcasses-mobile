@@ -313,8 +313,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 22) {
+        if (resultCode == RESULT_OK && requestCode == 22 &&
+                data.getStringExtra(AccountManager.KEY_AUTHTOKEN) != null) {
+            if (token == null) {
+                token = new MutableLiveData<>();
+            }
             token.setValue(data.getStringExtra(AccountManager.KEY_AUTHTOKEN));
+            Toasty.success(getContext(), getString(R.string.successfully_authenticated), Toast.LENGTH_SHORT, true).show();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
