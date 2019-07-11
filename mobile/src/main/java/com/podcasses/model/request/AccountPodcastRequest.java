@@ -13,6 +13,14 @@ public class AccountPodcastRequest {
 
     private Integer markAsPlayed;
 
+    private Long markAsPlayedTimestamp;
+
+    private Long likeTimestamp;
+
+    private Long viewTimestamp;
+
+    private Long createdTimestamp;
+
     public String getPodcastId() {
         return podcastId;
     }
@@ -43,5 +51,37 @@ public class AccountPodcastRequest {
 
     public void setMarkAsPlayed(Integer markAsPlayed) {
         this.markAsPlayed = markAsPlayed;
+    }
+
+    public Long getMarkAsPlayedTimestamp() {
+        return markAsPlayedTimestamp;
+    }
+
+    public void setMarkAsPlayedTimestamp(Long markAsPlayedTimestamp) {
+        this.markAsPlayedTimestamp = markAsPlayedTimestamp;
+    }
+
+    public Long getLikeTimestamp() {
+        return likeTimestamp;
+    }
+
+    public void setLikeTimestamp(Long likeTimestamp) {
+        this.likeTimestamp = likeTimestamp;
+    }
+
+    public Long getViewTimestamp() {
+        return viewTimestamp;
+    }
+
+    public void setViewTimestamp(Long viewTimestamp) {
+        this.viewTimestamp = viewTimestamp;
+    }
+
+    public Long getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Long createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
     }
 }

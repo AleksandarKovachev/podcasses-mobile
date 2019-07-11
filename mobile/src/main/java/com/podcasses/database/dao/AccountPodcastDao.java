@@ -22,6 +22,9 @@ public interface AccountPodcastDao {
     @Query("SELECT * FROM AccountPodcast WHERE podcastId IN (:podcastIds)")
     LiveData<List<AccountPodcast>> getAccountPodcasts(List<String> podcastIds);
 
+    @Query("SELECT * FROM AccountPodcast WHERE accountId IS NULL")
+    List<AccountPodcast> getNotSyncedAccountPodcasts();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(AccountPodcast... accountPodcast);
 

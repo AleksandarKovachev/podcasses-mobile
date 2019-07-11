@@ -30,6 +30,7 @@ import com.podcasses.R;
 import com.podcasses.authentication.KeycloakToken;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.AuthenticatorActivityBinding;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -57,6 +58,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     @Inject
     AuthenticationCallInterface authenticationCall;
+
+    @Inject
+    MainDataRepository repository;
 
     private CallbackManager callbackManager;
 
@@ -182,6 +186,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     Account account = addOrFindAccount(username, binder.password.getText().toString());
                     accountManager.setAuthToken(account, AUTH_TOKEN_TYPE, response.body().getAccessToken());
                     accountManager.setUserData(account, REFRESH_TOKEN, response.body().getRefreshToken());
+                    repository.syncAccountPodcasts(response.body().getAccessToken());
                     finishAccountAdd(intent, binder.username.getText().toString(), response.body().getAccessToken(), response.body().getRefreshToken());
                 }
             }

@@ -26,6 +26,7 @@ import com.podcasses.util.ConnectivityUtil;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -340,6 +341,25 @@ public class MainDataRepository {
             accountCommentsResponse.setValue(ApiResponse.error(new ConnectException()));
         }
         return accountCommentsResponse;
+    }
+
+    public void syncAccountPodcasts(String token) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<AccountPodcast> accountPodcasts = localDataSource.getNotSyncedAccountPodcasts();
+            for (AccountPodcast accountPodcast : accountPodcasts) {
+                networkDataSource.syncAccountPodcast(token, accountPodcast, new IDataCallback<AccountPodcast>() {
+                    @Override
+                    public void onSuccess(AccountPodcast data) {
+                        localDataSource.insertAccountPodcasts(data);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable error) {
+
+                    }
+                });
+            }
+        });
     }
 
     private void fetchAccountOnNetwork(MutableLiveData<ApiResponse> accountResponse, String username, String id, boolean isMyAccount) {

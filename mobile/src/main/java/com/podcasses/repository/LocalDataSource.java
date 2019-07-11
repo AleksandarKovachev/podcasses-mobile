@@ -106,6 +106,10 @@ public class LocalDataSource {
         return accountPodcastDao.getAccountPodcast(podcastId);
     }
 
+    List<AccountPodcast> getNotSyncedAccountPodcasts() {
+        return accountPodcastDao.getNotSyncedAccountPodcasts();
+    }
+
     void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
         Executors.newSingleThreadExecutor().execute(() ->
                 accountPodcastDao.insertAll(accountPodcasts));

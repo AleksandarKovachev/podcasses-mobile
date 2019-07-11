@@ -8,6 +8,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountPodcastType;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
@@ -355,6 +356,38 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<List<AccountComment>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    void syncAccountPodcast(String token, AccountPodcast accountPodcast, IDataCallback<AccountPodcast> callback) {
+        AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
+        accountPodcastRequest.setPodcastId(accountPodcast.getPodcastId());
+        accountPodcastRequest.setLikeStatus(accountPodcast.getLikeStatus());
+        accountPodcastRequest.setMarkAsPlayed(accountPodcast.getMarkAsPlayed());
+        accountPodcastRequest.setTimeIndex(accountPodcast.getTimeIndex());
+        if (accountPodcast.getViewTimestamp() != null) {
+            accountPodcastRequest.setViewTimestamp(accountPodcast.getViewTimestamp().getTime());
+        }
+        if (accountPodcast.getMarkAsPlayedTimestamp() != null) {
+            accountPodcastRequest.setMarkAsPlayedTimestamp(accountPodcast.getMarkAsPlayedTimestamp().getTime());
+        }
+        if (accountPodcast.getCreatedTimestamp() != null) {
+            accountPodcastRequest.setCreatedTimestamp(accountPodcast.getCreatedTimestamp().getTime());
+        }
+        if (accountPodcast.getLikeTimestamp() != null) {
+            accountPodcastRequest.setLikeTimestamp(accountPodcast.getLikeTimestamp().getTime());
+        }
+        Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
+        call.enqueue(new Callback<AccountPodcast>() {
+            @Override
+            public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<AccountPodcast> call, Throwable t) {
                 callback.onFailure(t);
             }
         });
