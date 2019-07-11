@@ -19,6 +19,7 @@ import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
+import com.podcasses.view.base.BaseActivity;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegistrationActivity extends AppCompatActivity {
+public class RegistrationActivity extends BaseActivity {
 
     @Inject
     ApiCallInterface apiCallInterface;

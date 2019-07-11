@@ -42,6 +42,7 @@ public class MainDataRepository {
 
     private final MutableLiveData<List<Nomenclature>> categories;
     private final MutableLiveData<List<Language>> languages;
+    private final MutableLiveData<List<Language>> locales;
     private final MutableLiveData<List<Nomenclature>> privacies;
     private final MutableLiveData<List<Nomenclature>> countries;
 
@@ -52,6 +53,7 @@ public class MainDataRepository {
         networkDataSource = new NetworkDataSource(apiCallInterface, context);
         categories = new MutableLiveData<>();
         languages = new MutableLiveData<>();
+        locales = new MutableLiveData<>();
         privacies = new MutableLiveData<>();
         countries = new MutableLiveData<>();
     }
@@ -281,6 +283,14 @@ public class MainDataRepository {
         }
         networkDataSource.getLanguages(getNomenclaturesCallback(languages, "getLanguages"));
         return languages;
+    }
+
+    public LiveData<List<Language>> getLocales() {
+        if (!CollectionUtils.isEmpty(locales.getValue())) {
+            return locales;
+        }
+        networkDataSource.getLocales(getNomenclaturesCallback(locales, "getLocales"));
+        return locales;
     }
 
     public LiveData<List<Nomenclature>> getPrivacies() {

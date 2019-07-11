@@ -17,11 +17,15 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
+import com.podcasses.adapter.LanguageAdapter;
+import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.DialogTrendingFilterBinding;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
+import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.HomeViewModel;
 
@@ -29,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import es.dmoral.toasty.Toasty;
@@ -107,6 +112,19 @@ public class DialogUtil {
                         (dialog, id) -> dialog.cancel());
 
         alertDialogBuilder.create().show();
+    }
+
+    public static void createLocaleDialog(Context context, List<Language> languages) {
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setAdapter(new LanguageAdapter(context, android.R.layout.simple_dropdown_item_1line, languages,
+                context.getString(R.string.language)), (d, pos) -> {
+            SharedPreferencesManager sharedPreferencesManager =
+                    ((BaseApplication) context.getApplicationContext()).getSharedPreferencesManager();
+            sharedPreferencesManager.setLocale(languages.get(pos).getIso639_1());
+        });
+        dialog = builder.create();
+        dialog.show();
     }
 
     public static void openDatePicker(AppCompatEditText view) {

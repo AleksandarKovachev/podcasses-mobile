@@ -103,6 +103,11 @@
 
     <string name="loading">Зареждане…</string>
 
+    <string name="settings_select_language">Избери Език</string>
+    <string name="settings_more">Още</string>
+    <string name="settings_terms_of_service">Общи Условия</string>
+    <string name="settings_privacy_policy">Декларация за Поверителност</string>
+
     <string-array name="trendingFilter">
         <item>Избери:</item>
         <item>DAILY</item>

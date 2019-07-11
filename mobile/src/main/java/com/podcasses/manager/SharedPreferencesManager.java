@@ -12,6 +12,7 @@ public class SharedPreferencesManager {
 
     private static final String PLAYBACK_SPEED = "playback_speed";
     private static final String TRIM_SILENCE = "trim_silence";
+    private static final String LOCALE = "locale";
 
     private SharedPreferences sharedPreferences;
 
@@ -33,6 +34,14 @@ public class SharedPreferencesManager {
 
     public void setTrimSilence(boolean trimSilence) {
         sharedPreferences.edit().putBoolean(TRIM_SILENCE, trimSilence).apply();
+    }
+
+    public String getLocale() {
+        return sharedPreferences.getString(LOCALE, null);
+    }
+
+    public void setLocale(String locale) {
+        sharedPreferences.edit().putString(LOCALE, locale).apply();
     }
 
 }

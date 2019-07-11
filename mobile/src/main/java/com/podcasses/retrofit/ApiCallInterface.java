@@ -78,6 +78,9 @@ public interface ApiCallInterface {
     @GET("/nomenclature/languages")
     Call<List<Language>> languages();
 
+    @GET("/nomenclature/locales")
+    Call<List<Language>> locales();
+
     @GET("/nomenclature/countries")
     Call<List<Nomenclature>> countries();
 

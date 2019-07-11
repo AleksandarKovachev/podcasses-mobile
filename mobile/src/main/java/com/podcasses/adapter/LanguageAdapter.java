@@ -47,23 +47,18 @@ public class LanguageAdapter extends ArrayAdapter {
         return languages.get(position).getId();
     }
 
-    @Override
-    public boolean isEnabled(int position) {
-        return position != 0;
-    }
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         TextView label = (TextView) super.getView(position, convertView, parent);
-        label.setText(languages.get(position).getName());
+        label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
         return label;
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
-        label.setText(languages.get(position).getName());
+        label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
         return label;
     }
 

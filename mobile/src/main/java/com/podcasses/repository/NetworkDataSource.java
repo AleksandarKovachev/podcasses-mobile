@@ -321,6 +321,11 @@ class NetworkDataSource {
         call.enqueue(nomenclatureCallback(callback));
     }
 
+    void getLocales(IDataCallback<List<Language>> callback) {
+        Call<List<Language>> call = apiCallInterface.locales();
+        call.enqueue(nomenclatureCallback(callback));
+    }
+
     void getComments(String podcastId, IDataCallback<List<Comment>> callback) {
         Call<List<Comment>> call = apiCallInterface.getComments(podcastId);
         call.enqueue(new Callback<List<Comment>>() {

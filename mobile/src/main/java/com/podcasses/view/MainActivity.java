@@ -31,6 +31,7 @@ import com.podcasses.databinding.MainActivityBinding;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
+import com.podcasses.view.base.BaseActivity;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.view.base.FragmentCallback;
 
@@ -42,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
         BaseFragment.FragmentNavigation,
         FragNavController.RootFragmentListener,
@@ -126,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.navigation_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.navigation_upload:
             case R.id.navigation_history:
             case R.id.navigation_logout:
@@ -136,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 return fragNavController.popFragment();
         }
+        return false;
     }
 
     @Override

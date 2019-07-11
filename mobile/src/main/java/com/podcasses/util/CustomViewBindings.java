@@ -64,9 +64,11 @@ public class CustomViewBindings {
 
     @BindingAdapter(value = {"isSubscribed"})
     public static void isSubscribed(View view, boolean isSubscribed) {
-        int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);
-        int defaultColor = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
-        view.getBackground().setColorFilter(isSubscribed ? selectedColor : defaultColor, PorterDuff.Mode.MULTIPLY);
+        if (view != null && view.getBackground() != null) {
+            int selectedColor = ContextCompat.getColor(view.getContext(), R.color.colorPrimaryLight);
+            int defaultColor = ContextCompat.getColor(view.getContext(), R.color.colorAccent);
+            view.getBackground().setColorFilter(isSubscribed ? selectedColor : defaultColor, PorterDuff.Mode.MULTIPLY);
+        }
     }
 
     @BindingAdapter(value = {"isLiked"})

@@ -107,6 +107,11 @@
     <string name="fb_login_protocol_scheme" translatable="false">fb302696717277253</string>
     <string name="google_web_client_id" translatable="false">478441231698-19toqhduh91mfltt43203hfrtr2im6q1.apps.googleusercontent.com</string>
 
+    <string name="settings_select_language">Select Language</string>
+    <string name="settings_more">More</string>
+    <string name="settings_terms_of_service">Terms of Service</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+
     <string-array name="trendingFilter">
         <item>Choose:</item>
         <item>DAILY</item>

@@ -3,8 +3,13 @@ package com.podcasses.view;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +41,7 @@ import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -126,6 +132,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 LogErrorResponseUtil.logFailure(e, this);
             }
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(updateBaseContextLocale(base));
     }
 
     private FacebookCallback<LoginResult> getFacebookLoginCallback() {
@@ -219,6 +230,37 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private Context updateBaseContextLocale(Context context) {
+        String language = ((BaseApplication) context.getApplicationContext()).getSharedPreferencesManager().getLocale();
+        if (language == null) {
+            return context;
+        }
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return updateResourcesLocale(context, locale);
+        }
+
+        return updateResourcesLocaleLegacy(context, locale);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private Context updateResourcesLocale(Context context, Locale locale) {
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(locale);
+        return context.createConfigurationContext(configuration);
+    }
+
+    @SuppressWarnings("deprecation")
+    private Context updateResourcesLocaleLegacy(Context context, Locale locale) {
+        Resources resources = context.getResources();
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        return context;
     }
 
 }

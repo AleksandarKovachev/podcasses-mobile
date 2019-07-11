@@ -12,6 +12,7 @@ import com.podcasses.view.PodcastFragment;
 import com.podcasses.view.PodcastsPageFragment;
 import com.podcasses.view.RegistrationActivity;
 import com.podcasses.view.SearchFragment;
+import com.podcasses.view.SettingsActivity;
 import com.podcasses.view.UploadFragment;
 
 import javax.inject.Singleton;
@@ -50,4 +51,6 @@ public interface AppComponent {
     void inject(AudioPlayerService service);
 
     void inject(RegistrationActivity registrationActivity);
+
+    void inject(SettingsActivity settingsActivity);
 }
