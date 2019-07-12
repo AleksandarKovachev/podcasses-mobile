@@ -13,9 +13,11 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
-import com.podcasses.databinding.FragmentPodcastsPageBinding;
+import com.podcasses.databinding.FragmentSearchBinding;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -26,6 +28,7 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,15 +46,16 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
 
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
+    private LiveData<ApiResponse> accountsResponse;
 
-    private static String podcast;
+    private static String searchQuery;
 
     static SearchFragment newInstance(int instance, String text) {
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         SearchFragment fragment = new SearchFragment();
         fragment.setArguments(args);
-        podcast = text;
+        searchQuery = text;
         return fragment;
     }
 
@@ -59,7 +63,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentPodcastsPageBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_podcasts_page, container, false);
+        FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         binding.setLifecycleOwner(this);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         updateActionBar();
@@ -72,25 +76,27 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getPodcasts(null);
+        getData(null);
         setListClick();
         setAccountClick();
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        getPodcasts(refreshLayout);
+        getData(refreshLayout);
     }
 
-    private void getPodcasts(RefreshLayout refreshLayout) {
-        podcastsResponse = viewModel.podcasts(this, podcast, null, null, true, false, 0);
+    private void getData(RefreshLayout refreshLayout) {
+        accountsResponse = viewModel.getAccounts(searchQuery);
+        podcastsResponse = viewModel.podcasts(this, searchQuery, null, null, true, false, 0);
         podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
+        accountsResponse.observe(this, response -> consumeResponse(response, accountsResponse, refreshLayout));
     }
 
     void updateActionBar() {
         if (getActivity() != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(podcast);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(searchQuery);
         }
     }
 
@@ -110,8 +116,18 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                     viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
-                viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
+                    return;
+                }
+
+                if (((List) apiResponse.data).get(0) instanceof Podcast) {
+                    viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                } else {
+                    viewModel.setAccountsInAdapter((List<Account>) apiResponse.data);
+                }
                 break;
+            case FETCHED:
+                liveData.removeObservers(this);
             case ERROR:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {

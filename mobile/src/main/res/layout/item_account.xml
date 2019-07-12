@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="position"
+            type="java.lang.Integer" />
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.base.BasePodcastViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_offset"
+        android:layout_marginTop="@dimen/extra_small_offset"
+        android:layout_marginEnd="@dimen/medium_offset"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{() -> viewModel.onAccountClick(position)}">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/account_profile_image"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            app:imageUrl="@{viewModel.getAccountProfileImage(position)}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/account_display_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="3"
+            android:text="@{viewModel.getAccountAt(position).displayName}"
+            app:layout_constraintEnd_toEndOf="@id/account_profile_image"
+            app:layout_constraintStart_toStartOf="@id/account_profile_image"
+            app:layout_constraintTop_toBottomOf="@id/account_profile_image" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

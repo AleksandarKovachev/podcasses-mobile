@@ -46,6 +46,9 @@ public interface ApiCallInterface {
     @POST("/keycloak/account")
     Call<Account> account(@Header("Authorization") String token, @Body AccountRequest accountRequest);
 
+    @GET("/keycloak/account")
+    Call<List<Account>> accounts(@Query("name") String name);
+
     @POST("/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 

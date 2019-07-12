@@ -64,6 +64,26 @@ class NetworkDataSource {
         });
     }
 
+    void getAccounts(String name, IDataCallback<List<Account>> callback) {
+        Call<List<Account>> call = apiCallInterface.accounts(name);
+        call.enqueue(new Callback<List<Account>>() {
+            @Override
+            public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Account>> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        });
+    }
+
     void getAccountSubscribes(String accountId, IDataCallback<Integer> callback) {
         Call<Integer> call = apiCallInterface.accountSubscribes(accountId);
         call.enqueue(new Callback<Integer>() {

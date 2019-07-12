@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/small_offset"
             android:layout_marginEnd="@dimen/small_offset"
-            android:onClick="@{() -> viewModel.onAccountClick(position)}"
+            android:onClick="@{() -> viewModel.onAccountClickFromPodcast(position)}"
             android:text="@{viewModel.getPodcastAt(position).username}"
             app:layout_constraintBottom_toBottomOf="@id/podcast_image"
             app:layout_constraintStart_toEndOf="@id/podcast_image"

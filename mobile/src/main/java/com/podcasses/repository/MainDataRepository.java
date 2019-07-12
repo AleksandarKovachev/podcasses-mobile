@@ -105,6 +105,28 @@ public class MainDataRepository {
         return accountResponse;
     }
 
+    public LiveData<ApiResponse> getAccounts(String name) {
+        MutableLiveData<ApiResponse> accountsResponse = new MutableLiveData<>(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context) && !Strings.isEmptyOrWhitespace(name)) {
+            networkDataSource.getAccounts(name, new IDataCallback<List<Account>>() {
+                @Override
+                public void onSuccess(List<Account> data, String url) {
+                    accountsResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    accountsResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            accountsResponse.setValue(ApiResponse.fetched());
+        }
+
+        return accountsResponse;
+    }
+
     public LiveData<ApiResponse> getAccountSubscribesCount(String accountId) {
         MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {

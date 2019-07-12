@@ -349,7 +349,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         if (apiResponse.data instanceof Account) {
             account = (Account) apiResponse.data;
             viewModel.setAccount(account);
-            if (viewModel.getIsSubscribed() && account != null) {
+            if (viewModel.getIsSubscribed() != null && viewModel.getIsSubscribed() && account != null) {
                 viewModel.saveAccount(account);
             }
         } else if (apiResponse.data instanceof Boolean) {
