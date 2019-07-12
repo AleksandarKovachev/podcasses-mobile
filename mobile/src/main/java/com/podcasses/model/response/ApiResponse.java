@@ -22,30 +22,33 @@ public class ApiResponse {
     @Nullable
     public final Throwable error;
 
-    private ApiResponse(Status status, @Nullable Object data, @Nullable Throwable error) {
+    public final String url;
+
+    private ApiResponse(Status status, @Nullable Object data, @Nullable Throwable error, String url) {
         this.status = status;
         this.data = data;
         this.error = error;
+        this.url = url;
     }
 
     public static ApiResponse loading() {
-        return new ApiResponse(LOADING, null, null);
+        return new ApiResponse(LOADING, null, null, null);
     }
 
-    public static ApiResponse success(@NonNull Object data) {
-        return new ApiResponse(SUCCESS, data, null);
+    public static ApiResponse success(@NonNull Object data, String url) {
+        return new ApiResponse(SUCCESS, data, null, url);
     }
 
-    public static ApiResponse error(@NonNull Throwable error) {
-        return new ApiResponse(ERROR, null, error);
+    public static ApiResponse error(@NonNull Throwable error, String url) {
+        return new ApiResponse(ERROR, null, error, url);
     }
 
     public static ApiResponse fetched() {
-        return  new ApiResponse(FETCHED, null, null);
+        return  new ApiResponse(FETCHED, null, null, null);
     }
 
     public static ApiResponse database(Object data) {
-        return new ApiResponse(DATABASE, data, null);
+        return new ApiResponse(DATABASE, data, null, null);
     }
 
     public enum Status {

@@ -96,15 +96,15 @@ public class NetworkRequestsUtil {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    accountPodcastResponse.setValue(ApiResponse.success(response.body()));
+                    accountPodcastResponse.setValue(ApiResponse.success(response.body(), response.raw().request().url().toString()));
                 } else {
-                    accountPodcastResponse.setValue(ApiResponse.error(null));
+                    accountPodcastResponse.setValue(ApiResponse.error(null, response.raw().request().url().toString()));
                 }
             }
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                accountPodcastResponse.setValue(ApiResponse.error(t));
+                accountPodcastResponse.setValue(ApiResponse.error(t, call.request().url().toString()));
                 LogErrorResponseUtil.logFailure(t, context);
             }
         });

@@ -73,11 +73,11 @@ public class AccountViewModel extends BasePodcastViewModel {
         return repository.getAccountSubscribesCount(accountId);
     }
 
-    public LiveData<ApiResponse> accountPodcastsCount(@NonNull String accountId) {
+    public LiveData<ApiResponse> accountPodcastsCount(String token, @NonNull String accountId) {
         if (accountPodcasts.get() != 0) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getAccountPodcastsCount(accountId);
+        return repository.getAccountPodcastsCount(token, accountId);
     }
 
     public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {

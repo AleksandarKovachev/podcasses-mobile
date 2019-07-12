@@ -5,8 +5,8 @@ package com.podcasses.repository;
  */
 interface IDataCallback<T> {
 
-    void onSuccess(T data);
+    void onSuccess(T data, String url);
 
-    void onFailure(Throwable error);
+    void onFailure(Throwable error, String url);
 
 }

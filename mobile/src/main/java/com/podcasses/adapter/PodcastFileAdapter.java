@@ -69,6 +69,7 @@ public class PodcastFileAdapter extends RecyclerView.Adapter<PodcastFileAdapter.
 
         ViewHolder(View itemView) {
             super(itemView);
+            bind();
         }
 
         void setData(AccountViewModel viewModel, Integer position) {

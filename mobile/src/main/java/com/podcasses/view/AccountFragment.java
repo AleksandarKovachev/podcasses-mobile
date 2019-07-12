@@ -271,7 +271,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
         if (accountId != null) {
             accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-            accountPodcastsCountResponse = viewModel.accountPodcastsCount(accountId);
+            accountPodcastsCountResponse = viewModel.accountPodcastsCount(token, accountId);
             accountSubscribesResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountSubscribesResponse, true));
             accountPodcastsCountResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountPodcastsCountResponse, false));
         }
@@ -349,10 +349,13 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         if (apiResponse.data instanceof Account) {
             account = (Account) apiResponse.data;
             viewModel.setAccount(account);
+            if (viewModel.getIsSubscribed() && account != null) {
+                viewModel.saveAccount(account);
+            }
         } else if (apiResponse.data instanceof Boolean) {
             boolean isSubscribed = (boolean) apiResponse.data;
             viewModel.setIsSubscribed(isSubscribed);
-            if (isSubscribed) {
+            if (isSubscribed && account != null) {
                 viewModel.saveAccount(account);
             }
         } else if (apiResponse.data instanceof List) {

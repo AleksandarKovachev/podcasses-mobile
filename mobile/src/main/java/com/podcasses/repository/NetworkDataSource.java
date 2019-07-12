@@ -50,16 +50,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<Account> call, Response<Account> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<Account> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -70,36 +70,36 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
 
-    void getAccountPodcastsCount(String accountId, IDataCallback<Integer> callback) {
-        Call<Integer> call = apiCallInterface.accountPodcastsCount(accountId);
+    void getAccountPodcastsCount(String token, String accountId, IDataCallback<Integer> callback) {
+        Call<Integer> call = apiCallInterface.accountPodcastsCount(token != null ? "Bearer " + token : null, accountId);
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -110,16 +110,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -130,16 +130,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -160,27 +160,27 @@ class NetworkDataSource {
                         @Override
                         public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
                             if (response.isSuccessful()) {
-                                callback.onSuccess(response.body());
+                                callback.onSuccess(response.body(), response.raw().request().url().toString());
                             } else {
-                                callback.onSuccess(null);
+                                callback.onSuccess(null, response.raw().request().url().toString());
                                 LogErrorResponseUtil.logErrorResponse(response, context);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<Podcast>> call, Throwable t) {
-                            callback.onFailure(t);
+                            callback.onFailure(t, call.request().url().toString());
                         }
                     });
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<AccountPodcast>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -196,27 +196,27 @@ class NetworkDataSource {
                         @Override
                         public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
                             if (response.isSuccessful()) {
-                                callback.onSuccess(response.body());
+                                callback.onSuccess(response.body(), response.raw().request().url().toString());
                             } else {
-                                callback.onSuccess(null);
+                                callback.onSuccess(null, response.raw().request().url().toString());
                                 LogErrorResponseUtil.logErrorResponse(response, context);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<Podcast>> call, Throwable t) {
-                            callback.onFailure(t);
+                            callback.onFailure(t, call.request().url().toString());
                         }
                     });
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -227,16 +227,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Podcast>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -247,16 +247,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -268,16 +268,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<AccountPodcast>> call, Response<List<AccountPodcast>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<AccountPodcast>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -288,16 +288,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<PodcastFile>> call, Response<List<PodcastFile>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<PodcastFile>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -343,16 +343,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Comment>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -363,16 +363,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<AccountComment>> call, Response<List<AccountComment>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<AccountComment>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -399,12 +399,12 @@ class NetworkDataSource {
         call.enqueue(new Callback<AccountPodcast>() {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
-                callback.onSuccess(response.body());
+                callback.onSuccess(response.body(), response.raw().request().url().toString());
             }
 
             @Override
             public void onFailure(Call<AccountPodcast> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         });
     }
@@ -414,16 +414,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body().get("agreement"));
+                    callback.onSuccess(response.body().get("agreement"), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         };
     }
@@ -433,16 +433,16 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<T>> call, Response<List<T>> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
-                    callback.onSuccess(null);
+                    callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
                 }
             }
 
             @Override
             public void onFailure(Call<List<T>> call, Throwable t) {
-                callback.onFailure(t);
+                callback.onFailure(t, call.request().url().toString());
             }
         };
     }

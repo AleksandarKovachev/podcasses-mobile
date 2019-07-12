@@ -99,7 +99,7 @@ public class MainDataRepository {
                 fetchAccountOnNetwork(accountResponse, username, id, isMyAccount);
             }
         } else if (isSwipedToRefresh) {
-            accountResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return accountResponse;
@@ -110,37 +110,37 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
                 @Override
-                public void onSuccess(Integer data) {
-                    accountSubscribesResponse.setValue(ApiResponse.success(data));
+                public void onSuccess(Integer data, String url) {
+                    accountSubscribesResponse.setValue(ApiResponse.success(data, url));
                 }
 
                 @Override
-                public void onFailure(Throwable error) {
-                    accountSubscribesResponse.setValue(ApiResponse.error(error));
+                public void onFailure(Throwable error, String url) {
+                    accountSubscribesResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> getAccountPodcastsCount(String accountId) {
+    public LiveData<ApiResponse> getAccountPodcastsCount(String token, String accountId) {
         MutableLiveData<ApiResponse> accountPodcastsCountResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountPodcastsCount(accountId, new IDataCallback<Integer>() {
+            networkDataSource.getAccountPodcastsCount(token, accountId, new IDataCallback<Integer>() {
                 @Override
-                public void onSuccess(Integer data) {
-                    accountPodcastsCountResponse.setValue(ApiResponse.success(data));
+                public void onSuccess(Integer data, String url) {
+                    accountPodcastsCountResponse.setValue(ApiResponse.success(data, url));
                 }
 
                 @Override
-                public void onFailure(Throwable error) {
-                    accountPodcastsCountResponse.setValue(ApiResponse.error(error));
+                public void onFailure(Throwable error, String url) {
+                    accountPodcastsCountResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            accountPodcastsCountResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountPodcastsCountResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
         return accountPodcastsCountResponse;
     }
@@ -150,17 +150,17 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
                 @Override
-                public void onSuccess(Integer data) {
-                    checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1));
+                public void onSuccess(Integer data, String url) {
+                    checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1, url));
                 }
 
                 @Override
-                public void onFailure(Throwable error) {
-                    checkAccountSubscribeResponse.setValue(ApiResponse.error(error));
+                public void onFailure(Throwable error, String url) {
+                    checkAccountSubscribeResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            checkAccountSubscribeResponse.setValue(ApiResponse.error(new ConnectException()));
+            checkAccountSubscribeResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
         return checkAccountSubscribeResponse;
     }
@@ -176,7 +176,7 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             fetchPodcastsOnNetwork(podcastsResponse, podcast, podcastId, userId, isMyAccount, page, isSwipedToRefresh);
         } else if (isSwipedToRefresh) {
-            podcastsResponse.setValue(ApiResponse.error(new ConnectException()));
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return podcastsResponse;
@@ -192,7 +192,7 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             fetchTrendingPodcastsOnNetwork(podcastsResponse, trendingFilter);
         } else if (isSwipedToRefresh) {
-            podcastsResponse.setValue(ApiResponse.error(new ConnectException()));
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return podcastsResponse;
@@ -209,7 +209,7 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
             fetchAccountPodcastsOnNetwork(podcastsResponse, token, likeStatus, podcastType, page);
         } else if (isSwipedToRefresh) {
-            podcastsResponse.setValue(ApiResponse.error(new ConnectException()));
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return podcastsResponse;
@@ -225,7 +225,7 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
             fetchPodcastsFromSubscriptionsOnNetwork(token, page, podcastsResponse);
         } else if (isSwipedToRefresh) {
-            podcastsResponse.setValue(ApiResponse.error(new ConnectException()));
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return podcastsResponse;
@@ -241,7 +241,7 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             fetchPodcastFilesOnNetwork(podcastFilesResponse, token);
         } else if (isSwipedToRefresh) {
-            podcastFilesResponse.setValue(ApiResponse.error(new ConnectException()));
+            podcastFilesResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return podcastFilesResponse;
@@ -265,10 +265,10 @@ public class MainDataRepository {
             fetchAccountPodcastsOnLocalDatabase(lifecycleOwner, accountPodcastsResponse, podcastIds);
         }
 
-        if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
+        if (ConnectivityUtil.checkInternetConnection(context) && token != null && !CollectionUtils.isEmpty(podcastIds)) {
             fetchAccountPodcastsOnNetwork(token, podcastIds, accountPodcastsResponse);
         } else if (isSwipedToRefresh) {
-            accountPodcastsResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountPodcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 
         return accountPodcastsResponse;
@@ -339,17 +339,17 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getComments(podcastId, new IDataCallback<List<Comment>>() {
                 @Override
-                public void onSuccess(List<Comment> data) {
-                    commentsResponse.setValue(ApiResponse.success(data));
+                public void onSuccess(List<Comment> data, String url) {
+                    commentsResponse.setValue(ApiResponse.success(data, url));
                 }
 
                 @Override
-                public void onFailure(Throwable error) {
-                    commentsResponse.setValue(ApiResponse.error(error));
+                public void onFailure(Throwable error, String url) {
+                    commentsResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            commentsResponse.setValue(ApiResponse.error(new ConnectException()));
+            commentsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
         return commentsResponse;
     }
@@ -359,17 +359,17 @@ public class MainDataRepository {
         if (ConnectivityUtil.checkInternetConnection(context)) {
             networkDataSource.getAccountComments(token, commentIds, new IDataCallback<List<AccountComment>>() {
                 @Override
-                public void onSuccess(List<AccountComment> data) {
-                    accountCommentsResponse.setValue(ApiResponse.success(data));
+                public void onSuccess(List<AccountComment> data, String url) {
+                    accountCommentsResponse.setValue(ApiResponse.success(data, url));
                 }
 
                 @Override
-                public void onFailure(Throwable error) {
-                    accountCommentsResponse.setValue(ApiResponse.error(error));
+                public void onFailure(Throwable error, String url) {
+                    accountCommentsResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            accountCommentsResponse.setValue(ApiResponse.error(new ConnectException()));
+            accountCommentsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
         return accountCommentsResponse;
     }
@@ -380,12 +380,12 @@ public class MainDataRepository {
             for (AccountPodcast accountPodcast : accountPodcasts) {
                 networkDataSource.syncAccountPodcast(token, accountPodcast, new IDataCallback<AccountPodcast>() {
                     @Override
-                    public void onSuccess(AccountPodcast data) {
+                    public void onSuccess(AccountPodcast data, String url) {
                         localDataSource.insertAccountPodcasts(data);
                     }
 
                     @Override
-                    public void onFailure(Throwable error) {
+                    public void onFailure(Throwable error, String url) {
 
                     }
                 });
@@ -396,8 +396,8 @@ public class MainDataRepository {
     private void fetchAccountOnNetwork(MutableLiveData<ApiResponse> accountResponse, String username, String id, boolean isMyAccount) {
         networkDataSource.getUserAccount(username, id, new IDataCallback<Account>() {
             @Override
-            public void onSuccess(Account account) {
-                accountResponse.setValue(ApiResponse.success(account));
+            public void onSuccess(Account account, String url) {
+                accountResponse.setValue(ApiResponse.success(account, url));
 
                 if (account != null) {
                     account.setIsMyAccount(isMyAccount ? 1 : 0);
@@ -408,8 +408,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                accountResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                accountResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -434,8 +434,8 @@ public class MainDataRepository {
                                         String userId, boolean isMyAccount, int page, boolean isSwipedToRefresh) {
         networkDataSource.getPodcasts(podcast, podcastId, Collections.singletonList(userId), null, page, new IDataCallback<List<Podcast>>() {
             @Override
-            public void onSuccess(List<Podcast> data) {
-                podcastsResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<Podcast> data, String url) {
+                podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (isMyAccount && !CollectionUtils.isEmpty(data)) {
                     if (isSwipedToRefresh) {
@@ -446,8 +446,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                podcastsResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                podcastsResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -472,8 +472,8 @@ public class MainDataRepository {
     private void fetchTrendingPodcastsOnNetwork(MutableLiveData<ApiResponse> podcastsResponse, TrendingFilter trendingFilter) {
         networkDataSource.getTrendingPodcasts(trendingFilter, new IDataCallback<List<Podcast>>() {
             @Override
-            public void onSuccess(List<Podcast> data) {
-                podcastsResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<Podcast> data, String url) {
+                podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
                     localDataSource.insertPodcasts(PodcastTypeEnum.TRENDING.getType(), data.toArray(new Podcast[0]));
@@ -481,8 +481,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                podcastsResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                podcastsResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -490,8 +490,8 @@ public class MainDataRepository {
     private void fetchPodcastsFromSubscriptionsOnNetwork(String token, int page, MutableLiveData<ApiResponse> podcastsResponse) {
         networkDataSource.getPodcastsFromSubscriptions(token, page, new IDataCallback<List<Podcast>>() {
             @Override
-            public void onSuccess(List<Podcast> data) {
-                podcastsResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<Podcast> data, String url) {
+                podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
                     localDataSource.insertPodcasts(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(), data.toArray(new Podcast[0]));
@@ -499,8 +499,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                podcastsResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                podcastsResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -509,8 +509,8 @@ public class MainDataRepository {
                                                Integer likeStatus, PodcastTypeEnum podcastType, int page) {
         networkDataSource.getPodcasts(token, podcastType.name(), likeStatus, page, new IDataCallback<List<Podcast>>() {
             @Override
-            public void onSuccess(List<Podcast> data) {
-                podcastsResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<Podcast> data, String url) {
+                podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
                     localDataSource.insertPodcasts(podcastType.getType(), data.toArray(new Podcast[0]));
@@ -518,8 +518,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                podcastsResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                podcastsResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -541,8 +541,8 @@ public class MainDataRepository {
     private void fetchPodcastFilesOnNetwork(MutableLiveData<ApiResponse> podcastFilesResponse, String token) {
         networkDataSource.getPodcastFiles(token, new IDataCallback<List<PodcastFile>>() {
             @Override
-            public void onSuccess(List<PodcastFile> data) {
-                podcastFilesResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<PodcastFile> data, String url) {
+                podcastFilesResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
                     localDataSource.insertPodcastFiles(data.toArray(new PodcastFile[0]));
@@ -550,8 +550,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                podcastFilesResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                podcastFilesResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -567,8 +567,8 @@ public class MainDataRepository {
     private void fetchAccountPodcastOnNetwork(String token, MutableLiveData<ApiResponse> accountPodcastResponse, String podcastId) {
         networkDataSource.getAccountPodcast(token, podcastId, new IDataCallback<AccountPodcast>() {
             @Override
-            public void onSuccess(AccountPodcast data) {
-                accountPodcastResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(AccountPodcast data, String url) {
+                accountPodcastResponse.setValue(ApiResponse.success(data, url));
 
                 if (data != null) {
                     localDataSource.insertAccountPodcasts(data);
@@ -576,8 +576,8 @@ public class MainDataRepository {
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                accountPodcastResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                accountPodcastResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -594,16 +594,16 @@ public class MainDataRepository {
     private void fetchAccountPodcastsOnNetwork(String token, List<String> podcastIds, MutableLiveData<ApiResponse> accountPodcastsResponse) {
         networkDataSource.getAccountPodcasts(token, podcastIds, new IDataCallback<List<AccountPodcast>>() {
             @Override
-            public void onSuccess(List<AccountPodcast> data) {
-                accountPodcastsResponse.setValue(ApiResponse.success(data));
+            public void onSuccess(List<AccountPodcast> data, String url) {
+                accountPodcastsResponse.setValue(ApiResponse.success(data, url));
                 if (!CollectionUtils.isEmpty(data)) {
                     localDataSource.insertAccountPodcasts(data.toArray(new AccountPodcast[0]));
                 }
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                accountPodcastsResponse.setValue(ApiResponse.error(error));
+            public void onFailure(Throwable error, String url) {
+                accountPodcastsResponse.setValue(ApiResponse.error(error, url));
             }
         });
     }
@@ -620,13 +620,13 @@ public class MainDataRepository {
     private <T> IDataCallback<List<T>> getNomenclaturesCallback(MutableLiveData<List<T>> nomenclatures, String method) {
         return new IDataCallback<List<T>>() {
             @Override
-            public void onSuccess(List<T> data) {
+            public void onSuccess(List<T> data, String url) {
                 nomenclatures.setValue(data);
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                Log.e("MainDataRepository", method, error);
+            public void onFailure(Throwable error, String url) {
+                Log.e("MainDataRepository", String.format("%1$s url %2$s", method, url), error);
             }
         };
     }
@@ -634,13 +634,13 @@ public class MainDataRepository {
     private IDataCallback<String> getAgreementCallback(MutableLiveData<String> agreement, String method) {
         return new IDataCallback<String>() {
             @Override
-            public void onSuccess(String data) {
+            public void onSuccess(String data, String url) {
                 agreement.setValue(data);
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                Log.e("MainDataRepository", method, error);
+            public void onFailure(Throwable error, String url) {
+                Log.e("MainDataRepository", String.format("%1$s url %2$s", method, url), error);
             }
         };
     }

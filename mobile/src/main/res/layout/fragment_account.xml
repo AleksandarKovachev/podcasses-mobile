@@ -168,7 +168,7 @@
                                         android:layout_margin="@dimen/medium_offset"
                                         android:gravity="center_horizontal"
                                         android:text="@{viewModel.account.username}"
-                                        android:textSize="@dimen/medium_text_size"
+                                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                                         app:layout_constraintTop_toTopOf="parent" />
 
                                     <androidx.appcompat.widget.LinearLayoutCompat
