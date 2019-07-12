@@ -44,6 +44,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new HistoryViewModel(repository);
         } else if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
             return (T) new SettingsViewModel(repository);
+        } else if (modelClass.isAssignableFrom(AgreementViewModel.class)) {
+            return (T) new AgreementViewModel(repository);
         }
         throw new IllegalArgumentException("Unknown class name");
     }

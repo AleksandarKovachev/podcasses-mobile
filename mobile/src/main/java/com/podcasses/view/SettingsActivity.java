@@ -10,7 +10,6 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.SettingsActivityBinding;
 import com.podcasses.model.response.Language;
-import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.view.base.BaseActivity;
 import com.podcasses.viewmodel.SettingsViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -23,9 +22,6 @@ import javax.inject.Inject;
  * Created by aleksandar.kovachev.
  */
 public class SettingsActivity extends BaseActivity {
-
-    @Inject
-    ApiCallInterface apiCallInterface;
 
     @Inject
     ViewModelFactory viewModelFactory;

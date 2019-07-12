@@ -1,10 +1,9 @@
 package com.podcasses.model.entity;
 
-import android.os.Build;
-import android.text.Html;
 import android.text.Spanned;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.databinding.Bindable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -261,11 +260,7 @@ public class Podcast extends BaseLikeModel {
     }
 
     public Spanned getPodcastDescription() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(description.replaceAll("\\\n", "<br/>"), Html.FROM_HTML_MODE_COMPACT);
-        } else {
-            return Html.fromHtml(description.replaceAll("\\\n", "<br/>"));
-        }
+        return HtmlCompat.fromHtml(description.replaceAll("\\\n", "<br/>"), 0);
     }
 
     @Override

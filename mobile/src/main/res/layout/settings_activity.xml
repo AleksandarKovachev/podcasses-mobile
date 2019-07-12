@@ -36,13 +36,13 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:minHeight="60dp"
-                android:orientation="horizontal"
                 android:onClick="@{v -> viewModel.onLocaleClick(v)}"
+                android:orientation="horizontal"
                 android:paddingLeft="@dimen/medium_offset"
                 android:paddingRight="@dimen/medium_offset"
                 app:layout_constraintTop_toBottomOf="@id/settings_title">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -50,7 +50,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textStyle="bold" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.locale}"
@@ -64,7 +64,7 @@
                 android:background="@android:color/darker_gray"
                 app:layout_constraintTop_toBottomOf="@id/language_select" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -84,6 +84,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:minHeight="60dp"
+                android:onClick="@{v -> viewModel.termOfServiceClick(v)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/medium_offset"
                 android:paddingRight="@dimen/medium_offset"
@@ -106,12 +107,13 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:minHeight="60dp"
+                android:onClick="@{v -> viewModel.privacyPolicyClick(v)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/medium_offset"
                 android:paddingRight="@dimen/medium_offset"
                 app:layout_constraintTop_toBottomOf="@id/terms_of_service">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_privacy_policy"

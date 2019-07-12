@@ -42,10 +42,15 @@
         <item name="rte_icToolbarClear">@drawable/selector_ic_toolbar_clear_dark</item>
     </style>
 
-    <style name="AppBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="DarkAppThemeActionBar" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorPrimaryInverse">@android:color/white</item>
-        <item name="android:alwaysDrawnWithCache">true</item>
+        <item name="android:textColorPrimaryInverse">@android:color/black</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
 

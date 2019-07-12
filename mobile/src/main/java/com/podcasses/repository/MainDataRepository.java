@@ -46,6 +46,9 @@ public class MainDataRepository {
     private final MutableLiveData<List<Nomenclature>> privacies;
     private final MutableLiveData<List<Nomenclature>> countries;
 
+    private final MutableLiveData<String> termsOfService;
+    private final MutableLiveData<String> privacyPolicy;
+
     @Inject
     public MainDataRepository(ApiCallInterface apiCallInterface, LocalDataSource localDataSource, Application context) {
         this.context = context;
@@ -56,6 +59,8 @@ public class MainDataRepository {
         locales = new MutableLiveData<>();
         privacies = new MutableLiveData<>();
         countries = new MutableLiveData<>();
+        termsOfService = new MutableLiveData<>();
+        privacyPolicy = new MutableLiveData<>();
     }
 
     public void removeAllLocalData() {
@@ -307,6 +312,22 @@ public class MainDataRepository {
         }
         networkDataSource.getCountries(getNomenclaturesCallback(countries, "getCountries"));
         return countries;
+    }
+
+    public LiveData<String> getTermOfService() {
+        if (termsOfService.getValue() != null) {
+            return termsOfService;
+        }
+        networkDataSource.getTermsOfService(getAgreementCallback(termsOfService, "getTermOfService"));
+        return termsOfService;
+    }
+
+    public LiveData<String> getPrivacyPolicy() {
+        if (privacyPolicy.getValue() != null) {
+            return privacyPolicy;
+        }
+        networkDataSource.getPrivacyPolicy(getAgreementCallback(privacyPolicy, "getPrivacyPolicy"));
+        return privacyPolicy;
     }
 
     public void deletePodcastFile(String id) {
@@ -601,6 +622,20 @@ public class MainDataRepository {
             @Override
             public void onSuccess(List<T> data) {
                 nomenclatures.setValue(data);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                Log.e("MainDataRepository", method, error);
+            }
+        };
+    }
+
+    private IDataCallback<String> getAgreementCallback(MutableLiveData<String> agreement, String method) {
+        return new IDataCallback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                agreement.setValue(data);
             }
 
             @Override

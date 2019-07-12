@@ -118,10 +118,10 @@ public interface ApiCallInterface {
     @POST("/podcast/comment")
     Call<Comment> accountComment(@Header("Authorization") String token, @Body CommentRequest commentRequest);
 
-    @POST("/feedback/comment")
+    @POST("/contact/feedback/comment")
     Call<Void> commentReport(@Header("Authorization") String token, @Body CommentReportRequest commentReportRequest);
 
-    @POST("/feedback/podcast")
+    @POST("/contact/feedback/podcast")
     Call<Void> podcastReport(@Header("Authorization") String token, @Body PodcastReportRequest podcastReportRequest);
 
     @GET("/podcast/trending")
@@ -138,5 +138,11 @@ public interface ApiCallInterface {
 
     @GET("/account/subscribes")
     Call<List<String>> getSubscriptions(@Header("Authorization") String token);
+
+    @GET("/contact/termsofservice")
+    Call<Map<String, String>> termsOfService();
+
+    @GET("/contact/privacypolicy")
+    Call<Map<String, String>> privacyPolicy();
 
 }

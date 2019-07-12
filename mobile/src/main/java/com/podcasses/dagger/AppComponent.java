@@ -3,6 +3,7 @@ package com.podcasses.dagger;
 import com.podcasses.service.AccountAuthenticatorService;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.AccountFragment;
+import com.podcasses.view.AgreementActivity;
 import com.podcasses.view.AuthenticatorActivity;
 import com.podcasses.view.EditAccountFragment;
 import com.podcasses.view.HistoryFragment;
@@ -53,4 +54,6 @@ public interface AppComponent {
     void inject(RegistrationActivity registrationActivity);
 
     void inject(SettingsActivity settingsActivity);
+
+    void inject(AgreementActivity agreementActivity);
 }

@@ -1,5 +1,6 @@
 package com.podcasses.viewmodel;
 
+import android.content.Intent;
 import android.view.View;
 
 import androidx.databinding.ObservableField;
@@ -8,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.podcasses.model.response.Language;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.util.DialogUtil;
+import com.podcasses.view.AgreementActivity;
 import com.podcasses.viewmodel.base.BaseViewModel;
 
 import java.util.List;
@@ -42,6 +44,20 @@ public class SettingsViewModel extends BaseViewModel {
 
     public void onLocaleClick(View view) {
         DialogUtil.createLocaleDialog(view.getContext(), languages);
+    }
+
+    public void termOfServiceClick(View view) {
+        startAgreementActivity(view, 0);
+    }
+
+    public void privacyPolicyClick(View view) {
+        startAgreementActivity(view, 1);
+    }
+
+    private void startAgreementActivity(View view, int agreement) {
+        Intent intent = new Intent(view.getContext(), AgreementActivity.class);
+        intent.putExtra("agreement", agreement);
+        view.getContext().startActivity(intent);
     }
 
 }

@@ -19,6 +19,7 @@ import com.podcasses.util.LogErrorResponseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -326,6 +327,16 @@ class NetworkDataSource {
         call.enqueue(nomenclatureCallback(callback));
     }
 
+    void getTermsOfService(IDataCallback<String> callback) {
+        Call<Map<String, String>> call = apiCallInterface.termsOfService();
+        call.enqueue(agreementCallback(callback));
+    }
+
+    void getPrivacyPolicy(IDataCallback<String> callback) {
+        Call<Map<String, String>> call = apiCallInterface.privacyPolicy();
+        call.enqueue(agreementCallback(callback));
+    }
+
     void getComments(String podcastId, IDataCallback<List<Comment>> callback) {
         Call<List<Comment>> call = apiCallInterface.getComments(podcastId);
         call.enqueue(new Callback<List<Comment>>() {
@@ -396,6 +407,25 @@ class NetworkDataSource {
                 callback.onFailure(t);
             }
         });
+    }
+
+    private Callback<Map<String, String>> agreementCallback(IDataCallback<String> callback) {
+        return new Callback<Map<String, String>>() {
+            @Override
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body().get("agreement"));
+                } else {
+                    callback.onSuccess(null);
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        };
     }
 
     private <T> Callback<List<T>> nomenclatureCallback(IDataCallback<List<T>> callback) {
