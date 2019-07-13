@@ -18,6 +18,7 @@ import com.podcasses.R;
 import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.request.TrendingFilter;
@@ -87,6 +88,16 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void getData(RefreshLayout refreshLayout) {
+        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
+        if (token != null) {
+            token.observe(this, s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    LiveData<ApiResponse> subscribedAccounts = viewModel.getSubscribedAccounts(s);
+                    subscribedAccounts.observe(this, response -> consumeApiResponse(response, subscribedAccounts));
+                }
+            });
+        }
+
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
     }
@@ -136,44 +147,51 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
         if (token == null) {
             LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, null, podcastIds, isSwipedToRefresh);
-            accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+            accountPodcasts.observe(this, response -> consumeApiResponse(response, accountPodcasts));
         } else {
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, s, podcastIds, isSwipedToRefresh);
-                    accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+                    accountPodcasts.observe(this, response -> consumeApiResponse(response, accountPodcasts));
                 }
             });
         }
     }
 
-    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
-        switch (accountPodcastsResponse.status) {
+    private void consumeApiResponse(ApiResponse apiResponse, LiveData<ApiResponse> liveData) {
+        switch (apiResponse.status) {
             case LOADING:
                 break;
             case DATABASE:
-                setAccountPodcastsData(accountPodcastsResponse);
+                setDataFromResponse(apiResponse);
                 break;
             case SUCCESS: {
                 liveData.removeObservers(this);
-                setAccountPodcastsData(accountPodcastsResponse);
+                setDataFromResponse(apiResponse);
                 break;
             }
             case ERROR: {
                 liveData.removeObservers(this);
-                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
+                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
                 break;
             }
         }
     }
 
-    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
-        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
-            for (Podcast podcast : viewModel.getPodcasts()) {
-                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
-                    if (accountPodcast.getPodcastId().equals(podcast.getId())) {
-                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
-                    }
+    private void setDataFromResponse(ApiResponse apiResponse) {
+        if (CollectionUtils.isEmpty((List<?>) apiResponse.data)) {
+            return;
+        }
+
+        if (((List<?>) apiResponse.data).get(0) instanceof Account) {
+            viewModel.setAccountsInAdapter((List<Account>) apiResponse.data);
+            return;
+        }
+
+        for (Podcast podcast : viewModel.getPodcasts()) {
+            for (AccountPodcast accountPodcast : (List<AccountPodcast>) apiResponse.data) {
+                if (accountPodcast.getPodcastId().equals(podcast.getId())) {
+                    podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
                 }
             }
         }

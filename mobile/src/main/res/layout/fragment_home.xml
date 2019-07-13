@@ -84,20 +84,6 @@
                             app:layout_constraintTop_toBottomOf="@id/account_podcast_tabs"
                             app:viewPagerFragmentManager="@{fragmentManager}"
                             app:viewPagerTypes="@{types}" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@android:color/darker_gray"
-                            app:layout_constraintTop_toBottomOf="@id/viewpager" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/see_more"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/viewpager" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 

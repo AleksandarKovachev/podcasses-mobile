@@ -127,10 +127,32 @@ public class MainDataRepository {
         return accountsResponse;
     }
 
+    public LiveData<ApiResponse> getSubscribedAccounts(String token) {
+        MutableLiveData<ApiResponse> accountsResponse = new MutableLiveData<>(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context) && !Strings.isEmptyOrWhitespace(token)) {
+            networkDataSource.getSubscribedAccounts(token, new IDataCallback<List<Account>>() {
+                @Override
+                public void onSuccess(List<Account> data, String url) {
+                    accountsResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    accountsResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            accountsResponse.setValue(ApiResponse.fetched());
+        }
+
+        return accountsResponse;
+    }
+
     public LiveData<ApiResponse> getAccountSubscribesCount(String accountId) {
         MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountSubscribes(accountId, new IDataCallback<Integer>() {
+            networkDataSource.getAccountSubscribesCount(accountId, new IDataCallback<Integer>() {
                 @Override
                 public void onSuccess(Integer data, String url) {
                     accountSubscribesResponse.setValue(ApiResponse.success(data, url));

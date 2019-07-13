@@ -8,10 +8,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.model.entity.Nomenclature;
-import com.podcasses.repository.MainDataRepository;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Language;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.DialogUtil;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
@@ -26,6 +26,10 @@ public class HomeViewModel extends BasePodcastViewModel {
 
     HomeViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository, apiCallInterface);
+    }
+
+    public LiveData<ApiResponse> getSubscribedAccounts(String token) {
+        return repository.getSubscribedAccounts(token);
     }
 
     public LiveData<List<Nomenclature>> getCategories() {

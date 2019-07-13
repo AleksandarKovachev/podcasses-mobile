@@ -167,16 +167,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             return;
         }
         if (((List) apiResponse.data).get(0) instanceof Podcast) {
-            List<Podcast> data = (List<Podcast>) apiResponse.data;
-            if (type == PodcastTypeEnum.DOWNLOADED ||
-                    type == PodcastTypeEnum.FROM_SUBSCRIPTIONS ||
-                    type == PodcastTypeEnum.IN_PROGRESS ||
-                    type == PodcastTypeEnum.MARK_AS_PLAYED) {
-                if (data.size() > 3) {
-                    data = data.subList(0, 3);
-                }
-            }
-            viewModel.setPodcastsInAdapter(data);
+            viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
         }
     }
 
