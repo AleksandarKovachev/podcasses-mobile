@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.lifecycle.LiveData;
@@ -123,6 +124,39 @@ public class NetworkRequestsUtil {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
+    }
+
+    public static void displayNameVerify(ApiCallInterface apiCallInterface, String displayName,
+                                         AppCompatImageView displayNameStatus,
+                                         ContentLoadingProgressBar progressBar,
+                                         MaterialButton submitButton) {
+        displayNameStatus.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        submitButton.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        submitButton.setClickable(false);
+        Call<Boolean> call = apiCallInterface.displayName(displayName);
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                progressBar.setVisibility(View.INVISIBLE);
+                if (response.isSuccessful() && response.body() != null && response.body()) {
+                    submitButton.setClickable(true);
+                    submitButton.getBackground().setColorFilter(null);
+                    displayNameStatus.setImageResource(R.drawable.ic_check);
+                    displayNameStatus.setVisibility(View.VISIBLE);
+                } else {
+                    displayNameStatus.setImageResource(R.drawable.ic_cancel);
+                    displayNameStatus.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                progressBar.setVisibility(View.INVISIBLE);
+                displayNameStatus.setImageResource(R.drawable.ic_cancel);
+                displayNameStatus.setVisibility(View.VISIBLE);
             }
         });
     }

@@ -49,6 +49,9 @@ public interface ApiCallInterface {
     @GET("/keycloak/account")
     Call<List<Account>> accounts(@Query("name") String name, @Query("id") List<String> ids);
 
+    @GET("/keycloak/displayName/{displayName}")
+    Call<Boolean> displayName(@Path("displayName") String displayName);
+
     @POST("/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 

@@ -71,6 +71,50 @@
                 app:layout_constraintTop_toBottomOf="@id/account_cover_image" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/display_name_input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/display_name_input"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintEnd_toStartOf="@id/displayNameProgressBar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_profile_image_upload"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/display_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textPersonName"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.verifyDisplayName(text, displayNameIconStatus, displayNameProgressBar, updateAccountBtn)}"
+                    android:singleLine="true"
+                    android:text="@={viewModel.account.displayName}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/displayNameIconStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_check"
+                app:layout_constraintBottom_toBottomOf="@id/display_name_input_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/display_name_input_layout"
+                app:layout_constraintTop_toTopOf="@id/display_name_input_layout" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/displayNameProgressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/display_name_input_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/display_name_input_layout"
+                app:layout_constraintTop_toTopOf="@id/display_name_input_layout" />
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/first_name_input"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -78,7 +122,7 @@
                 android:padding="@dimen/medium_offset"
                 app:layout_constraintEnd_toStartOf="@id/last_name_input"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/account_profile_image_upload"
+                app:layout_constraintTop_toBottomOf="@id/display_name_input_layout"
                 app:layout_constraintVertical_bias="0">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -100,7 +144,7 @@
                 android:padding="@dimen/medium_offset"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/first_name_input"
-                app:layout_constraintTop_toBottomOf="@id/account_profile_image_upload"
+                app:layout_constraintTop_toBottomOf="@id/display_name_input_layout"
                 app:layout_constraintVertical_bias="0">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -268,7 +312,7 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionDone|flagNoEnterAction"
                     android:inputType="textUri"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.verifyRssFeed(text, rssFeedEmail, progressBar, updateAccountBtn)}"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.verifyRssFeed(text, rssFeedEmail, rssFeedProgressBar, updateAccountBtn)}"
                     android:singleLine="true"
                     android:text="@={viewModel.account.rssFeed}" />
 
@@ -286,7 +330,7 @@
                 app:layout_constraintTop_toBottomOf="@id/rssFeed_input" />
 
             <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/progressBar"
+                android:id="@+id/rssFeedProgressBar"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
