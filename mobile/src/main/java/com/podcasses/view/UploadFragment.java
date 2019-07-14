@@ -4,11 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -29,7 +26,6 @@ import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
-import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
@@ -39,12 +35,11 @@ import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.DialogUtil;
+import com.podcasses.util.FileUploadUtil;
 import com.podcasses.view.base.BaseFragment;
 import com.podcasses.viewmodel.UploadViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
 import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.okhttp.OkHttpStack;
 
@@ -52,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -205,45 +199,17 @@ public class UploadFragment extends BaseFragment {
         binder.podcastFileName.setVisibility(VISIBLE);
         binder.podcastFileName.setSelected(true);
 
-        File podcast = new File(getRealPathFromURIPath(data.getData(), getContext()));
+        File podcast = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setPodcastFileName(podcast.getName());
 
-        uploadFileToServer(podcast, "/podcast/upload", "podcastFile");
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), podcast, "/podcast/upload", "podcastFile");
     }
 
     private void sendPodcastImageUploadRequest(Intent data) {
-        File image = new File(getRealPathFromURIPath(data.getData(), getContext()));
+        File image = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setImageFileName(image.getName());
 
-        uploadFileToServer(image, "/podcast/image", "imageFile");
-    }
-
-    private void uploadFileToServer(File file, String url, String multipartName) {
-        try {
-            MultipartUploadRequest request = new MultipartUploadRequest(
-                    getContext(),
-                    UUID.randomUUID().toString(),
-                    BuildConfig.API_GATEWAY_URL.concat(url));
-
-            request.addHeader("Authorization", "Bearer " + token.getValue());
-            request.addFileToUpload(file.getPath(), multipartName);
-            request.setNotificationConfig(new UploadNotificationConfig());
-            request.setMaxRetries(2);
-            request.startUpload();
-        } catch (Exception e) {
-            Log.e(getTag(), "onFailure: ", e);
-        }
-    }
-
-    private String getRealPathFromURIPath(Uri contentURI, Context context) {
-        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            return contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(idx);
-        }
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), image, "/podcast/image", "imageFile");
     }
 
     private View.OnClickListener onPodcastAdd = v -> {
