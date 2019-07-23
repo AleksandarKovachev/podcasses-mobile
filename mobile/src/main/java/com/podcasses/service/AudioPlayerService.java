@@ -133,7 +133,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                     return super.dispatchStop(player, reset);
                 }
             });
-            playerNotificationManager.setSmallIcon(R.drawable.ic_iconfinder_podcast_287666_white);
+            playerNotificationManager.setSmallIcon(R.drawable.ic_launcher_foreground);
             playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
             playerNotificationManager.setUseStopAction(true);
             playerNotificationManager.setUsePlayPauseActions(true);
