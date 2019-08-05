@@ -25,6 +25,8 @@ public class Comment extends BaseLikeModel {
 
     private String username;
 
+    private String displayName;
+
     private String userId;
 
     private Date createdTimestamp;
@@ -93,6 +95,14 @@ public class Comment extends BaseLikeModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getUserId() {

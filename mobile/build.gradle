@@ -32,25 +32,25 @@ android {
         }
 
         qa {
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.100:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.100:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.105:31000/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.105:30000"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"28f75581-188f-4d46-a6e2-2f1f841e5f62"'
+            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"8fbf8280-6e14-4b40-9d41-8f9566db2f3f"'
         }
 
         dev {
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.100:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.100:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.105:31000/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.105:30000"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"28f75581-188f-4d46-a6e2-2f1f841e5f62"'
+            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"8fbf8280-6e14-4b40-9d41-8f9566db2f3f"'
         }
 
         debug {
             debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.0.102:8080/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.0.102:9090"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.105:31000/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.105:30000"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"28f75581-188f-4d46-a6e2-2f1f841e5f62"'
+            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"8fbf8280-6e14-4b40-9d41-8f9566db2f3f"'
         }
     }
     compileOptions {

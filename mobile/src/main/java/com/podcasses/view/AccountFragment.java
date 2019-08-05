@@ -107,20 +107,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
         token = new MutableLiveData<>();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         setHasOptionsMenu(true);
         return binding.getRoot();
-    }
-
-    void updateActionBar() {
-        if (getActivity() != null) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-            ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-            setHasOptionsMenu(true);
-        }
     }
 
     @Override

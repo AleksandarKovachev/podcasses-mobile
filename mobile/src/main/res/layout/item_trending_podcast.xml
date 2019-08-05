@@ -20,6 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="300dp"
         android:layout_gravity="center"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:onClick="@{() -> viewModel.onPodcastClick(position)}"
@@ -88,14 +90,14 @@
                 app:layout_constraintTop_toTopOf="@id/podcast_title" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/podcast_username"
+                android:id="@+id/podcast_display_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:onClick="@{() -> viewModel.onAccountClickFromPodcast(position)}"
-                android:text="@{viewModel.getPodcastAt(position).username}"
+                android:text="@{viewModel.getPodcastAt(position).displayName}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/podcast_title"
                 app:layout_constraintTop_toBottomOf="@id/podcast_title" />

@@ -30,13 +30,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/account_username"
+            android:id="@+id/account_display_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{v -> viewModel.openAccount(position)}"
             android:paddingStart="@dimen/medium_offset"
             android:paddingEnd="@dimen/medium_offset"
-            android:text="@{viewModel.getCommentAt(position).username}"
+            android:text="@{viewModel.getCommentAt(position).displayName}"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             android:textSize="@dimen/extra_small_text_size"
             app:layout_constraintEnd_toStartOf="@drawable/like_button"
@@ -53,7 +53,7 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@drawable/like_button"
             app:layout_constraintStart_toEndOf="@id/account_image"
-            app:layout_constraintTop_toBottomOf="@id/account_username" />
+            app:layout_constraintTop_toBottomOf="@id/account_display_name" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/like_button"

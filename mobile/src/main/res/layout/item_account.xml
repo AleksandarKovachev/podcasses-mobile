@@ -21,15 +21,16 @@
         android:layout_marginStart="@dimen/medium_offset"
         android:layout_marginTop="@dimen/extra_small_offset"
         android:layout_marginEnd="@dimen/medium_offset"
-        android:background="?attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         android:onClick="@{() -> viewModel.onAccountClick(position)}">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/account_profile_image"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:civ_border_overlay="true"
             app:imageUrl="@{viewModel.getAccountProfileImage(position)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

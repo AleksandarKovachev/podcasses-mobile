@@ -296,7 +296,7 @@ public class MainActivity extends BaseActivity implements
     };
 
     private void setTitle(@Nullable Fragment fragment) {
-        if (!(fragment instanceof PodcastFragment) && !(fragment instanceof AccountFragment)) {
+        if (!(fragment instanceof PodcastFragment)) {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().hide();
             }
@@ -305,9 +305,6 @@ public class MainActivity extends BaseActivity implements
         }
         if (fragment instanceof PodcastFragment) {
             ((PodcastFragment) fragment).updateActionBar();
-        }
-        if (fragment instanceof AccountFragment) {
-            ((AccountFragment) fragment).updateActionBar();
         }
         if (fragment instanceof SearchFragment) {
             ((SearchFragment) fragment).updateActionBar();
