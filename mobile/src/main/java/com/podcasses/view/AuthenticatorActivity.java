@@ -40,6 +40,7 @@ import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -191,7 +192,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             @Override
             public void onResponse(Call<KeycloakToken> call, Response<KeycloakToken> response) {
                 progressDialog.dismiss();
-                if (response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     JWT jwt = new JWT(response.body().getAccessToken());
                     String username = jwt.getClaim("preferred_username").asString();
                     Account account = addOrFindAccount(username, binder.password.getText().toString());
@@ -199,6 +200,25 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     accountManager.setUserData(account, REFRESH_TOKEN, response.body().getRefreshToken());
                     repository.syncAccountPodcasts(response.body().getAccessToken());
                     finishAccountAdd(intent, binder.username.getText().toString(), response.body().getAccessToken(), response.body().getRefreshToken());
+                } else if (response.errorBody() != null) {
+                    try {
+                        String errorBodyString = response.errorBody().string();
+                        Log.e(AuthenticatorActivity.class.getName(), "Error response " + errorBodyString);
+                        if (errorBodyString.contains("Invalid user credentials")) {
+                            Toasty.error(AuthenticatorActivity.this,
+                                    getResources().getString(R.string.invalid_user_credentials),
+                                    Toast.LENGTH_SHORT, true).show();
+                        } else {
+                            Toasty.error(AuthenticatorActivity.this,
+                                    getResources().getString(R.string.error_response),
+                                    Toast.LENGTH_SHORT, true).show();
+                        }
+                    } catch (IOException e) {
+                        Log.e(AuthenticatorActivity.class.getName(), "Error reading ErrorResponseBody ", e);
+                        Toasty.error(AuthenticatorActivity.this,
+                                getResources().getString(R.string.error_response),
+                                Toast.LENGTH_SHORT, true).show();
+                    }
                 }
             }
 

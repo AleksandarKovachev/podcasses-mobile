@@ -90,6 +90,10 @@ class NetworkDataSource {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (response.isSuccessful()) {
+                    if (CollectionUtils.isEmpty(response.body())) {
+                        callback.onSuccess(null, response.raw().request().url().toString());
+                        return;
+                    }
                     apiCallInterface.accounts(null, response.body()).enqueue(new Callback<List<Account>>() {
                         @Override
                         public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {

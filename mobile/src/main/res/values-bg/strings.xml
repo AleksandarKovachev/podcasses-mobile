@@ -83,6 +83,7 @@
     <string name="error_response">Възникна проблем при изпълняването на заявката. Моля опитайте отново!</string>
 
     <string name="error_invalid_rss_feed">Невалиден RSS Feed</string>
+    <string name="invalid_user_credentials">Грешно потребителско име или парола</string>
 
     <string name="storage_permission_image">Трябва да дадеш достъп за четене на хранилището, за да избереш изображение!</string>
     <string name="storage_permission_audio">Трябва да дадеш достъп за четене на хранилището, за да избереш аудио!</string>

@@ -288,31 +288,31 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/rss_feed_sync"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/medium_offset"
-                android:layout_marginBottom="@dimen/medium_offset"
-                android:onClick="@{v -> viewModel.onSyncClick(v, token, rssFeedSyncProgress)}"
-                android:src="@drawable/ic_sync"
-                android:visibility="@{isMyAccount &amp;&amp; viewModel.account.rssFeed != null &amp;&amp; viewModel.account.rssFeedVerified == 1 ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/rssFeedSyncProgress"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:indeterminate="true"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/rss_feed_sync"
-                app:layout_constraintEnd_toEndOf="@id/rss_feed_sync"
-                app:layout_constraintStart_toStartOf="@id/rss_feed_sync"
-                app:layout_constraintTop_toTopOf="@id/rss_feed_sync" />
         </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/rss_feed_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/medium_offset"
+            android:layout_marginBottom="@dimen/medium_offset"
+            android:onClick="@{v -> viewModel.onSyncClick(v, token, rssFeedSyncProgress)}"
+            android:src="@drawable/ic_sync"
+            android:visibility="@{isMyAccount &amp;&amp; viewModel.account.rssFeed != null &amp;&amp; viewModel.account.rssFeedVerified == 1 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/rssFeedSyncProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/rss_feed_sync"
+            app:layout_constraintEnd_toEndOf="@id/rss_feed_sync"
+            app:layout_constraintStart_toStartOf="@id/rss_feed_sync"
+            app:layout_constraintTop_toTopOf="@id/rss_feed_sync" />
 
         <LinearLayout
             android:id="@+id/not_authenticated_view"

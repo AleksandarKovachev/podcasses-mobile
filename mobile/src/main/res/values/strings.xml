@@ -83,6 +83,7 @@
     <string name="error_response">Something went wrong. Please try again!</string>
 
     <string name="error_invalid_rss_feed">Invalid RSS Feed</string>
+    <string name="invalid_user_credentials">Invalid user credentials</string>
 
     <string name="storage_permission_image">You need to give read storage permission to select image!</string>
     <string name="storage_permission_audio">You need to give read storage permission to select audio!</string>
