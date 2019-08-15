@@ -41,7 +41,8 @@
             android:id="@+id/trim_silence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/trim_silence" />
+            android:text="@string/trim_silence"
+            android:tooltipText="@string/trim_silence_tooltip" />
 
     </LinearLayout>
 

@@ -99,7 +99,8 @@
     <string name="from_date">От дата</string>
     <string name="to_date">До дата</string>
 
-    <string name="trim_silence">Премахни тишината</string>
+    <string name="trim_silence">Премахни паузите</string>
+    <string name="trim_silence_tooltip">Премахва паузите в подкаста</string>
     <string name="share_text">Сподели подкаста с:</string>
 
     <string name="loading">Зареждане…</string>
