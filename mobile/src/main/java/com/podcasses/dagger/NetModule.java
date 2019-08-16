@@ -20,6 +20,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.retrofit.interceptor.AcceptLanguageHeaderInterceptor;
 import com.podcasses.retrofit.interceptor.BasicAuthInterceptor;
+import com.podcasses.util.OkHttpUtil;
 import com.podcasses.viewmodel.ViewModelFactory;
 
 import javax.inject.Named;
@@ -65,8 +66,8 @@ public class NetModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache) {
-        return new OkHttpClient.Builder()
+    OkHttpClient provideOkHttpClient(Cache cache, Application application) {
+        return OkHttpUtil.getTrustedOkHttpClient(application)
                 .addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
     }
 
@@ -89,12 +90,13 @@ public class NetModule {
     @Provides
     @Singleton
     @Named("authenticationOkHttp")
-    OkHttpClient provideAuthenticationOkHttpClient(Cache cache) {
-        return new OkHttpClient.Builder()
+    OkHttpClient provideAuthenticationOkHttpClient(Cache cache, Application application) {
+        return OkHttpUtil.getTrustedOkHttpClient(application)
                 .addInterceptor(
                         new BasicAuthInterceptor(AuthenticationCallInterface.CLIENT_ID, AuthenticationCallInterface.CLIENT_SECRET))
                 .addInterceptor(new AcceptLanguageHeaderInterceptor())
-                .cache(cache).build();
+                .cache(cache)
+                .build();
     }
 
     @Provides
