@@ -15,12 +15,12 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
-import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.model.response.ApiResponse;
@@ -66,10 +66,9 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         binder.setLifecycleOwner(this);
         binder.setFragmentManager(getChildFragmentManager());
         binder.refreshLayout.setOnRefreshListener(this);
-        binder.setTypes(Arrays.asList(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(),
-                PodcastTypeEnum.IN_PROGRESS.getType(),
-                PodcastTypeEnum.DOWNLOADED.getType(),
-                PodcastTypeEnum.MARK_AS_PLAYED.getType()));
+        binder.setTypes(Arrays.asList(PodcastType.FROM_SUBSCRIPTIONS.getType(),
+                PodcastType.IN_PROGRESS.getType(),
+                PodcastType.DOWNLOADED.getType()));
         return binder.getRoot();
     }
 

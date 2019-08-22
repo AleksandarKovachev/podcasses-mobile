@@ -5,9 +5,9 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 
 import com.podcasses.BR;
-import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.constant.PodcastType;
 import com.podcasses.model.entity.Nomenclature;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.Language;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.viewmodel.base.BaseViewModel;
@@ -57,7 +57,7 @@ public class UploadViewModel extends BaseViewModel {
     }
 
     public void savePodcast(Response<Podcast> response) {
-        repository.savePodcast(PodcastTypeEnum.MY_PODCASTS, response.body());
+        repository.insertPodcast(PodcastType.MY_PODCASTS, response.body());
     }
 
 }

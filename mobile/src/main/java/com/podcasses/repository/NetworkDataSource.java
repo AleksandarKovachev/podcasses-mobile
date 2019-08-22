@@ -6,7 +6,7 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountPodcastType;

@@ -9,7 +9,7 @@ import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.podcasses.R;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
 

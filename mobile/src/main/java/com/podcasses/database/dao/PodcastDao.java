@@ -6,7 +6,14 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.DownloadedPodcast;
+import com.podcasses.model.entity.HistoryPodcast;
+import com.podcasses.model.entity.LikedPodcast;
+import com.podcasses.model.entity.NewPodcast;
+import com.podcasses.model.entity.ProgressPodcast;
+import com.podcasses.model.entity.TrendingPodcast;
+import com.podcasses.model.entity.UserPodcast;
+import com.podcasses.model.entity.base.Podcast;
 
 import java.util.List;
 
@@ -16,25 +23,103 @@ import java.util.List;
 @Dao
 public interface PodcastDao {
 
-    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN PodcastType AS podcastType ON podcast.id = podcastType.podcastId WHERE podcastType.podcastType = (:type) ORDER BY podcastType.createdTimestamp DESC LIMIT (:page), 10")
-    LiveData<List<Podcast>> getPodcasts(Integer type, int page);
+    @Query("SELECT * " +
+            "FROM UserPodcast " +
+            "WHERE id = (:id)")
+    LiveData<Podcast> getUserPodcastById(String id);
 
-    @Query("SELECT podcast.* FROM Podcast AS podcast JOIN AccountPodcast AS accountPodcast ON podcast.id = accountPodcast.podcastId WHERE accountPodcast.timeIndex > 0 AND accountPodcast.markAsPlayed = 0 ORDER BY accountPodcast.viewTimestamp DESC LIMIT (:page), 10")
-    LiveData<List<Podcast>> getPodcastsInProgress(int page);
+    @Query("SELECT * " +
+            "FROM UserPodcast " +
+            "WHERE userId = (:userId) " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getUserPodcastsByUserId(String userId, int page);
 
-    @Query("SELECT * FROM Podcast WHERE id = (:podcastId)")
-    LiveData<Podcast> getPodcastById(String podcastId);
+    @Query("SELECT * " +
+            "FROM UserPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getUserPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM HistoryPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getHistoryPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM LikedPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getLikedPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM NewPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getNewPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM ProgressPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getProgressPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM TrendingPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getTrendingPodcasts(int page);
+
+    @Query("SELECT * " +
+            "FROM DownloadedPodcast " +
+            "ORDER BY internalId ASC " +
+            "LIMIT (:page), 10")
+    LiveData<List<Podcast>> getDownloadedPodcasts(int page);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(Podcast... podcasts);
+    void insertHistoryPodcasts(List<HistoryPodcast> podcasts);
 
-    @Query("DELETE FROM Podcast WHERE id = (:id)")
-    void deletePodcast(String id);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertUserPodcasts(List<UserPodcast> podcasts);
 
-    @Query("DELETE FROM Podcast WHERE id NOT IN (SELECT podcastId FROM PODCASTTYPE)")
-    void deletePodcasts();
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertLikedPodcasts(List<LikedPodcast> podcasts);
 
-    @Query("DELETE FROM Podcast")
-    void deleteAll();
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertDownloadedPodcasts(List<DownloadedPodcast> podcasts);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertNewPodcasts(List<NewPodcast> podcasts);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertTrendingPodcasts(List<TrendingPodcast> podcasts);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertProgressPodcasts(List<ProgressPodcast> podcasts);
+
+    @Query("DELETE FROM UserPodcast")
+    void deleteUserPodcasts();
+
+    @Query("DELETE FROM HistoryPodcast")
+    void deleteHistoryPodcasts();
+
+    @Query("DELETE FROM LikedPodcast")
+    void deleteLikedPodcasts();
+
+    @Query("DELETE FROM NewPodcast")
+    void deleteNewPodcasts();
+
+    @Query("DELETE FROM ProgressPodcast")
+    void deleteProgressPodcasts();
+
+    @Query("DELETE FROM TrendingPodcast")
+    void deleteTrendingPodcasts();
+
+    @Query("DELETE FROM DownloadedPodcast")
+    void deleteDownloadedPodcasts();
+
+    @Query("DELETE FROM DownloadedPodcast WHERE id = (:id)")
+    void deleteDownloadedPodcast(String id);
 
 }

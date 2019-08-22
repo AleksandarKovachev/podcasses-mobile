@@ -42,11 +42,10 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.constant.LikeStatus;
-import com.podcasses.constant.PodcastTypeEnum;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
@@ -241,11 +240,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     }
                     if (podcast.isMarkAsPlayed()) {
                         accountPodcast.setMarkAsPlayed(0);
-                        viewModel.deletePodcastType(PodcastTypeEnum.MARK_AS_PLAYED, podcast.getId());
                     } else {
                         accountPodcast.setMarkAsPlayed(1);
                         accountPodcast.setMarkAsPlayedTimestamp(new Date());
-                        viewModel.savePodcastType(PodcastTypeEnum.MARK_AS_PLAYED, podcast);
                     }
                     viewModel.saveAccountPodcast(accountPodcast);
                     podcast.setMarkAsPlayed(!podcast.isMarkAsPlayed());

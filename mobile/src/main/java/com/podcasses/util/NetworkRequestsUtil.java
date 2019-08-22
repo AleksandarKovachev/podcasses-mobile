@@ -19,7 +19,7 @@ import com.podcasses.R;
 import com.podcasses.constant.LikeStatus;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountRequest;

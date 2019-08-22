@@ -14,8 +14,6 @@ import retrofit2.http.POST;
  */
 public interface AuthenticationCallInterface {
 
-    String KEYCLOAK_URL = BuildConfig.KEYCLOAK_URL;
-
     String CLIENT_ID = BuildConfig.KEYCLOAK_CLIENT_ID;
 
     String CLIENT_SECRET = BuildConfig.KEYCLOAK_CLIENT_SECRET;

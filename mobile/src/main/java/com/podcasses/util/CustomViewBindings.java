@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.onegravity.rteditor.RTEditText;
@@ -38,11 +39,11 @@ import java.util.List;
  */
 public class CustomViewBindings {
 
-    public static final String PROFILE_IMAGE = "/account/image/";
+    public static final String PROFILE_IMAGE = "/api-gateway/account/image/";
 
-    public static final String COVER_IMAGE = "/account/cover/";
+    public static final String COVER_IMAGE = "/api-gateway/account/cover/";
 
-    public static final String PODCAST_IMAGE = "/podcast/image/";
+    public static final String PODCAST_IMAGE = "/api-gateway/podcast/image/";
 
     @BindingAdapter("setAdapter")
     public static void bindRecyclerViewAdapter(RecyclerView recyclerView, RecyclerView.Adapter<?> adapter) {
@@ -51,7 +52,8 @@ public class CustomViewBindings {
 
     @BindingAdapter("imageUrl")
     public static void loadImage(ImageView view, String url) {
-        Glide.with(view).load(url).apply(RequestOptions.placeholderOf(R.drawable.cover_placeholder)).into(view);
+        Glide.with(view).load(url).apply(RequestOptions.placeholderOf(R.drawable.cover_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)).into(view);
     }
 
     @BindingAdapter("isDownloaded")

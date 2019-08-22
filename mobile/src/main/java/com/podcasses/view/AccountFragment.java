@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
@@ -31,7 +30,7 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.AuthenticationCallInterface;

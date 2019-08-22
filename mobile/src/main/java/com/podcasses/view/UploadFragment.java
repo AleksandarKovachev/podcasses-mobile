@@ -29,7 +29,7 @@ import com.onegravity.rteditor.api.RTProxyImpl;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.retrofit.ApiCallInterface;

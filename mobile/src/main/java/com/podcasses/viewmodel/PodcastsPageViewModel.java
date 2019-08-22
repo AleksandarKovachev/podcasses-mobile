@@ -3,8 +3,8 @@ package com.podcasses.viewmodel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 
-import com.podcasses.constant.PodcastTypeEnum;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.constant.PodcastType;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -22,12 +22,12 @@ public class PodcastsPageViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> getPodcastsByType(LifecycleOwner lifecycleOwner, String token, Integer likeStatus,
-                                                   PodcastTypeEnum podcastTypeEnum, boolean isSwipedToRefresh, int page) {
+                                                   PodcastType podcastTypeEnum, boolean isSwipedToRefresh, int page) {
         return repository.getPodcastsByPodcastType(lifecycleOwner, token, likeStatus, podcastTypeEnum, isSwipedToRefresh, page);
     }
 
     public LiveData<List<Podcast>> getDownloadedPodcasts(int page) {
-        return repository.getPodcasts(PodcastTypeEnum.DOWNLOADED, page);
+        return repository.getPodcasts(PodcastType.DOWNLOADED, page);
     }
 
     public LiveData<ApiResponse> getPodcastsFromSubscriptions(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh, int page) {

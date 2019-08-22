@@ -9,12 +9,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
-import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.constant.PodcastType;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
-import com.podcasses.model.entity.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
@@ -63,12 +63,20 @@ public class MainDataRepository {
         privacyPolicy = new MutableLiveData<>();
     }
 
-    public void removeAllLocalData() {
-        localDataSource.removeAllLocalData();
+    public LiveData<List<Podcast>> getPodcasts(PodcastType type, int page) {
+        return localDataSource.getPodcasts(type, page);
     }
 
-    public void savePodcast(PodcastTypeEnum podcastType, Podcast podcast) {
-        localDataSource.insertPodcasts(podcastType.getType(), podcast);
+    public void insertPodcast(PodcastType type, Podcast podcast) {
+        localDataSource.insertPodcasts(type, Collections.singletonList(podcast));
+    }
+
+    public void deleteDownloadedPodcast(String id) {
+        localDataSource.deleteDownloadedPodcast(id);
+    }
+
+    public void removeAllLocalData() {
+        localDataSource.removeAllLocalData();
     }
 
     public void saveAccountPodcast(AccountPodcast accountPodcast) {
@@ -77,14 +85,6 @@ public class MainDataRepository {
 
     public void saveAccount(Account account) {
         localDataSource.insertAccount(account);
-    }
-
-    public LiveData<List<Podcast>> getPodcasts(PodcastTypeEnum type, int page) {
-        return localDataSource.getPodcasts(type.getType(), page);
-    }
-
-    public void deletePodcast(PodcastTypeEnum podcastType, String podcastId) {
-        localDataSource.deletePodcast(podcastType.getType(), podcastId);
     }
 
     public LiveData<ApiResponse> getAccount(LifecycleOwner lifecycleOwner, String username, String id, boolean isMyAccount, boolean isSwipedToRefresh) {
@@ -214,7 +214,7 @@ public class MainDataRepository {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (!isSwipedToRefresh) {
-            fetchPodcastsOnLocalDatabase(lifecycleOwner, podcastsResponse, podcastId, isMyAccount, page);
+            fetchPodcastsOnLocalDatabase(lifecycleOwner, podcastsResponse, podcastId, isMyAccount, page, userId);
         }
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
@@ -230,7 +230,7 @@ public class MainDataRepository {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (!isSwipedToRefresh) {
-            fetchPodcastsOnLocalDatabaseByPodcastType(lifecycleOwner, podcastsResponse, PodcastTypeEnum.TRENDING, 0);
+            fetchPodcastsOnLocalDatabaseByPodcastType(lifecycleOwner, podcastsResponse, PodcastType.TRENDING, 0);
         }
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
@@ -243,7 +243,7 @@ public class MainDataRepository {
     }
 
     public LiveData<ApiResponse> getPodcastsByPodcastType(LifecycleOwner lifecycleOwner, String token, Integer likeStatus,
-                                                          PodcastTypeEnum podcastType, boolean isSwipedToRefresh, int page) {
+                                                          PodcastType podcastType, boolean isSwipedToRefresh, int page) {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (!isSwipedToRefresh) {
@@ -263,7 +263,7 @@ public class MainDataRepository {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (!isSwipedToRefresh) {
-            fetchPodcastsOnLocalDatabaseByPodcastType(lifecycleOwner, podcastsResponse, PodcastTypeEnum.FROM_SUBSCRIPTIONS, page);
+            fetchPodcastsOnLocalDatabaseByPodcastType(lifecycleOwner, podcastsResponse, PodcastType.FROM_SUBSCRIPTIONS, page);
         }
 
         if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
@@ -483,9 +483,9 @@ public class MainDataRepository {
 
                 if (isMyAccount && !CollectionUtils.isEmpty(data)) {
                     if (isSwipedToRefresh) {
-                        localDataSource.deletePodcastsByType(PodcastTypeEnum.MY_PODCASTS.getType());
+                        localDataSource.deletePodcastsByType(PodcastType.MY_PODCASTS);
                     }
-                    localDataSource.insertPodcasts(PodcastTypeEnum.MY_PODCASTS.getType(), data.toArray(new Podcast[0]));
+                    localDataSource.insertPodcasts(PodcastType.MY_PODCASTS, data);
                 }
             }
 
@@ -497,15 +497,15 @@ public class MainDataRepository {
     }
 
     private void fetchPodcastsOnLocalDatabase(LifecycleOwner lifecycleOwner, MutableLiveData<ApiResponse> podcastsResponse,
-                                              String podcastId, boolean isMyAccount, int page) {
+                                              String podcastId, boolean isMyAccount, int page, String userId) {
         if (isMyAccount) {
-            LiveData<List<Podcast>> podcastsLiveData = getPodcasts(PodcastTypeEnum.MY_PODCASTS, page);
+            LiveData<List<Podcast>> podcastsLiveData = localDataSource.getUserPodcastsByUserId(userId, page);
             podcastsLiveData.observe(lifecycleOwner, podcasts -> {
                 podcastsLiveData.removeObservers(lifecycleOwner);
                 podcastsResponse.setValue(ApiResponse.database(podcasts));
             });
         } else if (!Strings.isEmptyOrWhitespace(podcastId)) {
-            LiveData<Podcast> podcastLiveData = localDataSource.getPodcastById(podcastId);
+            LiveData<Podcast> podcastLiveData = localDataSource.getUserPodcastById(podcastId);
             podcastLiveData.observe(lifecycleOwner, p -> {
                 podcastLiveData.removeObservers(lifecycleOwner);
                 podcastsResponse.setValue(ApiResponse.database(p));
@@ -520,7 +520,8 @@ public class MainDataRepository {
                 podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
-                    localDataSource.insertPodcasts(PodcastTypeEnum.TRENDING.getType(), data.toArray(new Podcast[0]));
+                    localDataSource.deletePodcastsByType(PodcastType.TRENDING);
+                    localDataSource.insertPodcasts(PodcastType.TRENDING, data);
                 }
             }
 
@@ -538,7 +539,10 @@ public class MainDataRepository {
                 podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
-                    localDataSource.insertPodcasts(PodcastTypeEnum.FROM_SUBSCRIPTIONS.getType(), data.toArray(new Podcast[0]));
+                    if (page == 0) {
+                        localDataSource.deletePodcastsByType(PodcastType.FROM_SUBSCRIPTIONS);
+                    }
+                    localDataSource.insertPodcasts(PodcastType.FROM_SUBSCRIPTIONS, data);
                 }
             }
 
@@ -550,14 +554,17 @@ public class MainDataRepository {
     }
 
     private void fetchAccountPodcastsOnNetwork(MutableLiveData<ApiResponse> podcastsResponse, String token,
-                                               Integer likeStatus, PodcastTypeEnum podcastType, int page) {
+                                               Integer likeStatus, PodcastType podcastType, int page) {
         networkDataSource.getPodcasts(token, podcastType.name(), likeStatus, page, new IDataCallback<List<Podcast>>() {
             @Override
             public void onSuccess(List<Podcast> data, String url) {
                 podcastsResponse.setValue(ApiResponse.success(data, url));
 
                 if (!CollectionUtils.isEmpty(data)) {
-                    localDataSource.insertPodcasts(podcastType.getType(), data.toArray(new Podcast[0]));
+                    if (page == 0) {
+                        localDataSource.deletePodcastsByType(podcastType);
+                    }
+                    localDataSource.insertPodcasts(podcastType, data);
                 }
             }
 
@@ -569,13 +576,8 @@ public class MainDataRepository {
     }
 
     private void fetchPodcastsOnLocalDatabaseByPodcastType(LifecycleOwner lifecycleOwner, MutableLiveData<ApiResponse> response,
-                                                           PodcastTypeEnum podcastType, int page) {
-        LiveData<List<Podcast>> podcasts;
-        if (podcastType.equals(PodcastTypeEnum.IN_PROGRESS)) {
-            podcasts = localDataSource.getPodcastsInProgress(page);
-        } else {
-            podcasts = getPodcasts(podcastType, page);
-        }
+                                                           PodcastType podcastType, int page) {
+        LiveData<List<Podcast>> podcasts = localDataSource.getPodcasts(podcastType, page);
         podcasts.observe(lifecycleOwner, p -> {
             podcasts.removeObservers(lifecycleOwner);
             response.setValue(ApiResponse.database(p));

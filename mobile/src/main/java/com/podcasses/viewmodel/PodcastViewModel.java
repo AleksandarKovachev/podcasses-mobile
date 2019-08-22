@@ -18,11 +18,11 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastCommentAdapter;
 import com.podcasses.constant.LikeStatus;
-import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.manager.DownloadTracker;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.response.ApiResponse;
@@ -88,14 +88,6 @@ public class PodcastViewModel extends BaseViewModel {
 
     public void saveAccountPodcast(AccountPodcast accountPodcast) {
         repository.saveAccountPodcast(accountPodcast);
-    }
-
-    public void savePodcastType(PodcastTypeEnum podcastType, Podcast podcast) {
-        repository.savePodcast(podcastType, podcast);
-    }
-
-    public void deletePodcastType(PodcastTypeEnum podcastType, String podcastId) {
-        repository.deletePodcast(podcastType, podcastId);
     }
 
     @Bindable

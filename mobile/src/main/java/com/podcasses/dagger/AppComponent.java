@@ -56,4 +56,6 @@ public interface AppComponent {
     void inject(SettingsActivity settingsActivity);
 
     void inject(AgreementActivity agreementActivity);
+
+    void inject(CustomGlideModule customGlideModule);
 }

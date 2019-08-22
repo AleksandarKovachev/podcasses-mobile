@@ -59,7 +59,7 @@ public class BaseApplication extends Application {
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
-                .netModule(new NetModule(ApiCallInterface.API_GATEWAY_URL, AuthenticationCallInterface.KEYCLOAK_URL))
+                .netModule(new NetModule(BuildConfig.API_GATEWAY_URL, BuildConfig.KEYCLOAK_URL))
                 .build();
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;

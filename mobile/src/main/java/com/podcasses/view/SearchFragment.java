@@ -18,7 +18,7 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.model.entity.Account;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;

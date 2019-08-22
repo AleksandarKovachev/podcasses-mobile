@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,7 +27,7 @@ import com.ncapdevi.fragnav.tabhistory.UniqueTabHistoryStrategy;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.MainActivityBinding;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.base.BaseActivity;

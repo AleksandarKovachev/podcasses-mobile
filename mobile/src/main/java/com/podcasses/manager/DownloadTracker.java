@@ -12,8 +12,8 @@ import com.google.android.exoplayer2.offline.DownloadManager;
 import com.google.android.exoplayer2.offline.DownloadRequest;
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.util.Util;
-import com.podcasses.constant.PodcastTypeEnum;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.constant.PodcastType;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.service.AudioDownloadService;
 
@@ -67,11 +67,11 @@ public class DownloadTracker {
         Download download = downloads.get(uri);
         if (download != null) {
             DownloadService.sendRemoveDownload(context, AudioDownloadService.class, download.request.id, false);
-            repository.deletePodcast(PodcastTypeEnum.DOWNLOADED, podcast.getId());
+            repository.deleteDownloadedPodcast(podcast.getId());
         } else {
             DownloadRequest downloadRequest = DownloadHelper.forProgressive(uri).getDownloadRequest(podcast.getId(), Util.getUtf8Bytes(podcast.getTitle()));
             DownloadService.sendAddDownload(context, AudioDownloadService.class, downloadRequest, false);
-            repository.savePodcast(PodcastTypeEnum.DOWNLOADED, podcast);
+            repository.insertPodcast(PodcastType.DOWNLOADED, podcast);
         }
     }
 

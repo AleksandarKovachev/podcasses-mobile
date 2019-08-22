@@ -7,7 +7,7 @@ import com.podcasses.R;
 /**
  * Created by aleksandar.kovachev.
  */
-public enum PodcastTypeEnum {
+public enum PodcastType {
 
     MY_PODCASTS(1, R.string.my_podcasts),
     HISTORY(2, R.string.history),
@@ -15,13 +15,12 @@ public enum PodcastTypeEnum {
     TRENDING(4, R.string.trending_podcasts),
     DOWNLOADED(5, R.string.downloaded_podcasts),
     IN_PROGRESS(6, R.string.podcasts_in_progress),
-    FROM_SUBSCRIPTIONS(7, R.string.podcasts_from_subscribe),
-    MARK_AS_PLAYED(8, R.string.mark_as_played);
+    FROM_SUBSCRIPTIONS(7, R.string.podcasts_from_subscribe);
 
     private int type;
     private int title;
 
-    PodcastTypeEnum(int type, int title) {
+    PodcastType(int type, int title) {
         this.type = type;
         this.title = title;
     }
@@ -35,7 +34,7 @@ public enum PodcastTypeEnum {
     }
 
     public static String getTitle(Context context, int type) {
-        for (PodcastTypeEnum podcastType : values()) {
+        for (PodcastType podcastType : values()) {
             if (podcastType.getType() == type) {
                 return context.getString(podcastType.getTitle());
             }
@@ -43,8 +42,8 @@ public enum PodcastTypeEnum {
         return null;
     }
 
-    public static PodcastTypeEnum getPodcastType(int type) {
-        for (PodcastTypeEnum podcastType : values()) {
+    public static PodcastType getPodcastType(int type) {
+        for (PodcastType podcastType : values()) {
             if (podcastType.getType() == type) {
                 return podcastType;
             }

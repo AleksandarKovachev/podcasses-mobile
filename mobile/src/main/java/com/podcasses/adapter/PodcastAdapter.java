@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.podcasses.R;
 import com.podcasses.databinding.ItemPodcastBinding;
 import com.podcasses.databinding.ItemTrendingPodcastBinding;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;

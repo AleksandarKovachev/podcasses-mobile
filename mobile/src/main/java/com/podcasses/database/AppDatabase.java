@@ -8,18 +8,31 @@ import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
-import com.podcasses.database.dao.PodcastTypeDao;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.DownloadedPodcast;
+import com.podcasses.model.entity.HistoryPodcast;
+import com.podcasses.model.entity.LikedPodcast;
+import com.podcasses.model.entity.NewPodcast;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.entity.PodcastType;
+import com.podcasses.model.entity.ProgressPodcast;
+import com.podcasses.model.entity.TrendingPodcast;
+import com.podcasses.model.entity.UserPodcast;
 
 /**
  * Created by aleksandar.kovachev.
  */
 @TypeConverters(DateConverter.class)
-@Database(entities = {Podcast.class, Account.class, AccountPodcast.class, PodcastFile.class, PodcastType.class}, version = 1, exportSchema = false)
+@Database(entities = {DownloadedPodcast.class,
+        UserPodcast.class,
+        HistoryPodcast.class,
+        LikedPodcast.class,
+        NewPodcast.class,
+        ProgressPodcast.class,
+        TrendingPodcast.class,
+        Account.class,
+        AccountPodcast.class,
+        PodcastFile.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public static final String DATABASE_NAME = "podcasses";
@@ -31,7 +44,5 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract AccountPodcastDao accountPodcastDao();
 
     public abstract PodcastFileDao podcastFileDao();
-
-    public abstract PodcastTypeDao podcastTypeDao();
 
 }

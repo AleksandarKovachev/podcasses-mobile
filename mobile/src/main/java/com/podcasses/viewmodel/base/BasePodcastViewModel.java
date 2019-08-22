@@ -13,7 +13,7 @@ import com.podcasses.R;
 import com.podcasses.adapter.AccountAdapter;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Account;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;

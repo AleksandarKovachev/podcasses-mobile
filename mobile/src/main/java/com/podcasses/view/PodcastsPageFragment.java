@@ -16,10 +16,10 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
-import com.podcasses.constant.PodcastTypeEnum;
+import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastsPageBinding;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -46,7 +46,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     private FragmentPodcastsPageBinding binder;
     private LiveData<ApiResponse> podcasts;
     private LiveData<String> token;
-    private PodcastTypeEnum type;
+    private PodcastType type;
 
     private int page = 0;
 
@@ -62,7 +62,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        type = PodcastTypeEnum.getPodcastType(getArguments().getInt("type"));
+        type = PodcastType.getPodcastType(getArguments().getInt("type"));
     }
 
     @Nullable
@@ -81,13 +81,12 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (type == PodcastTypeEnum.DOWNLOADED) {
+        if (type == PodcastType.DOWNLOADED) {
             getDownloadedPodcasts();
-        } else if (type == PodcastTypeEnum.HISTORY ||
-                type == PodcastTypeEnum.LIKED_PODCASTS ||
-                type == PodcastTypeEnum.FROM_SUBSCRIPTIONS ||
-                type == PodcastTypeEnum.IN_PROGRESS ||
-                type == PodcastTypeEnum.MARK_AS_PLAYED) {
+        } else if (type == PodcastType.HISTORY ||
+                type == PodcastType.LIKED_PODCASTS ||
+                type == PodcastType.FROM_SUBSCRIPTIONS ||
+                type == PodcastType.IN_PROGRESS) {
             token = AuthenticationUtil.getAuthenticationToken(this.getContext());
             if (token != null) {
                 token.observe(getViewLifecycleOwner(), s -> {
@@ -112,10 +111,10 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
-        if (type == PodcastTypeEnum.FROM_SUBSCRIPTIONS) {
+        if (type == PodcastType.FROM_SUBSCRIPTIONS) {
             podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null, page);
         } else {
-            podcasts = viewModel.getPodcastsByType(this, token, type == PodcastTypeEnum.LIKED_PODCASTS ? 1 : null,
+            podcasts = viewModel.getPodcastsByType(this, token, type == PodcastType.LIKED_PODCASTS ? 1 : null,
                     type, refreshLayout != null, page);
         }
         podcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));

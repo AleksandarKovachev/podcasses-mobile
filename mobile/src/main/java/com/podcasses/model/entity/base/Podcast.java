@@ -1,17 +1,14 @@
-package com.podcasses.model.entity;
+package com.podcasses.model.entity.base;
 
 import android.text.Spanned;
 
-import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.databinding.Bindable;
-import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
-import com.podcasses.model.entity.base.BaseLikeModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,11 +18,11 @@ import java.util.Objects;
 /**
  * Created by aleksandar.kovachev.
  */
-@Entity
 public class Podcast extends BaseLikeModel {
 
-    @NonNull
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    private int internalId;
+
     private String id;
 
     private String title;
@@ -71,6 +68,14 @@ public class Podcast extends BaseLikeModel {
 
     @TypeConverters({DateConverter.class})
     private Date updatedTimestamp;
+
+    public int getInternalId() {
+        return internalId;
+    }
+
+    public void setInternalId(int internalId) {
+        this.internalId = internalId;
+    }
 
     public String getId() {
         return id;
@@ -275,4 +280,34 @@ public class Podcast extends BaseLikeModel {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+    public Podcast() {
+    }
+
+    public Podcast(Podcast podcast) {
+        internalId = podcast.internalId;
+        id = podcast.id;
+        title = podcast.title;
+        description = podcast.description;
+        isActive = podcast.isActive;
+        categoryId = podcast.categoryId;
+        privacyId = podcast.privacyId;
+        hasComments = podcast.hasComments;
+        languageId = podcast.languageId;
+        views = podcast.views;
+        downloads = podcast.downloads;
+        duration = podcast.duration;
+        podcastFileName = podcast.podcastFileName;
+        imageFileName = podcast.imageFileName;
+        podcastUrl = podcast.podcastUrl;
+        imageUrl = podcast.imageUrl;
+        downloadUrl = podcast.downloadUrl;
+        userId = podcast.userId;
+        displayName = podcast.displayName;
+        username = podcast.username;
+        markAsPlayed = podcast.markAsPlayed;
+        createdTimestamp = podcast.createdTimestamp;
+        updatedTimestamp = podcast.updatedTimestamp;
+    }
+
 }

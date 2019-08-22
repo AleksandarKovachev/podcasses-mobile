@@ -2,18 +2,24 @@ package com.podcasses.repository;
 
 import androidx.lifecycle.LiveData;
 
+import com.podcasses.constant.PodcastType;
 import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
-import com.podcasses.database.dao.PodcastTypeDao;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Podcast;
+import com.podcasses.model.entity.DownloadedPodcast;
+import com.podcasses.model.entity.HistoryPodcast;
+import com.podcasses.model.entity.LikedPodcast;
+import com.podcasses.model.entity.NewPodcast;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.entity.PodcastType;
+import com.podcasses.model.entity.ProgressPodcast;
+import com.podcasses.model.entity.TrendingPodcast;
+import com.podcasses.model.entity.UserPodcast;
+import com.podcasses.model.entity.base.Podcast;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -32,57 +38,135 @@ public class LocalDataSource {
 
     private PodcastFileDao podcastFileDao;
 
-    private PodcastTypeDao podcastTypeDao;
-
     @Inject
     public LocalDataSource(PodcastDao podcastDao, AccountDao accountDao, AccountPodcastDao accountPodcastDao,
-                           PodcastFileDao podcastFileDao, PodcastTypeDao podcastTypeDao) {
+                           PodcastFileDao podcastFileDao) {
         this.podcastDao = podcastDao;
         this.accountDao = accountDao;
         this.accountPodcastDao = accountPodcastDao;
         this.podcastFileDao = podcastFileDao;
-        this.podcastTypeDao = podcastTypeDao;
     }
 
-    LiveData<List<Podcast>> getPodcasts(Integer type, int page) {
-        return podcastDao.getPodcasts(type, page * 10);
+    LiveData<Podcast> getUserPodcastById(String id) {
+        return podcastDao.getUserPodcastById(id);
     }
 
-    LiveData<List<Podcast>> getPodcastsInProgress(int page) {
-        return podcastDao.getPodcastsInProgress(page * 10);
+    LiveData<List<Podcast>> getUserPodcastsByUserId(String userId, int page) {
+        return podcastDao.getUserPodcastsByUserId(userId, page * 10);
     }
 
-    LiveData<Podcast> getPodcastById(String podcastId) {
-        return podcastDao.getPodcastById(podcastId);
+    LiveData<List<Podcast>> getPodcasts(PodcastType type, int page) {
+        switch (type) {
+            case LIKED_PODCASTS:
+                return podcastDao.getLikedPodcasts(page * 10);
+            case MY_PODCASTS:
+                return podcastDao.getUserPodcasts(page * 10);
+            case FROM_SUBSCRIPTIONS:
+                return podcastDao.getNewPodcasts(page * 10);
+            case TRENDING:
+                return podcastDao.getTrendingPodcasts(page * 10);
+            case IN_PROGRESS:
+                return podcastDao.getProgressPodcasts(page * 10);
+            case HISTORY:
+                return podcastDao.getHistoryPodcasts(page * 10);
+            case DOWNLOADED:
+                return podcastDao.getDownloadedPodcasts(page * 10);
+            default:
+                break;
+        }
+        return null;
     }
 
-    void insertPodcasts(Integer type, Podcast... podcasts) {
+    void insertPodcasts(PodcastType type, List<Podcast> podcasts) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            for (Podcast podcast : podcasts) {
-                podcastDao.insertAll(podcast);
-                if (podcastTypeDao.getPodcastType(podcast.getId(), type) == null) {
-                    PodcastType podcastType = new PodcastType();
-                    podcastType.setCreatedTimestamp(new Date());
-                    podcastType.setPodcastId(podcast.getId());
-                    podcastType.setPodcastType(type);
-                    podcastTypeDao.insertAll(podcastType);
-                }
+            switch (type) {
+                case LIKED_PODCASTS:
+                    List<LikedPodcast> likedPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        likedPodcasts.add(new LikedPodcast(podcast));
+                    }
+                    podcastDao.insertLikedPodcasts(likedPodcasts);
+                    break;
+                case MY_PODCASTS:
+                    List<UserPodcast> userPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        userPodcasts.add(new UserPodcast(podcast));
+                    }
+                    podcastDao.insertUserPodcasts(userPodcasts);
+                    break;
+                case FROM_SUBSCRIPTIONS:
+                    List<NewPodcast> newPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        newPodcasts.add(new NewPodcast(podcast));
+                    }
+                    podcastDao.insertNewPodcasts(newPodcasts);
+                    break;
+                case TRENDING:
+                    List<TrendingPodcast> trendingPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        trendingPodcasts.add(new TrendingPodcast(podcast));
+                    }
+                    podcastDao.insertTrendingPodcasts(trendingPodcasts);
+                    break;
+                case IN_PROGRESS:
+                    List<ProgressPodcast> progressPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        progressPodcasts.add(new ProgressPodcast(podcast));
+                    }
+                    podcastDao.insertProgressPodcasts(progressPodcasts);
+                    break;
+                case HISTORY:
+                    List<HistoryPodcast> historyPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        historyPodcasts.add(new HistoryPodcast(podcast));
+                    }
+                    podcastDao.insertHistoryPodcasts(historyPodcasts);
+                    break;
+                case DOWNLOADED:
+                    List<DownloadedPodcast> downloadedPodcasts = new ArrayList<>();
+                    for (Podcast podcast : podcasts) {
+                        downloadedPodcasts.add(new DownloadedPodcast(podcast));
+                    }
+                    podcastDao.insertDownloadedPodcasts(downloadedPodcasts);
+                    break;
+                default:
+                    break;
             }
         });
     }
 
-    void deletePodcast(Integer podcastType, String podcastId) {
+    void deletePodcastsByType(PodcastType type) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            podcastTypeDao.deletePodcastType(podcastType, podcastId);
-            podcastDao.deletePodcasts();
+            switch (type) {
+                case LIKED_PODCASTS:
+                    podcastDao.deleteLikedPodcasts();
+                    break;
+                case MY_PODCASTS:
+                    podcastDao.deleteUserPodcasts();
+                    break;
+                case FROM_SUBSCRIPTIONS:
+                    podcastDao.deleteNewPodcasts();
+                    break;
+                case TRENDING:
+                    podcastDao.deleteTrendingPodcasts();
+                    break;
+                case IN_PROGRESS:
+                    podcastDao.deleteProgressPodcasts();
+                    break;
+                case HISTORY:
+                    podcastDao.deleteHistoryPodcasts();
+                    break;
+                case DOWNLOADED:
+                    podcastDao.deleteDownloadedPodcasts();
+                    break;
+                default:
+                    break;
+            }
         });
     }
 
-    void deletePodcastsByType(Integer podcastType) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            podcastTypeDao.deletePodcastType(podcastType);
-            podcastDao.deletePodcasts();
-        });
+    void deleteDownloadedPodcast(String id) {
+        Executors.newSingleThreadExecutor().execute(() -> podcastDao.deleteDownloadedPodcast(id));
     }
 
     LiveData<Account> getMyAccountData() {
@@ -134,8 +218,11 @@ public class LocalDataSource {
     void removeAllLocalData() {
         Executors.newSingleThreadExecutor().execute(() -> {
             accountDao.deleteAll();
-            podcastTypeDao.deleteAll();
-            podcastDao.deleteAll();
+            podcastDao.deleteLikedPodcasts();
+            podcastDao.deleteUserPodcasts();
+            podcastDao.deleteNewPodcasts();
+            podcastDao.deleteProgressPodcasts();
+            podcastDao.deleteHistoryPodcasts();
             podcastFileDao.deletePodcastFiles();
             accountPodcastDao.deleteAll();
         });
