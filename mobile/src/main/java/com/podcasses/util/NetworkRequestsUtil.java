@@ -27,6 +27,7 @@ import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.viewmodel.base.BaseViewModel;
 
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
@@ -38,19 +39,19 @@ import retrofit2.Response;
  */
 public class NetworkRequestsUtil {
 
-    public static MutableLiveData<AccountPodcast> sendMarkAsPlayedRequest(MenuItem item, Context context, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
+    public static MutableLiveData<AccountPodcast> sendMarkAsPlayedRequest(BaseViewModel viewModel, MenuItem item, Context context, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
         MutableLiveData<AccountPodcast> accountPodcast = new MutableLiveData<>();
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
         accountPodcastRequest.setMarkAsPlayed(podcast.isMarkAsPlayed() ? 0 : 1);
         Call<AccountPodcast> call = apiCallInterface.accountPodcast("Bearer " + token, accountPodcastRequest);
-        call.enqueue(new retrofit2.Callback<AccountPodcast>() {
+        call.enqueue(new Callback<AccountPodcast>() {
             @Override
             public void onResponse(Call<AccountPodcast> call, Response<AccountPodcast> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     accountPodcast.setValue(response.body());
-                    item.setChecked(response.body().getMarkAsPlayed() == 1);
                     podcast.setMarkAsPlayed(response.body().getMarkAsPlayed() == 1);
+                    viewModel.saveAccountPodcast(response.body());
                 }
             }
 

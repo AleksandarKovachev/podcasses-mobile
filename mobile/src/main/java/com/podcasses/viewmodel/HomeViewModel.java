@@ -21,7 +21,7 @@ import java.util.List;
 public class HomeViewModel extends BasePodcastViewModel {
 
     private MutableLiveData<TrendingFilter> trendingFilterMutableLiveData = new MutableLiveData<>();
-    private Integer categoryId = null, languageId = null;
+    private Integer categoryId = -1, languageId = -1;
     private LifecycleOwner lifecycleOwner;
 
     HomeViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {

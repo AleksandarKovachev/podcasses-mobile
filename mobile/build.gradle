@@ -9,8 +9,8 @@ android {
         applicationId "com.podcasses"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -29,25 +29,10 @@ android {
             buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"a2af533c-f17f-4efe-8228-c8a776dd60cd"'
         }
 
-        qa {
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.110:31000/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30000"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"6dca5c1d-379c-4b38-abd4-b1b558ab5adf"'
-        }
-
-        dev {
-            debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.110:31000/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30000"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"6dca5c1d-379c-4b38-abd4-b1b558ab5adf"'
-        }
-
         debug {
             debuggable true
             buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.110:31000/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30000"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30010"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"6dca5c1d-379c-4b38-abd4-b1b558ab5adf"'
         }
@@ -76,7 +61,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.23.2'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha05'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha09'
 
     // Android Jetpack
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha03'

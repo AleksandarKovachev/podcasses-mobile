@@ -13,6 +13,7 @@ import com.podcasses.R;
 import com.podcasses.adapter.AccountAdapter;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
@@ -141,7 +142,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public void onOptionsButtonClick(View view, Integer position) {
-        PopupMenuUtil.podcastPopupMenu(view, podcasts.getValue().get(position), apiCallInterface, token);
+        PopupMenuUtil.podcastPopupMenu(this, view, podcasts.getValue().get(position), apiCallInterface, token);
     }
 
 }

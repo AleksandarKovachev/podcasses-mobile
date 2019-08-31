@@ -7,6 +7,7 @@ import androidx.databinding.PropertyChangeRegistry;
 import androidx.lifecycle.ViewModel;
 
 import com.podcasses.BR;
+import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.repository.MainDataRepository;
 
 /**
@@ -45,6 +46,10 @@ public class BaseViewModel extends ViewModel implements Observable {
     public void setIsLoading(Boolean isLoading) {
         this.isLoading.set(isLoading);
         notifyPropertyChanged(BR.isLoading);
+    }
+
+    public void saveAccountPodcast(AccountPodcast accountPodcast) {
+        repository.saveAccountPodcast(accountPodcast);
     }
 
 }

@@ -225,10 +225,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             case R.id.navigation_mark_as_played:
                 if (token != null) {
                     LiveData<AccountPodcast> accountPodcast =
-                            NetworkRequestsUtil.sendMarkAsPlayedRequest(item, getContext(), apiCallInterface, podcast, token.getValue());
+                            NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel, item, getContext(), apiCallInterface, podcast, token.getValue());
                     accountPodcast.observe(this, a -> {
                         if (a != null) {
-                            viewModel.saveAccountPodcast(a);
+                            this.accountPodcast = a;
                         }
                         accountPodcast.removeObservers(this);
                     });
@@ -371,7 +371,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
     }
 
     private void setAccountComments(List<Comment> comments) {
-        if (!Strings.isEmptyOrWhitespace(token.getValue())) {
+        if (token != null && !Strings.isEmptyOrWhitespace(token.getValue())) {
             List<String> commentIds = new ArrayList<>();
             for (Comment comment : comments) {
                 commentIds.add(comment.getId());

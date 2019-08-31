@@ -311,7 +311,7 @@ public class MainDataRepository {
 
         if (ConnectivityUtil.checkInternetConnection(context) && token != null && !CollectionUtils.isEmpty(podcastIds)) {
             fetchAccountPodcastsOnNetwork(token, podcastIds, accountPodcastsResponse);
-        } else if (isSwipedToRefresh) {
+        } else if (isSwipedToRefresh && token != null) {
             accountPodcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 

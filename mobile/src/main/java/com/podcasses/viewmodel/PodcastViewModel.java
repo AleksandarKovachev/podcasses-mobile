@@ -86,10 +86,6 @@ public class PodcastViewModel extends BaseViewModel {
         return repository.getAccountComments(token, commentIds);
     }
 
-    public void saveAccountPodcast(AccountPodcast accountPodcast) {
-        repository.saveAccountPodcast(accountPodcast);
-    }
-
     @Bindable
     public Podcast getPodcast() {
         return podcast.getValue();
