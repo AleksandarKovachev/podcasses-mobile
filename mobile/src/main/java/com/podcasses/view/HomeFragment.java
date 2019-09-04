@@ -1,6 +1,7 @@
 package com.podcasses.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,13 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
@@ -45,6 +51,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private HomeViewModel viewModel;
     private LiveData<ApiResponse> trendingPodcasts;
+
+    private AdLoader adLoader;
 
     static HomeFragment newInstance(int instance) {
         Bundle args = new Bundle();
@@ -132,7 +140,10 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
         if (apiResponse.data instanceof List) {
-            viewModel.setTrendingPodcastsInAdapter((List<Podcast>) apiResponse.data);
+            viewModel.setTrendingPodcastsInAdapter((List<Object>) apiResponse.data);
+            if(((List<Object>) apiResponse.data).size() > 5) {
+                addAds();
+            }
             getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
         }
     }
@@ -187,10 +198,10 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             return;
         }
 
-        for (Podcast podcast : viewModel.getPodcasts()) {
+        for (Object podcast : viewModel.getPodcasts()) {
             for (AccountPodcast accountPodcast : (List<AccountPodcast>) apiResponse.data) {
-                if (accountPodcast.getPodcastId().equals(podcast.getId())) {
-                    podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                if (accountPodcast.getPodcastId().equals(((Podcast) podcast).getId())) {
+                    ((Podcast) podcast).setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
                 }
             }
         }
@@ -221,6 +232,26 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         viewModel.getTrendingFilterMutableLiveData().observe(this, trendingFilter ->
                 getTrendingPodcasts(null, trendingFilter)
         );
+    }
+
+    private void addAds() {
+        adLoader = new AdLoader.Builder(getContext(), BuildConfig.TRENDING_NATIVE_ADS)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+                    Log.i(getTag(), "Native Ad In Trending Podcasts Loaded");
+                    if (!adLoader.isLoading()) {
+                        viewModel.addElementInTrendingPodcastsAdapter(unifiedNativeAd);
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Log.e(getTag(), "Native Ad In Trending Podcasts Failed to loaded: " + errorCode);
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 1);
     }
 
 }

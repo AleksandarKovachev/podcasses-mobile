@@ -1,6 +1,7 @@
 package com.podcasses.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,12 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.common.util.CollectionUtils;
+import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
@@ -43,6 +49,8 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    private AdLoader adLoader;
 
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
@@ -108,12 +116,11 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                 }
                 break;
             case DATABASE:
-                viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
                 break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
-                    viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
                 if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
@@ -121,7 +128,12 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                 }
 
                 if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                    viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+                    viewModel.clearPodcastsInAdapter();
+                    viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
+
+                    if (((List) apiResponse.data).size() > 5) {
+                        addAds();
+                    }
                 } else {
                     viewModel.setAccountsInAdapter((List<Account>) apiResponse.data);
                 }
@@ -159,6 +171,26 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                 }
             }
         });
+    }
+
+    private void addAds() {
+        adLoader = new AdLoader.Builder(getContext(), BuildConfig.SEARCH_PODCAST_NATIVE_ADS)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+                    Log.i(getTag(), "Native Ad In Search Podcasts Loaded");
+                    if (!adLoader.isLoading()) {
+                        viewModel.addElementInPodcastsAdapter(unifiedNativeAd, viewModel.getPodcastAdapter().getItemCount() / 2);
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Log.e(getTag(), "Native Ad In Search Podcasts Failed to loaded: " + errorCode);
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 1);
     }
 
 }

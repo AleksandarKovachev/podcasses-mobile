@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.ads.AdRequest;
 import com.podcasses.R;
 import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
@@ -49,6 +50,7 @@ public class HistoryFragment extends BaseFragment {
         binder.setViewModel(viewModel);
         binder.setFragmentManager(getChildFragmentManager());
         binder.setTypes(Arrays.asList(PodcastType.HISTORY.getType(), PodcastType.LIKED_PODCASTS.getType()));
+        binder.bannerAdView.loadAd(new AdRequest.Builder().build());
         return binder.getRoot();
     }
 

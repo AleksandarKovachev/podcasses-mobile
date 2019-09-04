@@ -13,7 +13,6 @@ import com.podcasses.R;
 import com.podcasses.adapter.AccountAdapter;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.model.entity.Account;
-import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
@@ -29,12 +28,12 @@ import java.util.List;
  */
 public abstract class BasePodcastViewModel extends BaseViewModel {
 
-    private MutableLiveData<List<Podcast>> podcasts = new MutableLiveData<>();
+    private MutableLiveData<List<Object>> podcasts = new MutableLiveData<>();
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
     private ObservableField<String> selectedAccount = new ObservableField<>();
     private MutableLiveData<List<Account>> accounts = new MutableLiveData<>();
-    private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, this);
-    private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, this);
+    private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, R.layout.ad_native_account_podcast, this);
+    private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, R.layout.ad_native_trending, this);
     private AccountAdapter accountAdapter = new AccountAdapter(this);
 
     private ApiCallInterface apiCallInterface;
@@ -62,9 +61,17 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         return trendingPodcastAdapter;
     }
 
-    public void setTrendingPodcastsInAdapter(List<Podcast> podcasts) {
+    public void setTrendingPodcastsInAdapter(List<Object> podcasts) {
         this.podcasts.setValue(podcasts);
         this.trendingPodcastAdapter.setPodcasts(podcasts);
+    }
+
+    public void addElementInTrendingPodcastsAdapter(Object element) {
+        this.trendingPodcastAdapter.addElement(element);
+    }
+
+    public void addElementInPodcastsAdapter(Object element, int index) {
+        this.podcastAdapter.addElement(element, index);
     }
 
     public PodcastAdapter getPodcastAdapter() {
@@ -85,7 +92,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         this.accountAdapter.setAccounts(accounts);
     }
 
-    public void setPodcastsInAdapter(List<Podcast> podcasts) {
+    public void setPodcastsInAdapter(List<Object> podcasts) {
         if (CollectionUtils.isEmpty(this.podcasts.getValue())) {
             this.podcasts.setValue(podcasts);
         } else {
@@ -100,7 +107,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public void onPodcastClick(Integer index) {
-        Podcast podcast = podcasts.getValue().get(index);
+        Podcast podcast = (Podcast) podcasts.getValue().get(index);
         selectedPodcast.setValue(podcast);
     }
 
@@ -109,20 +116,20 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public void onAccountClickFromPodcast(Integer index) {
-        selectedAccount.set(podcasts.getValue().get(index).getUserId());
+        selectedAccount.set(((Podcast) podcasts.getValue().get(index)).getUserId());
     }
 
     public void onAccountClick(Integer index) {
         selectedAccount.set(accounts.getValue().get(index).getId());
     }
 
-    public List<Podcast> getPodcasts() {
+    public List<Object> getPodcasts() {
         return podcasts.getValue();
     }
 
     public Podcast getPodcastAt(Integer index) {
         if (podcasts.getValue() != null && index != null && podcasts.getValue().size() > index) {
-            return podcasts.getValue().get(index);
+            return (Podcast) podcasts.getValue().get(index);
         }
         return null;
     }
@@ -142,7 +149,7 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public void onOptionsButtonClick(View view, Integer position) {
-        PopupMenuUtil.podcastPopupMenu(this, view, podcasts.getValue().get(position), apiCallInterface, token);
+        PopupMenuUtil.podcastPopupMenu(this, view, (Podcast) podcasts.getValue().get(position), apiCallInterface, token);
     }
 
 }

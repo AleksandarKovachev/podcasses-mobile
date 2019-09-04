@@ -107,7 +107,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getDownloadedPodcasts() {
-        viewModel.getDownloadedPodcasts(page).observe(this, podcasts -> viewModel.setPodcastsInAdapter(podcasts));
+        viewModel.getDownloadedPodcasts(page).observe(this, podcasts -> viewModel.setPodcastsInAdapter((List<Object>) (Object) podcasts));
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
@@ -166,7 +166,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             return;
         }
         if (((List) apiResponse.data).get(0) instanceof Podcast) {
-            viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
+            viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
         }
     }
 

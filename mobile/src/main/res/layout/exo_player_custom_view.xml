@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:id="@+id/play_pause"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
@@ -16,7 +16,7 @@
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/player_speed"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:entries="@array/speeds"
             android:gravity="center" />
@@ -39,7 +39,7 @@
 
         <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/trim_silence"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/trim_silence"
             android:tooltipText="@string/trim_silence_tooltip" />

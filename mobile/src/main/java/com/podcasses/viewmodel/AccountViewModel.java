@@ -200,6 +200,10 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     public void subscribeAccount(View view, String token, String accountId) {
+        if (token == null) {
+            return;
+        }
+
         Call<Integer> subscribeAccountCall = apiCallInterface.accountSubscribe("Bearer " + token, accountId);
         subscribeAccountCall.enqueue(new Callback<Integer>() {
             @Override

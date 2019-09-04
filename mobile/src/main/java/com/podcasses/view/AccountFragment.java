@@ -3,6 +3,7 @@ package com.podcasses.view;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +22,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
@@ -30,8 +37,8 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
@@ -71,13 +78,17 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private AccountViewModel viewModel;
     private FragmentAccountBinding binding;
 
+    private AdLoader adLoader;
+
+    private List<UnifiedNativeAd> nativeAds = new ArrayList<>();
+
     private MutableLiveData<String> token;
 
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> accountSubscribesResponse;
     private LiveData<ApiResponse> accountPodcastsCountResponse;
     private LiveData<ApiResponse> checkAccountSubscribeResponse;
-    private LiveData<ApiResponse> podcasts;
+    private LiveData<ApiResponse> podcastsResponse;
     private LiveData<ApiResponse> podcastFiles;
 
     private Account account;
@@ -122,7 +133,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         token = AuthenticationUtil.getAuthenticationToken(getContext());
-        if (token == null) {
+        if (token == null && accountId == null) {
+            binding.bannerAdView.loadAd(new AdRequest.Builder().build());
             binding.notAuthenticatedView.setVisibility(View.VISIBLE);
             binding.refreshLayout.setVisibility(View.GONE);
             binding.notAuthenticatedView.setOnClickListener(v -> {
@@ -218,6 +230,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                     getAccountData(null, null);
                 }
             });
+        } else {
+            getAccountData(null, null);
         }
     }
 
@@ -251,8 +265,11 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else if (accountId != null) {
             accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
-            checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
-            checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+
+            if (token != null || this.token != null) {
+                checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
+                checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
+            }
         }
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
 
@@ -352,8 +369,14 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 return;
             }
             if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                viewModel.setPodcastsInAdapter((List<Podcast>) apiResponse.data);
-                getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
+                viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
+
+                if (token != null) {
+                    getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
+                }
+                if (((List<Object>) apiResponse.data).size() > 5) {
+                    addAds();
+                }
             } else {
                 viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                 binding.podcastFilesCardView.setVisibility(View.VISIBLE);
@@ -426,10 +449,10 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
         if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
-            for (Podcast podcast : viewModel.getPodcasts()) {
+            for (Object podcast : viewModel.getPodcasts()) {
                 for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
-                    if (accountPodcast.getPodcastId().equals(podcast.getId())) {
-                        podcast.setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+                    if (accountPodcast.getPodcastId().equals(((Podcast) podcast).getId())) {
+                        ((Podcast) podcast).setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
                     }
                 }
             }
@@ -449,8 +472,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
-        podcasts = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
-        podcasts.observe(this, apiResponse -> consumeResponse(apiResponse, podcasts, refreshLayout));
+        podcastsResponse = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
+        podcastsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastsResponse, refreshLayout));
     }
 
     private void handleLogout() {
@@ -481,6 +504,26 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 Toast.makeText(getContext(), getString(R.string.error_response), Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    private void addAds() {
+        adLoader = new AdLoader.Builder(getContext(), BuildConfig.ACCOUNT_PODCAST_NATIVE_ADS)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+                    Log.i(getTag(), "Native Ad In Account Podcasts Loaded");
+                    if (!adLoader.isLoading()) {
+                        viewModel.addElementInPodcastsAdapter(unifiedNativeAd, viewModel.getPodcastAdapter().getItemCount() / 2);
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Log.e(getTag(), "Native Ad In Account Podcasts Failed to loaded: " + errorCode);
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 1);
     }
 
 }

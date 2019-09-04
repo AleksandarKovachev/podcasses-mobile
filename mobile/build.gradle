@@ -1,5 +1,7 @@
 //noinspection GradleCompatible
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
 
 android {
     signingConfigs {
@@ -9,8 +11,8 @@ android {
         applicationId "com.podcasses"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 6
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -27,6 +29,11 @@ android {
             buildConfigField 'String', 'API_GATEWAY_URL', '"https://podcasses.com"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"a2af533c-f17f-4efe-8228-c8a776dd60cd"'
+            buildConfigField 'String', 'TRENDING_NATIVE_ADS', '"ca-app-pub-5100562858517923/8208834379"'
+            buildConfigField 'String', 'ACCOUNT_PODCAST_NATIVE_ADS', '"ca-app-pub-5100562858517923/6111308161"'
+            buildConfigField 'String', 'SEARCH_PODCAST_NATIVE_ADS', '"ca-app-pub-5100562858517923/7101257528"'
+            resValue "string", 'AUTHENTICATION_BANNER_ADS', '"ca-app-pub-5100562858517923/5644705629"'
+            resValue "string", 'HISTORY_BANNER_ADS', '"ca-app-pub-5100562858517923/7305271654"'
         }
 
         debug {
@@ -35,6 +42,11 @@ android {
             buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30010"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"6dca5c1d-379c-4b38-abd4-b1b558ab5adf"'
+            buildConfigField 'String', 'TRENDING_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'
+            buildConfigField 'String', 'ACCOUNT_PODCAST_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'
+            buildConfigField 'String', 'SEARCH_PODCAST_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'
+            resValue "string", 'AUTHENTICATION_BANNER_ADS', '"ca-app-pub-3940256099942544/6300978111"'
+            resValue "string", 'HISTORY_BANNER_ADS', '"ca-app-pub-3940256099942544/6300978111"'
         }
     }
     compileOptions {
@@ -51,8 +63,13 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.cardview:cardview:1.0.0'
 
-    implementation 'com.facebook.android:facebook-login:5.1.1'
+    implementation 'com.facebook.android:facebook-android-sdk:5.5.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-ads:18.2.0'
+    implementation 'com.google.firebase:firebase-ads:18.2.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.0'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     // Dagger
     implementation 'com.google.dagger:dagger:2.23.2'
@@ -97,7 +114,7 @@ dependencies {
     implementation 'com.ncapdevi:frag-nav:3.2.0'
 
     // SmartRefreshLayout
-    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-11'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
 
     // Rich Text Editor
     implementation 'com.1gravity:android-rteditor:1.6.7'
