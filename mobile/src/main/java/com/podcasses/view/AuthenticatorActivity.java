@@ -21,16 +21,10 @@ import com.auth0.android.jwt.JWT;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.Task;
 import com.podcasses.R;
@@ -43,7 +37,6 @@ import com.podcasses.util.DialogUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -101,21 +94,21 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         binder.loginInput.setOnClickListener(loginClickListener);
         binder.register.setOnClickListener(r -> startActivityForResult(new Intent(this, RegistrationActivity.class), RC_REGISTRATION));
 
-        binder.facebookLogin.setPermissions(Arrays.asList("email", "public_profile", "user_hometown", "user_location"));
-        binder.facebookLogin.registerCallback(callbackManager, getFacebookLoginCallback());
-
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.google_web_client_id))
-                        .requestScopes(
-                                new Scope(Scopes.PROFILE),
-                                new Scope(Scopes.PLUS_ME),
-                                new Scope(Scopes.EMAIL),
-                                new Scope(Scopes.OPEN_ID))
-                        .requestProfile()
-                        .requestEmail()
-                        .build());
-        binder.googleLogin.setOnClickListener(g -> startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN));
+//        binder.facebookLogin.setPermissions(Arrays.asList("email", "public_profile", "user_hometown", "user_location"));
+//        binder.facebookLogin.registerCallback(callbackManager, getFacebookLoginCallback());
+//
+//        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
+//                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                        .requestIdToken(getString(R.string.google_web_client_id))
+//                        .requestScopes(
+//                                new Scope(Scopes.PROFILE),
+//                                new Scope(Scopes.PLUS_ME),
+//                                new Scope(Scopes.EMAIL),
+//                                new Scope(Scopes.OPEN_ID))
+//                        .requestProfile()
+//                        .requestEmail()
+//                        .build());
+//        binder.googleLogin.setOnClickListener(g -> startActivityForResult(googleSignInClient.getSignInIntent(), RC_GOOGLE_SIGN_IN));
     }
 
     @Override

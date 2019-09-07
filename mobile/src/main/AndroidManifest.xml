@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/DarkAppTheme"
         android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="false"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".view.MainActivity">
             <intent-filter>

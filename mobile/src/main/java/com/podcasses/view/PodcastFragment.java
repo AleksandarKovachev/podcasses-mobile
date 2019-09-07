@@ -417,7 +417,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         if (token == null) {
             showAuthenticationSnackbar();
         } else {
-            sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked, R.string.successful_like_status_change);
+            sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked);
         }
     };
 
@@ -425,7 +425,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         if (token == null) {
             showAuthenticationSnackbar();
         } else {
-            sendLikeDislikeRequest(LikeStatus.DISLIKE.getValue(), R.string.successful_dislike, R.string.successful_dislike_status_change);
+            sendLikeDislikeRequest(LikeStatus.DISLIKE.getValue(), R.string.successful_dislike);
         }
     };
 
@@ -439,7 +439,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 }).show();
     }
 
-    private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage, int successfulDefaultMessage) {
+    private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage) {
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
         if (accountPodcast != null && accountPodcast.getLikeStatus() == likeStatus) {
@@ -467,7 +467,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     if (accountPodcast.getLikeStatus() == likeStatus) {
                         Toasty.success(getContext(), getString(successfulChangeMessage), Toast.LENGTH_SHORT, true).show();
                     } else {
-                        Toasty.success(getContext(), getString(successfulDefaultMessage), Toast.LENGTH_SHORT, true).show();
+                        Toasty.success(getContext(), getString(R.string.successful_like_status_change), Toast.LENGTH_SHORT, true).show();
                     }
                 } else {
                     LogErrorResponseUtil.logErrorResponse(response, getContext());

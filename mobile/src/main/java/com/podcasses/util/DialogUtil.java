@@ -85,10 +85,10 @@ public class DialogUtil {
                             TrendingReport trendingReport = null;
                             Date fromDate = null, toDate = null;
                             Integer categoryId = null, languageId = null;
-                            if (viewModel.getCategoryId() != -1) {
+                            if (viewModel.getCategoryId() != null && viewModel.getCategoryId() != -1) {
                                 categoryId = viewModel.getCategoryId();
                             }
-                            if (viewModel.getLanguageId() != -1) {
+                            if (viewModel.getLanguageId() != null && viewModel.getLanguageId() != -1) {
                                 languageId = viewModel.getLanguageId();
                             }
                             if (binding.trendingFilterSpinner.getSelectedItemPosition() != 0) {

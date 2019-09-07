@@ -49,7 +49,7 @@ public class PopupMenuUtil {
                         podcast.setMarkAsPlayed(!podcast.isMarkAsPlayed());
                     }
                     break;
-                case R.id.report:
+                case R.id.navigation_report:
                     DialogUtil.createReportDialog(view.getContext(), podcast.getId(), apiCallInterface, token, true);
                     break;
             }

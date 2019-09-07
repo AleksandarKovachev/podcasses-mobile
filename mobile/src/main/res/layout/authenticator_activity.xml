@@ -135,7 +135,7 @@
                 app:layout_constraintStart_toEndOf="@id/forgot_password"
                 app:layout_constraintTop_toBottomOf="@+id/login_input" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <!--<androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/or_text_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                 app:buttonSize="wide"
                 app:layout_constraintEnd_toEndOf="@id/description_card_view"
                 app:layout_constraintStart_toStartOf="@id/description_card_view"
-                app:layout_constraintTop_toBottomOf="@+id/facebook_login" />
+                app:layout_constraintTop_toBottomOf="@+id/facebook_login" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
