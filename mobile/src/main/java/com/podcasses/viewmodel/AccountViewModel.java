@@ -4,7 +4,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
@@ -14,14 +13,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastFileAdapter;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
-import com.podcasses.util.NetworkRequestsUtil;
-import com.podcasses.viewmodel.base.BasePodcastViewModel;
+import com.podcasses.viewmodel.base.BasePodcastChannelViewModel;
 
 import java.util.List;
 
@@ -33,17 +31,13 @@ import retrofit2.Response;
 /**
  * Created by aleksandar.kovachev.
  */
-public class AccountViewModel extends BasePodcastViewModel {
+public class AccountViewModel extends BasePodcastChannelViewModel {
 
     private ApiCallInterface apiCallInterface;
 
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
-    private ObservableField<String> coverImage = new ObservableField<>();
-    private ObservableField<Integer> accountPodcasts = new ObservableField<>(0);
-    private ObservableField<Integer> accountSubscribes = new ObservableField<>(0);
-    private ObservableField<Boolean> isSubscribed = new ObservableField();
-    private ObservableField<String> editAccountId = new ObservableField<>();
+    private ObservableField<Integer> podcastChannels = new ObservableField<>(0);
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
     private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(this);
@@ -59,32 +53,18 @@ public class AccountViewModel extends BasePodcastViewModel {
         repository.removeAllLocalData();
     }
 
-    public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, String username, String id, boolean isSwipedToRefresh, boolean isMyAccount) {
+    public LiveData<ApiResponse> account(String username, String id, boolean isSwipedToRefresh) {
         if (!isSwipedToRefresh && account.getValue() != null && username != null && account.getValue().getUsername().equals(username)) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getAccount(lifecycleOwner, username, id, isMyAccount, isSwipedToRefresh);
+        return repository.getAccount(username, id, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> accountSubscribes(@NonNull String accountId) {
-        if (accountSubscribes.get() != 0) {
+    public LiveData<ApiResponse> podcastChannels(@NonNull String accountId) {
+        if (podcastChannels.get() != 0) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
         return repository.getAccountSubscribesCount(accountId);
-    }
-
-    public LiveData<ApiResponse> accountPodcastsCount(String token, @NonNull String accountId) {
-        if (accountPodcasts.get() != 0) {
-            return new MutableLiveData<>(ApiResponse.fetched());
-        }
-        return repository.getAccountPodcastsCount(token, accountId);
-    }
-
-    public LiveData<ApiResponse> checkAccountSubscribe(String token, String accountId) {
-        if (isSubscribed.get() != null) {
-            return new MutableLiveData<>(ApiResponse.fetched());
-        }
-        return repository.getAccountSubscribesCount(token, accountId);
     }
 
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
@@ -93,10 +73,6 @@ public class AccountViewModel extends BasePodcastViewModel {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
         return repository.getPodcastFiles(lifecycleOwner, token, isSwipedToRefresh);
-    }
-
-    public void saveAccount(Account account) {
-        repository.saveAccount(account);
     }
 
     @Bindable
@@ -110,23 +86,8 @@ public class AccountViewModel extends BasePodcastViewModel {
     }
 
     @Bindable
-    public String getCoverImage() {
-        return coverImage.get();
-    }
-
-    @Bindable
-    public String getAccountPodcasts() {
-        return accountPodcasts.get().toString();
-    }
-
-    @Bindable
-    public String getAccountSubscribes() {
-        return accountSubscribes.get().toString();
-    }
-
-    @Bindable
-    public Boolean getIsSubscribed() {
-        return isSubscribed.get();
+    public String getPodcastChannels() {
+        return podcastChannels.get().toString();
     }
 
     public PodcastFileAdapter getPodcastFileAdapter() {
@@ -174,70 +135,14 @@ public class AccountViewModel extends BasePodcastViewModel {
         notifyPropertyChanged(BR.profileImage);
     }
 
-    public void setCoverImage(String url) {
-        coverImage.set(url);
-        notifyPropertyChanged(BR.coverImage);
-    }
-
     public void setAccount(Account account) {
         this.account.setValue(account);
         notifyPropertyChanged(BR.account);
     }
 
-    public void setIsSubscribed(Boolean isSubscribed) {
-        this.isSubscribed.set(isSubscribed);
-        notifyPropertyChanged(BR.isSubscribed);
-    }
-
-    public void setAccountSubscribes(Integer accountSubscribes) {
-        this.accountSubscribes.set(accountSubscribes);
-        notifyPropertyChanged(BR.accountSubscribes);
-    }
-
-    public void setAccountPodcasts(Integer accountPodcasts) {
-        this.accountPodcasts.set(accountPodcasts);
-        notifyPropertyChanged(BR.accountPodcasts);
-    }
-
-    public void subscribeAccount(View view, String token, String accountId) {
-        if (token == null) {
-            return;
-        }
-
-        Call<Integer> subscribeAccountCall = apiCallInterface.accountSubscribe("Bearer " + token, accountId);
-        subscribeAccountCall.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    if (response.body() == 1) {
-                        setIsSubscribed(true);
-                        Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_subscribing), Toast.LENGTH_SHORT, true).show();
-                    } else {
-                        setIsSubscribed(false);
-                        Toasty.success(view.getContext(), view.getContext().getString(R.string.successful_unsubscribing), Toast.LENGTH_SHORT, true).show();
-                    }
-                } else {
-                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                LogErrorResponseUtil.logFailure(t, view.getContext());
-            }
-        });
-    }
-
-    public ObservableField<String> getEditAccountId() {
-        return editAccountId;
-    }
-
-    public void onEditClick(String accountId) {
-        editAccountId.set(accountId);
-    }
-
-    public void onSyncClick(View view, String token, ContentLoadingProgressBar progressBar) {
-        NetworkRequestsUtil.rssFeedSync(apiCallInterface, view.getContext(), token, progressBar);
+    public void setPodcastChannels(Integer accountPodcasts) {
+        this.podcastChannels.set(accountPodcasts);
+        notifyPropertyChanged(BR.podcastChannels);
     }
 
 }

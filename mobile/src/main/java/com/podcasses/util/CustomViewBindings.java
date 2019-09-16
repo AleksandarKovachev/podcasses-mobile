@@ -41,8 +41,6 @@ public class CustomViewBindings {
 
     public static final String PROFILE_IMAGE = "/api-gateway/account/image/";
 
-    public static final String COVER_IMAGE = "/api-gateway/account/cover/";
-
     public static final String PODCAST_IMAGE = "/api-gateway/podcast/image/";
 
     @BindingAdapter("setAdapter")

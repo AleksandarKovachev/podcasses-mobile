@@ -14,18 +14,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.common.util.CollectionUtils;
@@ -35,10 +33,9 @@ import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
-import com.podcasses.model.entity.Account;
-import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.entity.base.Podcast;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
@@ -85,10 +82,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private MutableLiveData<String> token;
 
     private LiveData<ApiResponse> accountResponse;
-    private LiveData<ApiResponse> accountSubscribesResponse;
-    private LiveData<ApiResponse> accountPodcastsCountResponse;
-    private LiveData<ApiResponse> checkAccountSubscribeResponse;
-    private LiveData<ApiResponse> podcastsResponse;
+    private LiveData<ApiResponse> podcastChannelsResponse;
     private LiveData<ApiResponse> podcastFiles;
 
     private Account account;
@@ -151,10 +145,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 setAuthenticationToken(true);
             }
         }
-        setPodcastClick();
-        setAccountClick();
-        setAccountEditClick();
-        setInfiniteScrollListener();
     }
 
     @Override
@@ -250,72 +240,25 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setAccountImages() {
         viewModel.setProfileImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accountId);
-        viewModel.setCoverImage(BuildConfig.API_GATEWAY_URL + CustomViewBindings.COVER_IMAGE + accountId);
     }
 
     private void getAccountData(String token, RefreshLayout refreshLayout) {
         if (accountId == null) {
             isMyAccount = true;
         }
-        loadPodcasts(isMyAccount, refreshLayout);
-
         if (isMyAccount) {
-            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, true);
+            accountResponse = viewModel.account(null, accountId, refreshLayout != null);
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else if (accountId != null) {
-            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
-
-            if (token != null || this.token != null) {
-                checkAccountSubscribeResponse = viewModel.checkAccountSubscribe(token != null ? token : this.token.getValue(), accountId);
-                checkAccountSubscribeResponse.observe(this, apiResponse -> consumeResponse(apiResponse, checkAccountSubscribeResponse, refreshLayout));
-            }
+            accountResponse = viewModel.account(null, accountId, refreshLayout != null);
         }
+
+        podcastChannelsResponse = viewModel.podcastChannels(this,
+                token != null ? token : this.token.getValue(), accountId, null, isMyAccount, refreshLayout != null);
+
+        podcastChannelsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelsResponse, refreshLayout));
         accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
-
-        if (accountId != null) {
-            accountSubscribesResponse = viewModel.accountSubscribes(accountId);
-            accountPodcastsCountResponse = viewModel.accountPodcastsCount(token, accountId);
-            accountSubscribesResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountSubscribesResponse, true));
-            accountPodcastsCountResponse.observe(this, apiResponse -> consumeIntegerResponse(apiResponse, accountPodcastsCountResponse, false));
-        }
-    }
-
-    private void consumeIntegerResponse(ApiResponse apiResponse, LiveData liveData, boolean isSubscribes) {
-        switch (apiResponse.status) {
-            case LOADING:
-                break;
-            case DATABASE:
-                if (apiResponse.data == null) {
-                    return;
-                }
-                if (isSubscribes) {
-                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
-                } else {
-                    viewModel.setAccountPodcasts((Integer) apiResponse.data);
-                }
-                break;
-            case SUCCESS:
-                if (apiResponse.data == null) {
-                    return;
-                }
-                liveData.removeObservers(this);
-                if (isSubscribes) {
-                    viewModel.setAccountSubscribes((Integer) apiResponse.data);
-                } else {
-                    viewModel.setAccountPodcasts((Integer) apiResponse.data);
-                }
-                break;
-            case ERROR:
-                viewModel.setIsLoading(false);
-                liveData.removeObservers(this);
-                LogErrorResponseUtil.logErrorApiResponse(apiResponse, getContext());
-                break;
-            case FETCHED:
-                viewModel.setIsLoading(false);
-                liveData.removeObservers(this);
-                break;
-        }
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData
@@ -329,7 +272,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
-                    viewModel.clearPodcastsInAdapter();
                     refreshLayout.finishRefresh();
                 }
                 setDataFromResponse(apiResponse, refreshLayout != null);
@@ -353,30 +295,22 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         if (apiResponse.data instanceof Account) {
             account = (Account) apiResponse.data;
             viewModel.setAccount(account);
-            if (viewModel.getIsSubscribed() != null && viewModel.getIsSubscribed() && account != null) {
-                viewModel.saveAccount(account);
-            }
-        } else if (apiResponse.data instanceof Boolean) {
-            boolean isSubscribed = (boolean) apiResponse.data;
-            viewModel.setIsSubscribed(isSubscribed);
-            if (isSubscribed && account != null) {
-                viewModel.saveAccount(account);
-            }
         } else if (apiResponse.data instanceof List) {
             viewModel.setIsLoading(false);
             if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                 binding.podcastFilesCardView.setVisibility(View.GONE);
                 return;
             }
-            if (((List) apiResponse.data).get(0) instanceof Podcast) {
-                viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
+            if (((List) apiResponse.data).get(0) instanceof PodcastChannel) {
+                viewModel.clearPodcastChannelsInAdapter();
+                viewModel.setPodcastChannelsInAdapter((List<Object>) apiResponse.data);
 
-                if (token != null) {
-                    getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
-                }
-                if (((List<Object>) apiResponse.data).size() > 5) {
-                    addAds();
-                }
+//                if (token != null) {
+//                    getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
+//                }
+//                if (((List<Object>) apiResponse.data).size() > 5) {
+//                    addAds();
+//                }
             } else {
                 viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                 binding.podcastFilesCardView.setVisibility(View.VISIBLE);
@@ -384,97 +318,85 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         }
     }
 
-    private void setPodcastClick() {
-        viewModel.getSelectedPodcast().observe(this, podcast -> {
-            if (podcast != null) {
-                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
-                viewModel.getSelectedPodcast().setValue(null);
-            }
-        });
-    }
-
-    private void setAccountClick() {
-        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-                    viewModel.getSelectedAccount().set(null);
-                }
-            }
-        });
-    }
-
-    private void setAccountEditClick() {
-        viewModel.getEditAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getEditAccountId().get() != null) {
-                    fragmentNavigation.pushFragment(EditAccountFragment.newInstance(fragmentCount + 1, account));
-                    viewModel.getEditAccountId().set(null);
-                }
-            }
-        });
-    }
-
-    private void getAccountPodcasts(List<Podcast> podcasts, boolean isSwipedToRefresh) {
-        List<String> podcastIds = new ArrayList<>();
-        for (Podcast podcast : podcasts) {
-            podcastIds.add(podcast.getId());
-        }
-
-        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, token.getValue(), podcastIds, isSwipedToRefresh);
-        accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
-    }
-
-    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
-        switch (accountPodcastsResponse.status) {
-            case LOADING:
-                break;
-            case DATABASE:
-                setAccountPodcastsData(accountPodcastsResponse);
-                break;
-            case SUCCESS: {
-                liveData.removeObservers(this);
-                setAccountPodcastsData(accountPodcastsResponse);
-                break;
-            }
-            case ERROR: {
-                liveData.removeObservers(this);
-                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
-                break;
-            }
-        }
-    }
-
-    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
-        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
-            for (Object podcast : viewModel.getPodcasts()) {
-                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
-                    if (accountPodcast.getPodcastId().equals(((Podcast) podcast).getId())) {
-                        ((Podcast) podcast).setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
-                    }
-                }
-            }
-        }
-    }
-
-    private void setInfiniteScrollListener() {
-        binding.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-            if (scrollY >= (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                if (!viewModel.getIsLoading()) {
-                    ++page;
-                    viewModel.setIsLoading(true);
-                    loadPodcasts(isMyAccount, null);
-                }
-            }
-        });
-    }
-
-    private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
-        podcastsResponse = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
-        podcastsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastsResponse, refreshLayout));
-    }
+//    private void setPodcastClick() {
+//        viewModel.getSelectedPodcast().observe(this, podcast -> {
+//            if (podcast != null) {
+//                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
+//                viewModel.getSelectedPodcast().setValue(null);
+//            }
+//        });
+//    }
+//
+//    private void setAccountClick() {
+//        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+//            @Override
+//            public void onPropertyChanged(Observable sender, int propertyId) {
+//                if (viewModel.getSelectedAccount().get() != null) {
+//                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
+//                    viewModel.getSelectedAccount().set(null);
+//                }
+//            }
+//        });
+//    }
+//
+//    private void getAccountPodcasts(List<Podcast> podcasts, boolean isSwipedToRefresh) {
+//        List<String> podcastIds = new ArrayList<>();
+//        for (Podcast podcast : podcasts) {
+//            podcastIds.add(podcast.getId());
+//        }
+//
+//        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, token.getValue(), podcastIds, isSwipedToRefresh);
+//        accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+//    }
+//
+//    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
+//        switch (accountPodcastsResponse.status) {
+//            case LOADING:
+//                break;
+//            case DATABASE:
+//                setAccountPodcastsData(accountPodcastsResponse);
+//                break;
+//            case SUCCESS: {
+//                liveData.removeObservers(this);
+//                setAccountPodcastsData(accountPodcastsResponse);
+//                break;
+//            }
+//            case ERROR: {
+//                liveData.removeObservers(this);
+//                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
+//                break;
+//            }
+//        }
+//    }
+//
+//    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
+//        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
+//            for (Object podcast : viewModel.getPodcasts()) {
+//                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
+//                    if (accountPodcast.getPodcastId().equals(((Podcast) podcast).getId())) {
+//                        ((Podcast) podcast).setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    private void setInfiniteScrollListener() {
+//        binding.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+//            if (scrollY >= (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+//                if (!viewModel.getIsLoading()) {
+//                    ++page;
+//                    viewModel.setIsLoading(true);
+//                    loadPodcasts(isMyAccount, null);
+//                }
+//            }
+//        });
+//    }
+//
+//    private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
+//        podcastsResponse = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
+//        podcastsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastsResponse, refreshLayout));
+//    }
 
     private void handleLogout() {
         AccountManager accountManager = AccountManager.get(getContext());
@@ -506,24 +428,24 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         };
     }
 
-    private void addAds() {
-        adLoader = new AdLoader.Builder(getContext(), BuildConfig.ACCOUNT_PODCAST_NATIVE_ADS)
-                .forUnifiedNativeAd(unifiedNativeAd -> {
-                    Log.i(getTag(), "Native Ad In Account Podcasts Loaded");
-                    if (!adLoader.isLoading()) {
-                        viewModel.addElementInPodcastsAdapter(unifiedNativeAd, viewModel.getPodcastAdapter().getItemCount() / 2);
-                    }
-                })
-                .withAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int errorCode) {
-                        Log.e(getTag(), "Native Ad In Account Podcasts Failed to loaded: " + errorCode);
-                    }
-                })
-                .withNativeAdOptions(new NativeAdOptions.Builder()
-                        .build())
-                .build();
-        adLoader.loadAds(new AdRequest.Builder().build(), 1);
-    }
+//    private void addAds() {
+//        adLoader = new AdLoader.Builder(getContext(), BuildConfig.ACCOUNT_PODCAST_NATIVE_ADS)
+//                .forUnifiedNativeAd(unifiedNativeAd -> {
+//                    Log.i(getTag(), "Native Ad In Account Podcasts Loaded");
+//                    if (!adLoader.isLoading()) {
+//                        viewModel.addElementInPodcastChannelsAdapter(unifiedNativeAd, viewModel.getPodcastChannels().getItemCount() / 2);
+//                    }
+//                })
+//                .withAdListener(new AdListener() {
+//                    @Override
+//                    public void onAdFailedToLoad(int errorCode) {
+//                        Log.e(getTag(), "Native Ad In Account Podcasts Failed to loaded: " + errorCode);
+//                    }
+//                })
+//                .withNativeAdOptions(new NativeAdOptions.Builder()
+//                        .build())
+//                .build();
+//        adLoader.loadAds(new AdRequest.Builder().build(), 1);
+//    }
 
 }

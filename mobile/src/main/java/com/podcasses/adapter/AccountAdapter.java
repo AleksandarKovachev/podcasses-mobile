@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.podcasses.R;
 import com.podcasses.databinding.ItemAccountBinding;
-import com.podcasses.model.entity.Account;
+import com.podcasses.model.response.Account;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;

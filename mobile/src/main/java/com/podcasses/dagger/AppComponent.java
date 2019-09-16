@@ -5,7 +5,6 @@ import com.podcasses.service.AudioPlayerService;
 import com.podcasses.view.AccountFragment;
 import com.podcasses.view.AgreementActivity;
 import com.podcasses.view.AuthenticatorActivity;
-import com.podcasses.view.EditAccountFragment;
 import com.podcasses.view.HistoryFragment;
 import com.podcasses.view.HomeFragment;
 import com.podcasses.view.MainActivity;
@@ -42,8 +41,6 @@ public interface AppComponent {
     void inject(AccountAuthenticatorService service);
 
     void inject(PodcastFragment fragment);
-
-    void inject(EditAccountFragment fragment);
 
     void inject(PodcastsPageFragment fragment);
 

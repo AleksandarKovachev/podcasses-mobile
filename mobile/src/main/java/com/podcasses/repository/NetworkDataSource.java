@@ -3,8 +3,9 @@ package com.podcasses.repository;
 import android.content.Context;
 
 import com.google.android.gms.common.util.CollectionUtils;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.entity.PodcastChannel;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.entity.Nomenclature;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.entity.PodcastFile;
@@ -178,6 +179,26 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        });
+    }
+
+    void getPodcastChannels(String token, String userId, String name, IDataCallback<List<PodcastChannel>> callback) {
+        Call<List<PodcastChannel>> call = apiCallInterface.podcastChannels(token != null ? "Bearer " + token : null, userId, name);
+        call.enqueue(new Callback<List<PodcastChannel>>() {
+            @Override
+            public void onResponse(Call<List<PodcastChannel>> call, Response<List<PodcastChannel>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PodcastChannel>> call, Throwable t) {
                 callback.onFailure(t, call.request().url().toString());
             }
         });

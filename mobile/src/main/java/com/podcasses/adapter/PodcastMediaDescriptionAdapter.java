@@ -25,16 +25,16 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     private String podcastTitle;
     private String podcastImageUrl;
     private String podcastDuration;
-    private String displayName;
+    private String podcastChannel;
 
     public PodcastMediaDescriptionAdapter(Context context,
                                           String podcastTitle, String podcastImageUrl,
-                                          String podcastDuration, String displayName) {
+                                          String podcastDuration, String podcastChannel) {
         this.context = context;
         this.podcastTitle = podcastTitle;
         this.podcastImageUrl = podcastImageUrl;
         this.podcastDuration = podcastDuration;
-        this.displayName = displayName;
+        this.podcastChannel = podcastChannel;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Nullable
     @Override
     public String getCurrentContentText(Player player) {
-        return displayName;
+        return podcastChannel;
     }
 
     @Nullable

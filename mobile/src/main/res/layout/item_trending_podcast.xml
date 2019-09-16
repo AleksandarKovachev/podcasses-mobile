@@ -97,7 +97,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:onClick="@{() -> viewModel.onAccountClickFromPodcast(position)}"
-                android:text="@{viewModel.getPodcastAt(position).displayName}"
+                android:text="@{viewModel.getPodcastAt(position).channel}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/podcast_title"
                 app:layout_constraintTop_toBottomOf="@id/podcast_title" />

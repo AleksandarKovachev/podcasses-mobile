@@ -66,7 +66,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     private String podcastUrl;
     private String podcastImageUrl;
     private String podcastDuration;
-    private String displayName;
+    private String podcastChannel;
 
     @Override
     public void onCreate() {
@@ -101,7 +101,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                 podcastImageUrl = bundle.getString("podcastImageUrl");
                 podcastUrl = bundle.getString("podcastUrl");
                 podcastDuration = bundle.getString("podcastDuration");
-                displayName = bundle.getString("displayName");
+                podcastChannel = bundle.getString("podcastChannel");
             }
 
             DataSource.Factory dataSourceFactory = ((BaseApplication) getApplication()).buildDataSourceFactory();
@@ -112,7 +112,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                     "playback_channel",
                     R.string.app_name,
                     1,
-                    new PodcastMediaDescriptionAdapter(context, podcastTitle, podcastImageUrl, podcastDuration, displayName),
+                    new PodcastMediaDescriptionAdapter(context, podcastTitle, podcastImageUrl, podcastDuration, podcastChannel),
                     new PlayerNotificationManager.NotificationListener() {
                         @Override
                         public void onNotificationCancelled(int notificationId, boolean dismissedByUser) {

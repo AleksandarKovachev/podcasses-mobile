@@ -10,12 +10,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.constant.PodcastType;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
@@ -83,20 +84,12 @@ public class MainDataRepository {
         localDataSource.insertAccountPodcasts(accountPodcast);
     }
 
-    public void saveAccount(Account account) {
-        localDataSource.insertAccount(account);
-    }
-
-    public LiveData<ApiResponse> getAccount(LifecycleOwner lifecycleOwner, String username, String id, boolean isMyAccount, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> getAccount(String username, String id, boolean isSwipedToRefresh) {
         MutableLiveData<ApiResponse> accountResponse = new MutableLiveData<>(ApiResponse.loading());
-
-        if (!isSwipedToRefresh) {
-            fetchAccountOnLocalDatabase(lifecycleOwner, accountResponse, username, id, isMyAccount);
-        }
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
             if (id != null || username != null) {
-                fetchAccountOnNetwork(accountResponse, username, id, isMyAccount);
+                fetchAccountOnNetwork(accountResponse, username, id);
             }
         } else if (isSwipedToRefresh) {
             accountResponse.setValue(ApiResponse.error(new ConnectException(), null));
@@ -169,44 +162,21 @@ public class MainDataRepository {
         return accountSubscribesResponse;
     }
 
-    public LiveData<ApiResponse> getAccountPodcastsCount(String token, String accountId) {
-        MutableLiveData<ApiResponse> accountPodcastsCountResponse = new MutableLiveData<>(ApiResponse.loading());
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountPodcastsCount(token, accountId, new IDataCallback<Integer>() {
-                @Override
-                public void onSuccess(Integer data, String url) {
-                    accountPodcastsCountResponse.setValue(ApiResponse.success(data, url));
-                }
+    public LiveData<ApiResponse> getPodcastChannels(LifecycleOwner lifecycleOwner, String token, String userId, String name,
+                                                    boolean isMyAccount, boolean isSwipedToRefresh) {
+        MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
-                @Override
-                public void onFailure(Throwable error, String url) {
-                    accountPodcastsCountResponse.setValue(ApiResponse.error(error, url));
-                }
-            });
-        } else {
-            accountPodcastsCountResponse.setValue(ApiResponse.error(new ConnectException(), null));
+        if (!isSwipedToRefresh && !Strings.isEmptyOrWhitespace(userId)) {
+            fetchPodcastChannelsOnLocalDatabase(lifecycleOwner, podcastsResponse, userId);
         }
-        return accountPodcastsCountResponse;
-    }
 
-    public LiveData<ApiResponse> getAccountSubscribesCount(String token, String accountId) {
-        MutableLiveData<ApiResponse> checkAccountSubscribeResponse = new MutableLiveData<>(ApiResponse.loading());
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.checkAccountSubscribe(token, accountId, new IDataCallback<Integer>() {
-                @Override
-                public void onSuccess(Integer data, String url) {
-                    checkAccountSubscribeResponse.setValue(ApiResponse.success(data != null && data == 1, url));
-                }
-
-                @Override
-                public void onFailure(Throwable error, String url) {
-                    checkAccountSubscribeResponse.setValue(ApiResponse.error(error, url));
-                }
-            });
-        } else {
-            checkAccountSubscribeResponse.setValue(ApiResponse.error(new ConnectException(), null));
+            fetchPodcastChannelsOnNetwork(podcastsResponse, token, userId, name, isMyAccount, isSwipedToRefresh);
+        } else if (isSwipedToRefresh) {
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
-        return checkAccountSubscribeResponse;
+
+        return podcastsResponse;
     }
 
     public LiveData<ApiResponse> getPodcasts(LifecycleOwner lifecycleOwner, String podcast, String podcastId, String userId,
@@ -437,18 +407,11 @@ public class MainDataRepository {
         });
     }
 
-    private void fetchAccountOnNetwork(MutableLiveData<ApiResponse> accountResponse, String username, String id, boolean isMyAccount) {
+    private void fetchAccountOnNetwork(MutableLiveData<ApiResponse> accountResponse, String username, String id) {
         networkDataSource.getUserAccount(username, id, new IDataCallback<Account>() {
             @Override
             public void onSuccess(Account account, String url) {
                 accountResponse.setValue(ApiResponse.success(account, url));
-
-                if (account != null) {
-                    account.setIsMyAccount(isMyAccount ? 1 : 0);
-                    if (isMyAccount) {
-                        localDataSource.insertAccount(account);
-                    }
-                }
             }
 
             @Override
@@ -458,19 +421,25 @@ public class MainDataRepository {
         });
     }
 
-    private void fetchAccountOnLocalDatabase(LifecycleOwner lifecycleOwner, MutableLiveData<ApiResponse> accountResponse, String username, String id, boolean isMyAccount) {
-        if (!isMyAccount && id == null || !isMyAccount && username == null) {
-            return;
-        }
-        LiveData<Account> accountLiveData;
-        if (isMyAccount) {
-            accountLiveData = localDataSource.getMyAccountData();
-        } else {
-            accountLiveData = localDataSource.getAccount(username, id);
-        }
-        accountLiveData.observe(lifecycleOwner, account -> {
-            accountLiveData.removeObservers(lifecycleOwner);
-            accountResponse.setValue(ApiResponse.database(account));
+    private void fetchPodcastChannelsOnNetwork(MutableLiveData<ApiResponse> podcastChannelsResponse, String token, String userId,
+                                               String name, boolean isMyAccount, boolean isSwipedToRefresh) {
+        networkDataSource.getPodcastChannels(token, userId, name, new IDataCallback<List<PodcastChannel>>() {
+            @Override
+            public void onSuccess(List<PodcastChannel> data, String url) {
+                podcastChannelsResponse.setValue(ApiResponse.success(data, url));
+
+                if (isMyAccount && !CollectionUtils.isEmpty(data)) {
+                    if (isSwipedToRefresh) {
+                        localDataSource.deletePodcastChannelsByUserId(userId);
+                    }
+                    localDataSource.insertPodcastChannels(data);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable error, String url) {
+                podcastChannelsResponse.setValue(ApiResponse.error(error, url));
+            }
         });
     }
 
@@ -493,6 +462,14 @@ public class MainDataRepository {
             public void onFailure(Throwable error, String url) {
                 podcastsResponse.setValue(ApiResponse.error(error, url));
             }
+        });
+    }
+
+    private void fetchPodcastChannelsOnLocalDatabase(LifecycleOwner lifecycleOwner, MutableLiveData<ApiResponse> podcastChannelsResponse, String userId) {
+        LiveData<List<PodcastChannel>> podcastChannelsLiveData = localDataSource.getPodcastChannelsByUserId(userId);
+        podcastChannelsLiveData.observe(lifecycleOwner, podcastChannels -> {
+            podcastChannelsLiveData.removeObservers(lifecycleOwner);
+            podcastChannelsResponse.setValue(ApiResponse.database(podcastChannels));
         });
     }
 

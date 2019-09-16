@@ -1,17 +1,17 @@
 package com.podcasses.retrofit;
 
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
-import com.podcasses.model.request.AccountRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -40,14 +40,8 @@ public interface ApiCallInterface {
     @GET("/api-gateway/keycloak/id/{id}")
     Call<Account> accountById(@Path("id") String id);
 
-    @POST("/api-gateway/keycloak/account")
-    Call<Account> account(@Header("Authorization") String token, @Body AccountRequest accountRequest);
-
     @GET("/api-gateway/keycloak/account")
     Call<List<Account>> accounts(@Query("name") String name, @Query("id") List<String> ids);
-
-    @GET("/api-gateway/keycloak/displayName/{displayName}")
-    Call<Boolean> displayName(@Path("displayName") String displayName);
 
     @POST("/api-gateway/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
@@ -61,8 +55,10 @@ public interface ApiCallInterface {
     @GET("/api-gateway/account/subscribe/{accountId}")
     Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
 
-    @POST("/api-gateway/account/subscribe/{accountId}")
-    Call<Integer> accountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+    @GET("/api-gateway/podcast/podcastChannels")
+    Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,
+                                               @Query(value = "userId", encoded = true) String userId,
+                                               @Query(value = "name", encoded = true) String name);
 
     @GET("/api-gateway/podcast")
     Call<List<Podcast>> podcast(

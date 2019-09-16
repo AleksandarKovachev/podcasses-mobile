@@ -25,6 +25,14 @@ public class Podcast extends BaseLikeModel {
 
     private String id;
 
+    private String channelId;
+
+    private String channel;
+
+    private String channelImageUrl;
+
+    private String guid;
+
     private String title;
 
     private String description;
@@ -57,10 +65,6 @@ public class Podcast extends BaseLikeModel {
 
     private String userId;
 
-    private String displayName;
-
-    private String username;
-
     private boolean markAsPlayed = false;
 
     @TypeConverters({DateConverter.class})
@@ -83,6 +87,38 @@ public class Podcast extends BaseLikeModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getChannelImageUrl() {
+        return channelImageUrl;
+    }
+
+    public void setChannelImageUrl(String channelImageUrl) {
+        this.channelImageUrl = channelImageUrl;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     public String getTitle() {
@@ -193,13 +229,6 @@ public class Podcast extends BaseLikeModel {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getPodcastUrl() {
         return podcastUrl;
@@ -223,14 +252,6 @@ public class Podcast extends BaseLikeModel {
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 
     @Bindable
@@ -287,6 +308,10 @@ public class Podcast extends BaseLikeModel {
     public Podcast(Podcast podcast) {
         internalId = podcast.internalId;
         id = podcast.id;
+        channel = podcast.channel;
+        channelId = podcast.channelId;
+        channelImageUrl = podcast.channelImageUrl;
+        guid = podcast.guid;
         title = podcast.title;
         description = podcast.description;
         isActive = podcast.isActive;
@@ -303,8 +328,6 @@ public class Podcast extends BaseLikeModel {
         imageUrl = podcast.imageUrl;
         downloadUrl = podcast.downloadUrl;
         userId = podcast.userId;
-        displayName = podcast.displayName;
-        username = podcast.username;
         markAsPlayed = podcast.markAsPlayed;
         createdTimestamp = podcast.createdTimestamp;
         updatedTimestamp = podcast.updatedTimestamp;

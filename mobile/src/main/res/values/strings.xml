@@ -27,7 +27,7 @@
 
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
-    <string name="trending_header">Trending podcasts</string>
+    <string name="trending_header">Trending podcastChannels</string>
     <string name="trending_filter">Change filter</string>
 
     <string name="podcast_upload">Upload podcast</string>
@@ -40,27 +40,19 @@
 
     <string name="history">History</string>
     <string name="liked_podcasts">Liked</string>
-    <string name="my_podcasts">My podcasts</string>
+    <string name="my_podcasts">My podcastChannels</string>
     <string name="trending_podcasts">Trending</string>
     <string name="downloaded_podcasts">Downloaded</string>
     <string name="podcasts_in_progress">In progress</string>
-    <string name="podcasts_from_subscribe">New podcasts</string>
+    <string name="podcasts_from_subscribe">New podcastChannels</string>
 
-    <string name="account_subscribes">Subscribes</string>
-    <string name="account_podcasts">Podcasts</string>
-    <string name="account_first_name">First name</string>
-    <string name="account_last_name">Last name</string>
-    <string name="account_email">Email</string>
-    <string name="account_description">Description</string>
-    <string name="account_city">City</string>
-    <string name="account_rss_feed">RSS Feed</string>
+    <string name="account_podcast_channels">Podcast channels</string>
 
     <string name="privacy">Privacy</string>
     <string name="country">Country</string>
     <string name="category">Category</string>
     <string name="language">Language</string>
 
-    <string name="see_more">See more</string>
     <string name="account_save_changes">Save changes</string>
 
     <string name="podcast_successfully_added">Successfully added podcast</string>

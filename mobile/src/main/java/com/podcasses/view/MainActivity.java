@@ -270,7 +270,7 @@ public class MainActivity extends BaseActivity implements
         serviceBundle.putString("podcastImageUrl", podcast.getImageUrl());
         serviceBundle.putString("podcastUrl", podcast.getPodcastUrl());
         serviceBundle.putString("podcastDuration", podcast.getDuration());
-        serviceBundle.putString("displayName", podcast.getDisplayName());
+        serviceBundle.putString("podcastChannel", podcast.getChannel());
         intent.putExtra("player", serviceBundle);
         Util.startForegroundService(this, intent);
         initializePlayer(true);

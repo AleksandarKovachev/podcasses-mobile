@@ -7,6 +7,9 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.podcasses.database.DateConverter;
 
 /**
  * Created by aleksandar.kovachev.
@@ -22,6 +25,7 @@ public class PodcastFile {
 
     private String fileName;
 
+    @TypeConverters({DateConverter.class})
     private Date date;
 
     public String getId() {

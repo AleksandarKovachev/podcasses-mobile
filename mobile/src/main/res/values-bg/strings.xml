@@ -46,21 +46,13 @@
     <string name="podcasts_in_progress">Недовършени</string>
     <string name="podcasts_from_subscribe">Нови</string>
 
-    <string name="account_subscribes">Абонати</string>
-    <string name="account_podcasts">Подкасти</string>
-    <string name="account_first_name">Първо име</string>
-    <string name="account_last_name">Последно име</string>
-    <string name="account_email">Имейл</string>
-    <string name="account_description">Описание</string>
-    <string name="account_city">Град</string>
-    <string name="account_rss_feed">RSS Feed</string>
+    <string name="account_podcast_channels">Подкаст канали</string>
 
     <string name="privacy">Поверителност</string>
     <string name="country">Държава</string>
     <string name="category">Категория</string>
     <string name="language">Език</string>
 
-    <string name="see_more">Виж повече</string>
     <string name="account_save_changes">Запази промените</string>
 
     <string name="podcast_successfully_added">Подкаста е успешно добавен.</string>
