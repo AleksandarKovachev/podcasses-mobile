@@ -46,14 +46,8 @@ public interface ApiCallInterface {
     @POST("/api-gateway/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 
-    @GET("/api-gateway/account/subscribes/{accountId}")
-    Call<Integer> accountSubscribes(@Path("accountId") String accountId);
-
-    @GET("/api-gateway/podcast/count")
-    Call<Integer> accountPodcastsCount(@Header("Authorization") String token, @Query("userId") String userId);
-
-    @GET("/api-gateway/account/subscribe/{accountId}")
-    Call<Integer> checkAccountSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
+    @GET("/api-gateway/account/subscribe/{channelId}")
+    Call<Integer> checkPodcastChannelSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
 
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,
@@ -128,12 +122,6 @@ public interface ApiCallInterface {
 
     @POST("/api-gateway/podcast/view/{podcastId}")
     Call<Void> podcastView(@Path("podcastId") String podcastId);
-
-    @GET("/api-gateway/podcast/feed/verify")
-    Call<String> rssFeedVerify(@Query("url") String url);
-
-    @POST("/api-gateway/podcast/feed/sync")
-    Call<Void> rssFeedSync(@Header("Authorization") String token);
 
     @GET("/api-gateway/account/subscribes")
     Call<List<String>> getSubscriptions(@Header("Authorization") String token);

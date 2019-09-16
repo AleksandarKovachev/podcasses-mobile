@@ -60,13 +60,6 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
         return repository.getAccount(username, id, isSwipedToRefresh);
     }
 
-    public LiveData<ApiResponse> podcastChannels(@NonNull String accountId) {
-        if (podcastChannels.get() != 0) {
-            return new MutableLiveData<>(ApiResponse.fetched());
-        }
-        return repository.getAccountSubscribesCount(accountId);
-    }
-
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
         this.token = token;
         if (!isSwipedToRefresh && podcastFiles.getValue() != null && !podcastFiles.getValue().isEmpty()) {
@@ -140,8 +133,8 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
         notifyPropertyChanged(BR.account);
     }
 
-    public void setPodcastChannels(Integer accountPodcasts) {
-        this.podcastChannels.set(accountPodcasts);
+    public void setPodcastChannels(Integer podcastChannels) {
+        this.podcastChannels.set(podcastChannels);
         notifyPropertyChanged(BR.podcastChannels);
     }
 

@@ -304,13 +304,11 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             if (((List) apiResponse.data).get(0) instanceof PodcastChannel) {
                 viewModel.clearPodcastChannelsInAdapter();
                 viewModel.setPodcastChannelsInAdapter((List<Object>) apiResponse.data);
+                viewModel.setPodcastChannels(((List<Object>) apiResponse.data).size());
 
-//                if (token != null) {
-//                    getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
-//                }
-//                if (((List<Object>) apiResponse.data).size() > 5) {
-//                    addAds();
-//                }
+                if (((List<Object>) apiResponse.data).size() >= 3) {
+                    addAds();
+                }
             } else {
                 viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                 binding.podcastFilesCardView.setVisibility(View.VISIBLE);
@@ -428,24 +426,24 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         };
     }
 
-//    private void addAds() {
-//        adLoader = new AdLoader.Builder(getContext(), BuildConfig.ACCOUNT_PODCAST_NATIVE_ADS)
-//                .forUnifiedNativeAd(unifiedNativeAd -> {
-//                    Log.i(getTag(), "Native Ad In Account Podcasts Loaded");
-//                    if (!adLoader.isLoading()) {
-//                        viewModel.addElementInPodcastChannelsAdapter(unifiedNativeAd, viewModel.getPodcastChannels().getItemCount() / 2);
-//                    }
-//                })
-//                .withAdListener(new AdListener() {
-//                    @Override
-//                    public void onAdFailedToLoad(int errorCode) {
-//                        Log.e(getTag(), "Native Ad In Account Podcasts Failed to loaded: " + errorCode);
-//                    }
-//                })
-//                .withNativeAdOptions(new NativeAdOptions.Builder()
-//                        .build())
-//                .build();
-//        adLoader.loadAds(new AdRequest.Builder().build(), 1);
-//    }
+    private void addAds() {
+        adLoader = new AdLoader.Builder(getContext(), BuildConfig.ACCOUNT_PODCAST_CHANNELS_NATIVE_ADS)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+                    Log.i(getTag(), "Native Ad In Account Podcast Channels Loaded");
+                    if (!adLoader.isLoading()) {
+                        viewModel.addElementInPodcastChannelsAdapter(unifiedNativeAd);
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Log.e(getTag(), "Native Ad In Account Podcast Channels Failed to loaded: " + errorCode);
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 1);
+    }
 
 }

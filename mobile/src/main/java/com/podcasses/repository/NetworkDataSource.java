@@ -124,66 +124,6 @@ class NetworkDataSource {
         });
     }
 
-    void getAccountSubscribesCount(String accountId, IDataCallback<Integer> callback) {
-        Call<Integer> call = apiCallInterface.accountSubscribes(accountId);
-        call.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.body(), response.raw().request().url().toString());
-                } else {
-                    callback.onSuccess(null, response.raw().request().url().toString());
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t, call.request().url().toString());
-            }
-        });
-    }
-
-    void getAccountPodcastsCount(String token, String accountId, IDataCallback<Integer> callback) {
-        Call<Integer> call = apiCallInterface.accountPodcastsCount(token != null ? "Bearer " + token : null, accountId);
-        call.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.body(), response.raw().request().url().toString());
-                } else {
-                    callback.onSuccess(null, response.raw().request().url().toString());
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t, call.request().url().toString());
-            }
-        });
-    }
-
-    void checkAccountSubscribe(String token, String accountId, IDataCallback<Integer> callback) {
-        Call<Integer> call = apiCallInterface.checkAccountSubscribe("Bearer " + token, accountId);
-        call.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.body(), response.raw().request().url().toString());
-                } else {
-                    callback.onSuccess(null, response.raw().request().url().toString());
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                callback.onFailure(t, call.request().url().toString());
-            }
-        });
-    }
-
     void getPodcastChannels(String token, String userId, String name, IDataCallback<List<PodcastChannel>> callback) {
         Call<List<PodcastChannel>> call = apiCallInterface.podcastChannels(token != null ? "Bearer " + token : null, userId, name);
         call.enqueue(new Callback<List<PodcastChannel>>() {

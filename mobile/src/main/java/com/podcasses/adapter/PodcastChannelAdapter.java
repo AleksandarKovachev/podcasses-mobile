@@ -109,13 +109,6 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
-    public void addElement(Object element, int index) {
-        if (podcastChannels != null && !podcastChannels.isEmpty()) {
-            this.podcastChannels.add(index, element);
-            notifyDataSetChanged();
-        }
-    }
-
     class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
 
         private UnifiedNativeAdView adView;

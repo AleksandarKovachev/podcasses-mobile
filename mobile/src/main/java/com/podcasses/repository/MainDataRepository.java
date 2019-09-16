@@ -142,26 +142,6 @@ public class MainDataRepository {
         return accountsResponse;
     }
 
-    public LiveData<ApiResponse> getAccountSubscribesCount(String accountId) {
-        MutableLiveData<ApiResponse> accountSubscribesResponse = new MutableLiveData<>(ApiResponse.loading());
-        if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getAccountSubscribesCount(accountId, new IDataCallback<Integer>() {
-                @Override
-                public void onSuccess(Integer data, String url) {
-                    accountSubscribesResponse.setValue(ApiResponse.success(data, url));
-                }
-
-                @Override
-                public void onFailure(Throwable error, String url) {
-                    accountSubscribesResponse.setValue(ApiResponse.error(error, url));
-                }
-            });
-        } else {
-            accountSubscribesResponse.setValue(ApiResponse.error(new ConnectException(), null));
-        }
-        return accountSubscribesResponse;
-    }
-
     public LiveData<ApiResponse> getPodcastChannels(LifecycleOwner lifecycleOwner, String token, String userId, String name,
                                                     boolean isMyAccount, boolean isSwipedToRefresh) {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());

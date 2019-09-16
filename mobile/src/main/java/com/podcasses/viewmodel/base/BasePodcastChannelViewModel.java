@@ -8,7 +8,6 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastChannelAdapter;
 import com.podcasses.model.entity.PodcastChannel;
-import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -23,7 +22,7 @@ public class BasePodcastChannelViewModel extends BaseViewModel {
 
     private MutableLiveData<List<Object>> podcastChannels = new MutableLiveData<>();
     private PodcastChannelAdapter podcastChannelAdapter = new PodcastChannelAdapter(R.layout.item_podcast_channel,
-            R.layout.ad_native_account_podcast, this);
+            R.layout.ad_native_podcast_channel, this);
 
     private ApiCallInterface apiCallInterface;
 
@@ -34,6 +33,10 @@ public class BasePodcastChannelViewModel extends BaseViewModel {
 
     public PodcastChannelAdapter getPodcastChannelAdapter() {
         return podcastChannelAdapter;
+    }
+
+    public void addElementInPodcastChannelsAdapter(Object element) {
+        this.podcastChannelAdapter.addElement(element);
     }
 
     public void setPodcastChannelsInAdapter(List<Object> podcastChannels) {
