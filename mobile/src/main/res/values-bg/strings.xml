@@ -30,6 +30,11 @@
     <string name="trending_header">Популярни</string>
     <string name="trending_filter">Смени филтъра</string>
 
+    <string name="podcast_channel_author">Автор: </string>
+    <string name="podcast_channel_podcasts_count">Подкасти</string>
+    <string name="podcast_channel_subscribes">Последователи</string>
+    <string name="podcast_channel_views">Показвания</string>
+
     <string name="podcast_upload">Качи подкаст</string>
     <string name="podcast_title">Заглавие</string>
     <string name="podcast_description">Описание</string>

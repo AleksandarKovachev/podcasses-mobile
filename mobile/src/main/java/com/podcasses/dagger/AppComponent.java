@@ -8,6 +8,7 @@ import com.podcasses.view.AuthenticatorActivity;
 import com.podcasses.view.HistoryFragment;
 import com.podcasses.view.HomeFragment;
 import com.podcasses.view.MainActivity;
+import com.podcasses.view.PodcastChannelFragment;
 import com.podcasses.view.PodcastFragment;
 import com.podcasses.view.PodcastsPageFragment;
 import com.podcasses.view.RegistrationActivity;
@@ -55,4 +56,6 @@ public interface AppComponent {
     void inject(AgreementActivity agreementActivity);
 
     void inject(CustomGlideModule customGlideModule);
+
+    void inject(PodcastChannelFragment podcastChannelFragment);
 }

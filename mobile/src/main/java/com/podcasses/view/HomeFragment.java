@@ -96,14 +96,14 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void getData(RefreshLayout refreshLayout) {
         LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
-        if (token != null) {
-            token.observe(this, s -> {
-                if (!Strings.isEmptyOrWhitespace(s)) {
-                    LiveData<ApiResponse> subscribedAccounts = viewModel.getSubscribedAccounts(s);
-                    subscribedAccounts.observe(this, response -> consumeApiResponse(response, subscribedAccounts));
-                }
-            });
-        }
+//        if (token != null) {
+//            token.observe(this, s -> {
+//                if (!Strings.isEmptyOrWhitespace(s)) {
+//                    LiveData<ApiResponse> subscribedAccounts = viewModel.getSubscribedAccounts(s);
+//                    subscribedAccounts.observe(this, response -> consumeApiResponse(response, subscribedAccounts));
+//                }
+//            });
+//        }
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);

@@ -95,10 +95,10 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void getData(RefreshLayout refreshLayout) {
-        accountsResponse = viewModel.getAccounts(searchQuery);
+//        accountsResponse = viewModel.getAccounts(searchQuery);
         podcastsResponse = viewModel.podcasts(this, searchQuery, null, null, true, false, 0);
         podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
-        accountsResponse.observe(this, response -> consumeResponse(response, accountsResponse, refreshLayout));
+//        accountsResponse.observe(this, response -> consumeResponse(response, accountsResponse, refreshLayout));
     }
 
     void updateActionBar() {

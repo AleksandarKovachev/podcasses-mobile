@@ -65,64 +65,44 @@ class NetworkDataSource {
         });
     }
 
-    void getAccounts(String name, IDataCallback<List<Account>> callback) {
-        Call<List<Account>> call = apiCallInterface.accounts(name, null);
-        call.enqueue(new Callback<List<Account>>() {
-            @Override
-            public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.body(), response.raw().request().url().toString());
-                } else {
-                    callback.onSuccess(null, response.raw().request().url().toString());
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Account>> call, Throwable t) {
-                callback.onFailure(t, call.request().url().toString());
-            }
-        });
-    }
-
-    void getSubscribedAccounts(String token, IDataCallback<List<Account>> callback) {
-        Call<List<String>> call = apiCallInterface.getSubscriptions("Bearer " + token);
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if (response.isSuccessful()) {
-                    if (CollectionUtils.isEmpty(response.body())) {
-                        callback.onSuccess(null, response.raw().request().url().toString());
-                        return;
-                    }
-                    apiCallInterface.accounts(null, response.body()).enqueue(new Callback<List<Account>>() {
-                        @Override
-                        public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
-                            if (response.isSuccessful()) {
-                                callback.onSuccess(response.body(), response.raw().request().url().toString());
-                            } else {
-                                callback.onSuccess(null, response.raw().request().url().toString());
-                                LogErrorResponseUtil.logErrorResponse(response, context);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Account>> call, Throwable t) {
-                            callback.onFailure(t, call.request().url().toString());
-                        }
-                    });
-                } else {
-                    callback.onSuccess(null, response.raw().request().url().toString());
-                    LogErrorResponseUtil.logErrorResponse(response, context);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                callback.onFailure(t, call.request().url().toString());
-            }
-        });
-    }
+//    void getSubscribedAccounts(String token, IDataCallback<List<Account>> callback) {
+//        Call<List<String>> call = apiCallInterface.getSubscriptions("Bearer " + token);
+//        call.enqueue(new Callback<List<String>>() {
+//            @Override
+//            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+//                if (response.isSuccessful()) {
+//                    if (CollectionUtils.isEmpty(response.body())) {
+//                        callback.onSuccess(null, response.raw().request().url().toString());
+//                        return;
+//                    }
+//                    apiCallInterface.accounts(null, response.body()).enqueue(new Callback<List<Account>>() {
+//                        @Override
+//                        public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
+//                            if (response.isSuccessful()) {
+//                                callback.onSuccess(response.body(), response.raw().request().url().toString());
+//                            } else {
+//                                callback.onSuccess(null, response.raw().request().url().toString());
+//                                LogErrorResponseUtil.logErrorResponse(response, context);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<List<Account>> call, Throwable t) {
+//                            callback.onFailure(t, call.request().url().toString());
+//                        }
+//                    });
+//                } else {
+//                    callback.onSuccess(null, response.raw().request().url().toString());
+//                    LogErrorResponseUtil.logErrorResponse(response, context);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<String>> call, Throwable t) {
+//                callback.onFailure(t, call.request().url().toString());
+//            }
+//        });
+//    }
 
     void getPodcastChannels(String token, String userId, String name, IDataCallback<List<PodcastChannel>> callback) {
         Call<List<PodcastChannel>> call = apiCallInterface.podcastChannels(token != null ? "Bearer " + token : null, userId, name);
@@ -139,6 +119,26 @@ class NetworkDataSource {
 
             @Override
             public void onFailure(Call<List<PodcastChannel>> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        });
+    }
+
+    void getPodcastChannel(String id, IDataCallback<PodcastChannel> callback) {
+        Call<PodcastChannel> call = apiCallInterface.podcastChannel(id);
+        call.enqueue(new Callback<PodcastChannel>() {
+            @Override
+            public void onResponse(Call<PodcastChannel> call, Response<PodcastChannel> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PodcastChannel> call, Throwable t) {
                 callback.onFailure(t, call.request().url().toString());
             }
         });

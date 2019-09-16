@@ -1,6 +1,9 @@
 package com.podcasses.model.entity;
 
+import android.text.Spanned;
+
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
@@ -179,4 +182,9 @@ public class PodcastChannel {
     public void setUpdatedTimestamp(Date updatedTimestamp) {
         this.updatedTimestamp = updatedTimestamp;
     }
+
+    public Spanned getPodcastChannelDescription() {
+        return HtmlCompat.fromHtml(description.replaceAll("\\\n", "<br/>"), 0);
+    }
+
 }

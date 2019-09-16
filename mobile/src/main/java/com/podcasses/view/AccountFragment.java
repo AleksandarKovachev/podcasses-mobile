@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -77,15 +78,12 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private AdLoader adLoader;
 
-    private List<UnifiedNativeAd> nativeAds = new ArrayList<>();
-
     private MutableLiveData<String> token;
 
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> podcastChannelsResponse;
     private LiveData<ApiResponse> podcastFiles;
 
-    private Account account;
     private static String accountId;
 
     private boolean isMyAccount = false;
@@ -100,7 +98,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         return fragment;
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -145,6 +142,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 setAuthenticationToken(true);
             }
         }
+
+        setPodcastChannelClick();
     }
 
     @Override
@@ -293,7 +292,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
         if (apiResponse.data instanceof Account) {
-            account = (Account) apiResponse.data;
+            Account account = (Account) apiResponse.data;
             viewModel.setAccount(account);
         } else if (apiResponse.data instanceof List) {
             viewModel.setIsLoading(false);
@@ -315,86 +314,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             }
         }
     }
-
-//    private void setPodcastClick() {
-//        viewModel.getSelectedPodcast().observe(this, podcast -> {
-//            if (podcast != null) {
-//                fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
-//                viewModel.getSelectedPodcast().setValue(null);
-//            }
-//        });
-//    }
-//
-//    private void setAccountClick() {
-//        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-//            @Override
-//            public void onPropertyChanged(Observable sender, int propertyId) {
-//                if (viewModel.getSelectedAccount().get() != null) {
-//                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-//                    viewModel.getSelectedAccount().set(null);
-//                }
-//            }
-//        });
-//    }
-//
-//    private void getAccountPodcasts(List<Podcast> podcasts, boolean isSwipedToRefresh) {
-//        List<String> podcastIds = new ArrayList<>();
-//        for (Podcast podcast : podcasts) {
-//            podcastIds.add(podcast.getId());
-//        }
-//
-//        LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, token.getValue(), podcastIds, isSwipedToRefresh);
-//        accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
-//    }
-//
-//    private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
-//        switch (accountPodcastsResponse.status) {
-//            case LOADING:
-//                break;
-//            case DATABASE:
-//                setAccountPodcastsData(accountPodcastsResponse);
-//                break;
-//            case SUCCESS: {
-//                liveData.removeObservers(this);
-//                setAccountPodcastsData(accountPodcastsResponse);
-//                break;
-//            }
-//            case ERROR: {
-//                liveData.removeObservers(this);
-//                LogErrorResponseUtil.logErrorApiResponse(accountPodcastsResponse, getContext());
-//                break;
-//            }
-//        }
-//    }
-//
-//    private void setAccountPodcastsData(ApiResponse accountPodcastsResponse) {
-//        if (!CollectionUtils.isEmpty((List<AccountPodcast>) accountPodcastsResponse.data)) {
-//            for (Object podcast : viewModel.getPodcasts()) {
-//                for (AccountPodcast accountPodcast : (List<AccountPodcast>) accountPodcastsResponse.data) {
-//                    if (accountPodcast.getPodcastId().equals(((Podcast) podcast).getId())) {
-//                        ((Podcast) podcast).setMarkAsPlayed(accountPodcast.getMarkAsPlayed() == 1);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    private void setInfiniteScrollListener() {
-//        binding.nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-//            if (scrollY >= (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-//                if (!viewModel.getIsLoading()) {
-//                    ++page;
-//                    viewModel.setIsLoading(true);
-//                    loadPodcasts(isMyAccount, null);
-//                }
-//            }
-//        });
-//    }
-//
-//    private void loadPodcasts(boolean isMyAccount, RefreshLayout refreshLayout) {
-//        podcastsResponse = viewModel.podcasts(this, null, null, accountId, refreshLayout != null, isMyAccount, page);
-//        podcastsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastsResponse, refreshLayout));
-//    }
 
     private void handleLogout() {
         AccountManager accountManager = AccountManager.get(getContext());
@@ -444,6 +363,15 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                         .build())
                 .build();
         adLoader.loadAds(new AdRequest.Builder().build(), 1);
+    }
+
+    private void setPodcastChannelClick() {
+        viewModel.getSelectedPodcastChannel().observe(this, podcastChannel -> {
+            if (podcastChannel != null) {
+                fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel));
+                viewModel.getSelectedPodcastChannel().setValue(null);
+            }
+        });
     }
 
 }

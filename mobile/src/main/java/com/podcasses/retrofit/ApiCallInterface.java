@@ -40,19 +40,16 @@ public interface ApiCallInterface {
     @GET("/api-gateway/keycloak/id/{id}")
     Call<Account> accountById(@Path("id") String id);
 
-    @GET("/api-gateway/keycloak/account")
-    Call<List<Account>> accounts(@Query("name") String name, @Query("id") List<String> ids);
-
     @POST("/api-gateway/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
-
-    @GET("/api-gateway/account/subscribe/{channelId}")
-    Call<Integer> checkPodcastChannelSubscribe(@Header("Authorization") String token, @Path("accountId") String accountId);
 
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,
                                                @Query(value = "userId", encoded = true) String userId,
                                                @Query(value = "name", encoded = true) String name);
+
+    @GET("/api-gateway/podcast/podcastChannel/{id}")
+    Call<PodcastChannel> podcastChannel(@Path("id") String id);
 
     @GET("/api-gateway/podcast")
     Call<List<Podcast>> podcast(

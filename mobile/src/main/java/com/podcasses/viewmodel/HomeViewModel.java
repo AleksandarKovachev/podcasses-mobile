@@ -28,10 +28,6 @@ public class HomeViewModel extends BasePodcastViewModel {
         super(repository, apiCallInterface);
     }
 
-    public LiveData<ApiResponse> getSubscribedAccounts(String token) {
-        return repository.getSubscribedAccounts(token);
-    }
-
     public LiveData<List<Nomenclature>> getCategories() {
         return repository.getCategories();
     }

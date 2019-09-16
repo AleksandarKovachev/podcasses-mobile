@@ -99,6 +99,7 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:gravity="center"
                             android:text="@{viewModel.podcastChannels}"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline" />
@@ -106,6 +107,8 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
                             android:text="@string/account_podcast_channels" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

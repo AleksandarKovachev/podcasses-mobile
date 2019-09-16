@@ -21,6 +21,7 @@ import java.util.List;
 public class BasePodcastChannelViewModel extends BaseViewModel {
 
     private MutableLiveData<List<Object>> podcastChannels = new MutableLiveData<>();
+    private MutableLiveData<PodcastChannel> selectedPodcastChannel = new MutableLiveData<>();
     private PodcastChannelAdapter podcastChannelAdapter = new PodcastChannelAdapter(R.layout.item_podcast_channel,
             R.layout.ad_native_podcast_channel, this);
 
@@ -59,7 +60,7 @@ public class BasePodcastChannelViewModel extends BaseViewModel {
         if (!isSwipedToRefresh && podcastChannels.getValue() != null && !podcastChannels.getValue().isEmpty()) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getPodcastChannels(lifecycleOwner, token, userId, name, isMyAccount, isSwipedToRefresh);
+        return repository.getPodcastChannel(lifecycleOwner, token, userId, name, isMyAccount, isSwipedToRefresh);
     }
 
     public PodcastChannel getPodcastChannelAt(Integer index) {
@@ -70,11 +71,15 @@ public class BasePodcastChannelViewModel extends BaseViewModel {
     }
 
     public void onPodcastChannelClick(Integer index) {
-
+        selectedPodcastChannel.setValue((PodcastChannel) podcastChannels.getValue().get(index));
     }
 
     public void onAuthorClick(Integer index) {
 
+    }
+
+    public MutableLiveData<PodcastChannel> getSelectedPodcastChannel() {
+        return selectedPodcastChannel;
     }
 
 }

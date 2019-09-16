@@ -30,6 +30,11 @@
     <string name="trending_header">Trending podcastChannels</string>
     <string name="trending_filter">Change filter</string>
 
+    <string name="podcast_channel_author">Author: </string>
+    <string name="podcast_channel_podcasts_count">Episodes</string>
+    <string name="podcast_channel_subscribes">Subscribes</string>
+    <string name="podcast_channel_views">Views</string>
+
     <string name="podcast_upload">Upload podcast</string>
     <string name="podcast_title">Title</string>
     <string name="podcast_description">Description</string>
