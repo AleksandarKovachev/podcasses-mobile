@@ -17,14 +17,15 @@ import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.ProgressPodcast;
 import com.podcasses.model.entity.TrendingPodcast;
-import com.podcasses.model.entity.UserPodcast;
+import com.podcasses.model.entity.base.Podcast;
 
 /**
  * Created by aleksandar.kovachev.
  */
 @TypeConverters(DateConverter.class)
-@Database(entities = {DownloadedPodcast.class,
-        UserPodcast.class,
+@Database(entities = {
+        Podcast.class,
+        DownloadedPodcast.class,
         HistoryPodcast.class,
         LikedPodcast.class,
         NewPodcast.class,

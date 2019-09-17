@@ -1,7 +1,7 @@
 package com.podcasses.retrofit;
 
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
@@ -43,6 +43,9 @@ public interface ApiCallInterface {
     @POST("/api-gateway/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 
+    @GET("/api-gateway/account/subscribe/{id}")
+    Call<Integer> checkPodcastChannelSubscribe(@Header("Authorization") String token, @Path("id") String id);
+
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,
                                                @Query(value = "userId", encoded = true) String userId,
@@ -55,7 +58,7 @@ public interface ApiCallInterface {
     Call<List<Podcast>> podcast(
             @Query(value = "podcast", encoded = true) String podcast,
             @Query(value = "podcastId", encoded = true) String podcastId,
-            @Query(value = "userId", encoded = true) List<String> userId,
+            @Query(value = "channelId", encoded = true) List<String> channelId,
             @Query(value = "id", encoded = true) List<String> id,
             @Query(value = "page") Integer page);
 

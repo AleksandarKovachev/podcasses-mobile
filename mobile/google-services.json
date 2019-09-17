@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "478441231698",
+    "firebase_url": "https://podcasses-243710.firebaseio.com",
+    "project_id": "podcasses-243710",
+    "storage_bucket": "podcasses-243710.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478441231698:android:93c91f5e68db658b",
+        "android_client_info": {
+          "package_name": "com.podcasses"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478441231698-mupule9cslv5jc8dkkgqet8kq5lgregv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFmRzeVUReEksHV5s6zrmG8GW2lmBpwx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478441231698-mupule9cslv5jc8dkkgqet8kq5lgregv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

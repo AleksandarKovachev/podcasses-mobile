@@ -1,4 +1,4 @@
-package com.podcasses.model.entity;
+package com.podcasses.model.response;
 
 /**
  * Created by aleksandar.kovachev.

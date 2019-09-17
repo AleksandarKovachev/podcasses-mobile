@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="token"
+            type="java.lang.String" />
+
+        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.PodcastChannelViewModel" />
     </data>
@@ -74,9 +78,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/medium_offset"
-            android:onClick="@{(view) -> viewModel.onSubscribeClick(view)}"
+            android:onClick="@{(view) -> viewModel.onSubscribeClick(view, token)}"
             android:scaleType="fitXY"
             android:src="@drawable/ic_record_voice_over"
+            android:visibility="@{viewModel.isMyPodcastChannel ? View.GONE : View.VISIBLE}"
+            app:isSubscribed="@{viewModel.isSubscribed}"
             app:fabSize="auto"
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="bottom|right|end" />

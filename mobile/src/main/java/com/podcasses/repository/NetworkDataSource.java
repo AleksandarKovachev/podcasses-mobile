@@ -6,7 +6,7 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.response.Account;
-import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.request.AccountPodcastRequest;
@@ -144,8 +144,28 @@ class NetworkDataSource {
         });
     }
 
-    void getPodcasts(String podcast, String podcastId, List<String> userId, List<String> ids, int page, IDataCallback<List<Podcast>> callback) {
-        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, userId, ids, page);
+    void checkPodcastChannelSubscribe(String token, String channelId, IDataCallback<Integer> callback) {
+        Call<Integer> call = apiCallInterface.checkPodcastChannelSubscribe("Bearer " + token, channelId);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        });
+    }
+
+    void getPodcasts(String podcast, String podcastId, List<String> channelId, List<String> ids, int page, IDataCallback<List<Podcast>> callback) {
+        Call<List<Podcast>> call = apiCallInterface.podcast(podcast, podcastId, channelId, ids, page);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {

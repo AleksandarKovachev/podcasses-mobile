@@ -8,7 +8,7 @@ import com.podcasses.model.entity.base.Podcast;
 /**
  * Created by aleksandar.kovachev.
  */
-@Entity(indices = {@Index(value = {"id"}, unique = true)})
+@Entity(inheritSuperIndices = true)
 public class TrendingPodcast extends Podcast {
 
     public TrendingPodcast() {

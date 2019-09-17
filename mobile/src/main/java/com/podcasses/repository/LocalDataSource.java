@@ -16,7 +16,6 @@ import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.ProgressPodcast;
 import com.podcasses.model.entity.TrendingPodcast;
-import com.podcasses.model.entity.UserPodcast;
 import com.podcasses.model.entity.base.Podcast;
 
 import java.util.ArrayList;
@@ -47,12 +46,12 @@ public class LocalDataSource {
         this.podcastFileDao = podcastFileDao;
     }
 
-    LiveData<Podcast> getUserPodcastById(String id) {
-        return podcastDao.getUserPodcastById(id);
+    LiveData<Podcast> getPodcastById(String id) {
+        return podcastDao.getPodcastById(id);
     }
 
-    LiveData<List<Podcast>> getUserPodcastsByUserId(String userId, int page) {
-        return podcastDao.getUserPodcastsByUserId(userId, page * 10);
+    LiveData<List<Podcast>> getPodcastsByChannelId(String channelId, int page) {
+        return podcastDao.getPodcastsByChannelId(channelId, page * 10);
     }
 
     LiveData<List<PodcastChannel>> getPodcastChannelsByUserId(String userId) {
@@ -73,7 +72,7 @@ public class LocalDataSource {
             case LIKED_PODCASTS:
                 return podcastDao.getLikedPodcasts(page * 10);
             case MY_PODCASTS:
-                return podcastDao.getUserPodcasts(page * 10);
+                return podcastDao.getPodcasts(page * 10);
             case FROM_SUBSCRIPTIONS:
                 return podcastDao.getNewPodcasts(page * 10);
             case TRENDING:
@@ -101,11 +100,7 @@ public class LocalDataSource {
                     podcastDao.insertLikedPodcasts(likedPodcasts);
                     break;
                 case MY_PODCASTS:
-                    List<UserPodcast> userPodcasts = new ArrayList<>();
-                    for (Podcast podcast : podcasts) {
-                        userPodcasts.add(new UserPodcast(podcast));
-                    }
-                    podcastDao.insertUserPodcasts(userPodcasts);
+                    podcastDao.insertPodcasts(podcasts);
                     break;
                 case FROM_SUBSCRIPTIONS:
                     List<NewPodcast> newPodcasts = new ArrayList<>();
@@ -155,7 +150,7 @@ public class LocalDataSource {
                     podcastDao.deleteLikedPodcasts();
                     break;
                 case MY_PODCASTS:
-                    podcastDao.deleteUserPodcasts();
+                    podcastDao.deletePodcasts();
                     break;
                 case FROM_SUBSCRIPTIONS:
                     podcastDao.deleteNewPodcasts();
@@ -218,7 +213,7 @@ public class LocalDataSource {
     void removeAllLocalData() {
         Executors.newSingleThreadExecutor().execute(() -> {
             podcastDao.deleteLikedPodcasts();
-            podcastDao.deleteUserPodcasts();
+            podcastDao.deletePodcasts();
             podcastDao.deleteNewPodcasts();
             podcastDao.deleteProgressPodcasts();
             podcastDao.deleteHistoryPodcasts();

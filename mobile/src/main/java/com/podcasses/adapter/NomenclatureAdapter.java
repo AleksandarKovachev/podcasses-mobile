@@ -1,7 +1,6 @@
 package com.podcasses.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.response.Nomenclature;
 
 import java.util.List;
 

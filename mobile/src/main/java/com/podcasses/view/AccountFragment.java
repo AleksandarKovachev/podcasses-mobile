@@ -15,18 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAdOptions;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.BuildConfig;
@@ -48,7 +45,6 @@ import com.podcasses.viewmodel.ViewModelFactory;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -87,7 +83,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private static String accountId;
 
     private boolean isMyAccount = false;
-    private int page = 0;
 
     static AccountFragment newInstance(int instance, String openedAccountId) {
         accountId = openedAccountId;
@@ -107,7 +102,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
-        token = new MutableLiveData<>();
         setHasOptionsMenu(true);
         return binding.getRoot();
     }
@@ -125,15 +119,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         super.onViewCreated(view, savedInstanceState);
         token = AuthenticationUtil.getAuthenticationToken(getContext());
         if (token == null && accountId == null) {
-            binding.bannerAdView.loadAd(new AdRequest.Builder().build());
-            binding.notAuthenticatedView.setVisibility(View.VISIBLE);
-            binding.refreshLayout.setVisibility(View.GONE);
-            binding.notAuthenticatedView.setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
-                intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-                intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
-                startActivityForResult(intent, 22);
-            });
+            handleNotAuthenticatedView();
         } else {
             if (accountId != null) {
                 setAccountImages();
@@ -187,7 +173,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        page = 0;
         if (token == null || token.getValue() == null || new JWT(token.getValue()).isExpired(0)) {
             setAuthenticationToken(false);
         }
@@ -214,6 +199,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                     setAccountAdditionalData(jwt, additionalData);
                     getAccountData(s, null);
                 } else if (AccountManager.get(getContext()).getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE).length != 0) {
+                    token.removeObservers(this);
                     binding.notAuthenticatedView.setVisibility(View.GONE);
                     binding.refreshLayout.setVisibility(View.VISIBLE);
                     getAccountData(null, null);
@@ -226,12 +212,10 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setAccountAdditionalData(JWT jwt, boolean setAccountImages) {
         if (setAccountImages) {
-            binding.setIsMyAccount(true);
             isMyAccount = true;
             setAccountImages();
         } else {
             if (accountId.equals(jwt.getSubject())) {
-                binding.setIsMyAccount(true);
                 isMyAccount = true;
             }
         }
@@ -266,14 +250,14 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             case LOADING:
                 break;
             case DATABASE:
-                setDataFromResponse(apiResponse, refreshLayout != null);
+                setDataFromResponse(apiResponse);
                 break;
             case SUCCESS:
                 liveData.removeObservers(this);
                 if (refreshLayout != null) {
                     refreshLayout.finishRefresh();
                 }
-                setDataFromResponse(apiResponse, refreshLayout != null);
+                setDataFromResponse(apiResponse);
                 break;
             case ERROR:
                 viewModel.setIsLoading(false);
@@ -290,7 +274,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         }
     }
 
-    private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
+    private void setDataFromResponse(@NonNull ApiResponse apiResponse) {
         if (apiResponse.data instanceof Account) {
             Account account = (Account) apiResponse.data;
             viewModel.setAccount(account);
@@ -325,6 +309,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                     AuthenticationCallInterface.CLIENT_ID,
                     AuthenticationCallInterface.CLIENT_SECRET,
                     refreshToken).enqueue(logoutRequest(accounts[0], accountManager));
+            handleNotAuthenticatedView();
         }
     }
 
@@ -371,6 +356,18 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel));
                 viewModel.getSelectedPodcastChannel().setValue(null);
             }
+        });
+    }
+
+    private void handleNotAuthenticatedView() {
+        binding.bannerAdView.loadAd(new AdRequest.Builder().build());
+        binding.notAuthenticatedView.setVisibility(View.VISIBLE);
+        binding.refreshLayout.setVisibility(View.GONE);
+        binding.notAuthenticatedView.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
+            intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
+            intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
+            startActivityForResult(intent, 22);
         });
     }
 

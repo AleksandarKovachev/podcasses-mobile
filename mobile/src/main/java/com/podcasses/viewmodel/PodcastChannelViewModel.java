@@ -23,6 +23,8 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
     private ObservableField<Integer> podcastsCount = new ObservableField<>(0);
     private ObservableField<Integer> subscribes = new ObservableField<>(0);
     private ObservableField<Integer> views = new ObservableField<>(0);
+    private ObservableField<Boolean> isMyPodcastChannel = new ObservableField();
+    private ObservableField<Boolean> isSubscribed = new ObservableField();
 
     PodcastChannelViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository, apiCallInterface);
@@ -30,6 +32,10 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
 
     public LiveData<ApiResponse> podcastChannel(String id) {
         return repository.getPodcastChannel(id);
+    }
+
+    public LiveData<ApiResponse> checkPodcastChannelSubscribe(String token, String channelId) {
+        return repository.checkPodcastChannelSubscribe(token, channelId);
     }
 
     @Bindable
@@ -52,6 +58,16 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
         return views.get().toString();
     }
 
+    @Bindable
+    public Boolean getIsMyPodcastChannel() {
+        return isMyPodcastChannel.get();
+    }
+
+    @Bindable
+    public Boolean getIsSubscribed() {
+        return isSubscribed.get();
+    }
+
     public void setPodcastChannel(PodcastChannel podcastChannel) {
         this.podcastChannel.setValue(podcastChannel);
         notifyPropertyChanged(com.podcasses.BR.podcastChannel);
@@ -72,7 +88,17 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
         notifyPropertyChanged(BR.views);
     }
 
-    public void onSubscribeClick(View view) {
+    public void setIsMyPodcastChannel(Boolean isMyPodcastChannel) {
+        this.isMyPodcastChannel.set(isMyPodcastChannel);
+        notifyPropertyChanged(BR.isMyPodcastChannel);
+    }
+
+    public void setIsSubscribed(Boolean isSubscribed) {
+        this.isSubscribed.set(isSubscribed);
+        notifyPropertyChanged(BR.isSubscribed);
+    }
+
+    public void onSubscribeClick(View view, String token) {
 
     }
 

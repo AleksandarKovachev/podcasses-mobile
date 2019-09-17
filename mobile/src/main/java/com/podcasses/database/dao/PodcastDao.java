@@ -12,7 +12,6 @@ import com.podcasses.model.entity.LikedPodcast;
 import com.podcasses.model.entity.NewPodcast;
 import com.podcasses.model.entity.ProgressPodcast;
 import com.podcasses.model.entity.TrendingPodcast;
-import com.podcasses.model.entity.UserPodcast;
 import com.podcasses.model.entity.base.Podcast;
 
 import java.util.List;
@@ -24,22 +23,22 @@ import java.util.List;
 public interface PodcastDao {
 
     @Query("SELECT * " +
-            "FROM UserPodcast " +
+            "FROM Podcast " +
             "WHERE id = (:id)")
-    LiveData<Podcast> getUserPodcastById(String id);
+    LiveData<Podcast> getPodcastById(String id);
 
     @Query("SELECT * " +
-            "FROM UserPodcast " +
-            "WHERE userId = (:userId) " +
+            "FROM Podcast " +
+            "WHERE channelId = (:channelId) " +
             "ORDER BY internalId ASC " +
             "LIMIT (:page), 10")
-    LiveData<List<Podcast>> getUserPodcastsByUserId(String userId, int page);
+    LiveData<List<Podcast>> getPodcastsByChannelId(String channelId, int page);
 
     @Query("SELECT * " +
-            "FROM UserPodcast " +
+            "FROM Podcast " +
             "ORDER BY internalId ASC " +
             "LIMIT (:page), 10")
-    LiveData<List<Podcast>> getUserPodcasts(int page);
+    LiveData<List<Podcast>> getPodcasts(int page);
 
     @Query("SELECT * " +
             "FROM HistoryPodcast " +
@@ -81,7 +80,7 @@ public interface PodcastDao {
     void insertHistoryPodcasts(List<HistoryPodcast> podcasts);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertUserPodcasts(List<UserPodcast> podcasts);
+    void insertPodcasts(List<Podcast> podcasts);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertLikedPodcasts(List<LikedPodcast> podcasts);
@@ -98,8 +97,8 @@ public interface PodcastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertProgressPodcasts(List<ProgressPodcast> podcasts);
 
-    @Query("DELETE FROM UserPodcast")
-    void deleteUserPodcasts();
+    @Query("DELETE FROM Podcast")
+    void deletePodcasts();
 
     @Query("DELETE FROM HistoryPodcast")
     void deleteHistoryPodcasts();

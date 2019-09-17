@@ -4,6 +4,8 @@ import android.text.Spanned;
 
 import androidx.core.text.HtmlCompat;
 import androidx.databinding.Bindable;
+import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
@@ -18,6 +20,7 @@ import java.util.Objects;
 /**
  * Created by aleksandar.kovachev.
  */
+@Entity(indices = {@Index(value = {"id"}, unique = true)})
 public class Podcast extends BaseLikeModel {
 
     @PrimaryKey(autoGenerate = true)

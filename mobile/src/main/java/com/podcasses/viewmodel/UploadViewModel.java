@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.podcasses.BR;
 import com.podcasses.constant.PodcastType;
-import com.podcasses.model.entity.Nomenclature;
+import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.Language;
 import com.podcasses.repository.MainDataRepository;
