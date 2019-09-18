@@ -20,6 +20,7 @@ import com.podcasses.viewmodel.base.BasePodcastViewModel;
 public class PodcastChannelViewModel extends BasePodcastViewModel {
 
     private MutableLiveData<PodcastChannel> podcastChannel = new MutableLiveData<>();
+    private ObservableField<String> selectedAuthor = new ObservableField<>();
     private ObservableField<Integer> podcastsCount = new ObservableField<>(0);
     private ObservableField<Integer> subscribes = new ObservableField<>(0);
     private ObservableField<Integer> views = new ObservableField<>(0);
@@ -32,6 +33,18 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
 
     public LiveData<ApiResponse> podcastChannel(String id) {
         return repository.getPodcastChannel(id);
+    }
+
+    public LiveData<ApiResponse> podcastChannelViews(String channelId) {
+        return repository.podcastChannelViews(channelId);
+    }
+
+    public LiveData<ApiResponse> podcastChannelSubscribes(String channelId) {
+        return repository.podcastChannelSubscribes(channelId);
+    }
+
+    public LiveData<ApiResponse> podcastChannelEpisodes(String token, String channelId) {
+        return repository.podcastChannelEpisodes(token, channelId);
     }
 
     public LiveData<ApiResponse> checkPodcastChannelSubscribe(String token, String channelId) {
@@ -96,6 +109,14 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
     public void setIsSubscribed(Boolean isSubscribed) {
         this.isSubscribed.set(isSubscribed);
         notifyPropertyChanged(BR.isSubscribed);
+    }
+
+    public ObservableField<String> getSelectedAuthor() {
+        return selectedAuthor;
+    }
+
+    public void onAuthorClick(View view) {
+        selectedAuthor.set(podcastChannel.getValue().getUserId());
     }
 
     public void onSubscribeClick(View view, String token) {

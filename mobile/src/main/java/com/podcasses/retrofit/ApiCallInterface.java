@@ -1,7 +1,6 @@
 package com.podcasses.retrofit;
 
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
@@ -15,6 +14,7 @@ import com.podcasses.model.response.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
+import com.podcasses.model.response.Nomenclature;
 
 import java.util.List;
 import java.util.Map;
@@ -43,11 +43,21 @@ public interface ApiCallInterface {
     @POST("/api-gateway/keycloak/registration")
     Call<Void> registration(@Body UserRegistrationRequest registrationRequest);
 
+    @GET("/api-gateway/podcast/podcastChannel/views/{id}")
+    Call<Integer> podcastChannelViews(@Path("id") String id);
+
+    @GET("/api-gateway/account/subscribes/{id}")
+    Call<Integer> podcastChannelSubscribes(@Path("id") String id);
+
+    @GET("/api-gateway/podcast/count")
+    Call<Integer> podcastChannelEpisodes(@Header("Authorization") String token, @Query("channelId") String channelId);
+
     @GET("/api-gateway/account/subscribe/{id}")
     Call<Integer> checkPodcastChannelSubscribe(@Header("Authorization") String token, @Path("id") String id);
 
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,
+                                               @Query(value = "id", encoded = true) List<String> id,
                                                @Query(value = "userId", encoded = true) String userId,
                                                @Query(value = "name", encoded = true) String name);
 

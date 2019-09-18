@@ -102,7 +102,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
             }
         }
         setPodcastClick();
-        setAccountClick();
+        setChannelClick();
         setPodcastScrollListener();
     }
 
@@ -179,13 +179,13 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
         });
     }
 
-    private void setAccountClick() {
-        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+    private void setChannelClick() {
+        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-                    viewModel.getSelectedAccount().set(null);
+                if (viewModel.getSelectedChannel().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
+                    viewModel.getSelectedChannel().set(null);
                 }
             }
         });

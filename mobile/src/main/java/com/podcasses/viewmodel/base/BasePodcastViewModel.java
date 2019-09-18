@@ -10,8 +10,9 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
-import com.podcasses.adapter.AccountAdapter;
 import com.podcasses.adapter.PodcastAdapter;
+import com.podcasses.adapter.PodcastChannelAdapter;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.response.Account;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
@@ -30,11 +31,11 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
 
     private MutableLiveData<List<Object>> podcasts = new MutableLiveData<>();
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
-    private ObservableField<String> selectedAccount = new ObservableField<>();
-    private MutableLiveData<List<Account>> accounts = new MutableLiveData<>();
+    private ObservableField<String> selectedChannel = new ObservableField<>();
+    private MutableLiveData<List<PodcastChannel>> podcastChannels = new MutableLiveData<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, R.layout.ad_native_account_podcast, this);
     private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, R.layout.ad_native_trending, this);
-    private AccountAdapter accountAdapter = new AccountAdapter(this);
+    private PodcastChannelAdapter podcastChannelAdapter = new PodcastChannelAdapter(this);
 
     private ApiCallInterface apiCallInterface;
     private String token;
@@ -78,8 +79,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         return podcastAdapter;
     }
 
-    public AccountAdapter getAccountAdapter() {
-        return accountAdapter;
+    public PodcastChannelAdapter getPodcastChannelAdapter() {
+        return podcastChannelAdapter;
     }
 
     public void clearPodcastsInAdapter() {
@@ -87,9 +88,14 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         this.podcastAdapter.setPodcasts(this.podcasts.getValue());
     }
 
-    public void setAccountsInAdapter(List<Account> accounts) {
-        this.accounts.setValue(accounts);
-        this.accountAdapter.setAccounts(accounts);
+    public void setPodcastChannelsInAdapter(List<PodcastChannel> podcastChannels) {
+        if (CollectionUtils.isEmpty(this.podcastChannels.getValue())) {
+            this.podcastChannels.setValue(podcastChannels);
+        } else {
+            podcastChannels.removeAll(this.podcastChannels.getValue());
+            this.podcastChannels.getValue().addAll(podcastChannels);
+        }
+        this.podcastChannelAdapter.setPodcastChannels(Collections.singletonList(this.podcastChannels.getValue()));
     }
 
     public void setPodcastsInAdapter(List<Object> podcasts) {
@@ -111,16 +117,12 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         selectedPodcast.setValue(podcast);
     }
 
-    public ObservableField<String> getSelectedAccount() {
-        return selectedAccount;
+    public ObservableField<String> getSelectedChannel() {
+        return selectedChannel;
     }
 
-    public void onAccountClickFromPodcast(Integer index) {
-        selectedAccount.set(((Podcast) podcasts.getValue().get(index)).getUserId());
-    }
-
-    public void onAccountClick(Integer index) {
-        selectedAccount.set(accounts.getValue().get(index).getId());
+    public void onChannelClick(Integer index) {
+        selectedChannel.set(((Podcast) podcasts.getValue().get(index)).getChannelId());
     }
 
     public List<Object> getPodcasts() {
@@ -134,16 +136,9 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         return null;
     }
 
-    public Account getAccountAt(Integer index) {
-        if (accounts.getValue() != null && index != null && accounts.getValue().size() > index) {
-            return accounts.getValue().get(index);
-        }
-        return null;
-    }
-
-    public String getAccountProfileImage(Integer index) {
-        if (accounts.getValue() != null && index != null && accounts.getValue().size() > index) {
-            return BuildConfig.API_GATEWAY_URL + CustomViewBindings.PROFILE_IMAGE + accounts.getValue().get(index).getId();
+    public PodcastChannel getPodcastChannelAt(Integer index) {
+        if (podcastChannels.getValue() != null && index != null && podcastChannels.getValue().size() > index) {
+            return podcastChannels.getValue().get(index);
         }
         return null;
     }

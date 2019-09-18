@@ -11,7 +11,6 @@ import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.constant.PodcastType;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
@@ -21,6 +20,7 @@ import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
+import com.podcasses.model.response.Nomenclature;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.ConnectivityUtil;
 
@@ -98,27 +98,27 @@ public class MainDataRepository {
         return accountResponse;
     }
 
-/*    public LiveData<ApiResponse> getSubscribedAccounts(String token) {
-        MutableLiveData<ApiResponse> accountsResponse = new MutableLiveData<>(ApiResponse.loading());
+    public LiveData<ApiResponse> getSubscribedPodcastChannels(String token) {
+        MutableLiveData<ApiResponse> podcastChannelsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (ConnectivityUtil.checkInternetConnection(context) && !Strings.isEmptyOrWhitespace(token)) {
-            networkDataSource.getSubscribedAccounts(token, new IDataCallback<List<Account>>() {
+            networkDataSource.getSubscribedPodcastChannels(token, new IDataCallback<List<PodcastChannel>>() {
                 @Override
-                public void onSuccess(List<Account> data, String url) {
-                    accountsResponse.setValue(ApiResponse.success(data, url));
+                public void onSuccess(List<PodcastChannel> data, String url) {
+                    podcastChannelsResponse.setValue(ApiResponse.success(data, url));
                 }
 
                 @Override
                 public void onFailure(Throwable error, String url) {
-                    accountsResponse.setValue(ApiResponse.error(error, url));
+                    podcastChannelsResponse.setValue(ApiResponse.error(error, url));
                 }
             });
         } else {
-            accountsResponse.setValue(ApiResponse.fetched());
+            podcastChannelsResponse.setValue(ApiResponse.fetched());
         }
 
-        return accountsResponse;
-    }*/
+        return podcastChannelsResponse;
+    }
 
     public LiveData<ApiResponse> getPodcastChannel(LifecycleOwner lifecycleOwner, String token, String userId, String name,
                                                    boolean isMyAccount, boolean isSwipedToRefresh) {
@@ -147,6 +147,66 @@ public class MainDataRepository {
         }
 
         return podcastChannelResponse;
+    }
+
+    public LiveData<ApiResponse> podcastChannelViews(String channelId) {
+        MutableLiveData<ApiResponse> podcastChannelViewsResponse = new MutableLiveData<>(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.podcastChannelViews(channelId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data, String url) {
+                    podcastChannelViewsResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    podcastChannelViewsResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            podcastChannelViewsResponse.setValue(ApiResponse.error(new ConnectException(), null));
+        }
+        return podcastChannelViewsResponse;
+    }
+
+    public LiveData<ApiResponse> podcastChannelSubscribes(String channelId) {
+        MutableLiveData<ApiResponse> podcastChannelSubscribesResponse = new MutableLiveData<>(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.podcastChannelSubscribes(channelId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data, String url) {
+                    podcastChannelSubscribesResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    podcastChannelSubscribesResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            podcastChannelSubscribesResponse.setValue(ApiResponse.error(new ConnectException(), null));
+        }
+        return podcastChannelSubscribesResponse;
+    }
+
+    public LiveData<ApiResponse> podcastChannelEpisodes(String token, String channelId) {
+        MutableLiveData<ApiResponse> podcastChannelEpisodesResponse = new MutableLiveData<>(ApiResponse.loading());
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.podcastChannelEpisodes(token, channelId, new IDataCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer data, String url) {
+                    podcastChannelEpisodesResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    podcastChannelEpisodesResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            podcastChannelEpisodesResponse.setValue(ApiResponse.error(new ConnectException(), null));
+        }
+        return podcastChannelEpisodesResponse;
     }
 
     public LiveData<ApiResponse> checkPodcastChannelSubscribe(String token, String channelId) {

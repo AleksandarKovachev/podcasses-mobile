@@ -24,28 +24,28 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="@{() -> viewModel.onAccountClick(position)}">
+        android:onClick="@{() -> viewModel.onChannelClick(position)}">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/account_profile_image"
+            android:id="@+id/podcast_channel_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:civ_border_overlay="true"
-            app:imageUrl="@{viewModel.getAccountProfileImage(position)}"
+            app:imageUrl="@{viewModel.getPodcastChannelAt(position).imageUrl}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/account_display_name"
+            android:id="@+id/podcast_channel_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="3"
-            android:text="@{viewModel.getAccountAt(position).displayName}"
-            app:layout_constraintEnd_toEndOf="@id/account_profile_image"
-            app:layout_constraintStart_toStartOf="@id/account_profile_image"
-            app:layout_constraintTop_toBottomOf="@id/account_profile_image" />
+            android:text="@{viewModel.getPodcastChannelAt(position).title}"
+            app:layout_constraintEnd_toEndOf="@id/podcast_channel_image"
+            app:layout_constraintStart_toStartOf="@id/podcast_channel_image"
+            app:layout_constraintTop_toBottomOf="@id/podcast_channel_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

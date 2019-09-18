@@ -18,9 +18,10 @@ import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.podcasses.R;
-import com.podcasses.databinding.ItemPodcastBinding;
 import com.podcasses.databinding.ItemPodcastChannelBinding;
+import com.podcasses.databinding.ItemPodcastChannelMiniBinding;
 import com.podcasses.viewmodel.base.BasePodcastChannelViewModel;
+import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
 
@@ -32,14 +33,20 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private List<Object> podcastChannels;
     private int layoutId;
     private int adLayout;
-    private BasePodcastChannelViewModel viewModel;
+    private BasePodcastChannelViewModel podcastChannelViewModel;
+    private BasePodcastViewModel podcastViewModel;
 
     private static final int NATIVE_AD_VIEW_TYPE = 1;
 
-    public PodcastChannelAdapter(@LayoutRes int layoutId, @LayoutRes int adLayout, BasePodcastChannelViewModel viewModel) {
+    public PodcastChannelAdapter(@LayoutRes int layoutId, @LayoutRes int adLayout, BasePodcastChannelViewModel podcastChannelViewModel) {
         this.layoutId = layoutId;
-        this.viewModel = viewModel;
+        this.podcastChannelViewModel = podcastChannelViewModel;
         this.adLayout = adLayout;
+    }
+
+    public PodcastChannelAdapter(BasePodcastViewModel podcastViewModel) {
+        this.layoutId = R.layout.item_podcast_channel_mini;
+        this.podcastViewModel = podcastViewModel;
     }
 
     @NonNull
@@ -63,7 +70,11 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             UnifiedNativeAd nativeAd = (UnifiedNativeAd) podcastChannels.get(position);
             populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) holder).getAdView());
         } else {
-            ((PodcastChannelViewHolder) holder).setData(viewModel, position);
+            if (podcastViewModel != null) {
+                ((PodcastChannelViewHolder) holder).setData(podcastViewModel, position);
+            } else {
+                ((PodcastChannelViewHolder) holder).setData(podcastChannelViewModel, position);
+            }
         }
     }
 
@@ -145,6 +156,13 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         void unbind() {
             if (binding != null) {
                 binding.unbind();
+            }
+        }
+
+        void setData(BasePodcastViewModel viewModel, int position) {
+            if (binding != null) {
+                ((ItemPodcastChannelMiniBinding) binding).setViewModel(viewModel);
+                ((ItemPodcastChannelMiniBinding) binding).setPosition(position);
             }
         }
 

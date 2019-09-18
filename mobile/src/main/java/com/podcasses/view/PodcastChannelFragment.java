@@ -2,6 +2,7 @@ package com.podcasses.view;
 
 import android.accounts.AccountManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
@@ -61,6 +67,8 @@ public class PodcastChannelFragment extends BaseFragment {
 
     private int page = 0;
 
+    private AdLoader adLoader;
+
     static PodcastChannelFragment newInstance(int instance, String podcastChannelId, PodcastChannel podcastChannel) {
         PodcastChannelFragment.podcastChannelId = podcastChannelId;
         PodcastChannelFragment.podcastChannel = podcastChannel;
@@ -85,7 +93,8 @@ public class PodcastChannelFragment extends BaseFragment {
         setHasOptionsMenu(true);
 
         setPodcastClick();
-        setAccountClick();
+        setAuthorClick();
+        setChannelClick();
         return binding.getRoot();
     }
 
@@ -124,26 +133,64 @@ public class PodcastChannelFragment extends BaseFragment {
                     token.removeObservers(this);
                     JWT jwt = new JWT(s);
 
-                    if(jwt.getSubject().equals(podcastChannel.getUserId())) {
+                    if (podcastChannel != null && jwt.getSubject().equals(podcastChannel.getUserId())) {
                         viewModel.setIsMyPodcastChannel(true);
                         loadPodcasts(true, true);
                         setInfiniteScrollListener(true);
                     }
 
                     binding.setToken(s);
+                    processPodcastChannelStatisticData(s);
                     podcastChannelSubscribeStatus = viewModel.checkPodcastChannelSubscribe(s, podcastChannelId);
                     podcastChannelSubscribeStatus.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelSubscribeStatus));
                 } else if (AccountManager.get(getContext()).getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE).length != 0) {
                     token.removeObservers(this);
+                    processPodcastChannelStatisticData(null);
                     loadPodcasts(false, false);
                     setInfiniteScrollListener(false);
                 }
             });
         } else {
+            processPodcastChannelStatisticData(null);
             loadPodcasts(false, false);
             setInfiniteScrollListener(false);
         }
+    }
 
+    private void processPodcastChannelStatisticData(String token) {
+        LiveData<ApiResponse> podcastChannelViews = viewModel.podcastChannelViews(podcastChannelId);
+        LiveData<ApiResponse> podcastChannelSubscribes = viewModel.podcastChannelSubscribes(podcastChannelId);
+        LiveData<ApiResponse> podcastChannelEpisodes = viewModel.podcastChannelEpisodes(token, podcastChannelId);
+
+        podcastChannelViews.observe(this, a -> {
+            if (a.status == ApiResponse.Status.SUCCESS) {
+                podcastChannelViews.removeObservers(this);
+                viewModel.setViews((Integer) a.data);
+            } else if (a.status == ApiResponse.Status.ERROR) {
+                podcastChannelViews.removeObservers(this);
+                Log.e("ErrorResponse", String.format("API Error response from url %1$s: ", a.url), a.error);
+            }
+        });
+
+        podcastChannelSubscribes.observe(this, a -> {
+            if (a.status == ApiResponse.Status.SUCCESS) {
+                podcastChannelSubscribes.removeObservers(this);
+                viewModel.setSubscribes((Integer) a.data);
+            } else if (a.status == ApiResponse.Status.ERROR) {
+                podcastChannelSubscribes.removeObservers(this);
+                Log.e("ErrorResponse", String.format("API Error response from url %1$s: ", a.url), a.error);
+            }
+        });
+
+        podcastChannelEpisodes.observe(this, a -> {
+            if (a.status == ApiResponse.Status.SUCCESS) {
+                podcastChannelEpisodes.removeObservers(this);
+                viewModel.setPodcastsCount((Integer) a.data);
+            } else if (a.status == ApiResponse.Status.ERROR) {
+                podcastChannelEpisodes.removeObservers(this);
+                Log.e("ErrorResponse", String.format("API Error response from url %1$s: ", a.url), a.error);
+            }
+        });
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData) {
@@ -169,16 +216,30 @@ public class PodcastChannelFragment extends BaseFragment {
             viewModel.setIsSubscribed((Boolean) apiResponse.data);
             loadPodcasts(true, (Boolean) apiResponse.data);
             setInfiniteScrollListener((Boolean) apiResponse.data);
+        } else if (apiResponse.data instanceof PodcastChannel) {
+            viewModel.setPodcastChannel((PodcastChannel) apiResponse.data);
+            podcastChannel = (PodcastChannel) apiResponse.data;
+            if (token != null && token.getValue() != null && new JWT(token.getValue()).getSubject().equals(podcastChannel.getUserId())) {
+                viewModel.setIsMyPodcastChannel(true);
+                loadPodcasts(true, true);
+                setInfiniteScrollListener(true);
+            } else {
+                viewModel.setIsMyPodcastChannel(false);
+                loadPodcasts(false, false);
+                setInfiniteScrollListener(false);
+            }
         } else if (apiResponse.data instanceof List) {
             viewModel.setIsLoading(false);
             if (CollectionUtils.isEmpty((Collection<?>) apiResponse.data)) {
                 return;
             }
-            if (((List) apiResponse.data).get(0) instanceof PodcastChannel) {
-                viewModel.setPodcastChannel((PodcastChannel) apiResponse.data);
-            } else {
-                viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
+            viewModel.setPodcastsInAdapter((List<Object>) apiResponse.data);
+
+            if (token != null) {
                 getAccountPodcasts((List<Podcast>) apiResponse.data, false);
+            }
+            if (((List<Object>) apiResponse.data).size() >= 5) {
+                addAds();
             }
         }
     }
@@ -251,16 +312,48 @@ public class PodcastChannelFragment extends BaseFragment {
         });
     }
 
-    private void setAccountClick() {
-        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+    private void setAuthorClick() {
+        viewModel.getSelectedAuthor().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-                    viewModel.getSelectedAccount().set(null);
+                if (viewModel.getSelectedAuthor().get() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAuthor().get()));
+                    viewModel.getSelectedAuthor().set(null);
                 }
             }
         });
+    }
+
+    private void setChannelClick() {
+        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getSelectedChannel().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
+                    viewModel.getSelectedChannel().set(null);
+                }
+            }
+        });
+    }
+
+    private void addAds() {
+        adLoader = new AdLoader.Builder(getContext(), BuildConfig.PODCAST_FROM_PODCAST_CHANNEL_NATIVE_ADS)
+                .forUnifiedNativeAd(unifiedNativeAd -> {
+                    Log.i(getTag(), "Native Ad In Account Podcasts Loaded");
+                    if (!adLoader.isLoading()) {
+                        viewModel.addElementInPodcastsAdapter(unifiedNativeAd, viewModel.getPodcastAdapter().getItemCount() / 2);
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Log.e(getTag(), "Native Ad In Account Podcasts Failed to loaded: " + errorCode);
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 1);
     }
 
 }

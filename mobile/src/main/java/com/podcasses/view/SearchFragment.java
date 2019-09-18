@@ -23,6 +23,7 @@ import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.response.Account;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
@@ -135,7 +136,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                         addAds();
                     }
                 } else {
-                    viewModel.setAccountsInAdapter((List<Account>) apiResponse.data);
+                    viewModel.setPodcastChannelsInAdapter((List<PodcastChannel>) apiResponse.data);
                 }
                 break;
             case FETCHED:
@@ -162,12 +163,12 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setAccountClick() {
-        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-                    viewModel.getSelectedAccount().set(null);
+                if (viewModel.getSelectedChannel().get() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get()));
+                    viewModel.getSelectedChannel().set(null);
                 }
             }
         });

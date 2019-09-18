@@ -71,12 +71,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/podcast_display_name"
+            android:id="@+id/podcast_channel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/small_offset"
             android:layout_marginEnd="@dimen/small_offset"
-            android:onClick="@{() -> viewModel.onAccountClickFromPodcast(position)}"
+            android:onClick="@{() -> viewModel.onChannelClick(position)}"
             android:text="@{viewModel.getPodcastAt(position).channel}"
             app:layout_constraintBottom_toBottomOf="@id/podcast_image"
             app:layout_constraintStart_toEndOf="@id/podcast_image"

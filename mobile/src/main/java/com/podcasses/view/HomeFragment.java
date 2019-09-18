@@ -25,10 +25,11 @@ import com.podcasses.constant.PodcastType;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentHomeBinding;
 import com.podcasses.model.entity.AccountPodcast;
-import com.podcasses.model.response.Account;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
+import com.podcasses.model.response.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -85,7 +86,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         super.onViewCreated(view, savedInstanceState);
         getData(null);
         setListClick();
-        setAccountClick();
+        setChannelClick();
         setTrendingFilterChange();
     }
 
@@ -96,14 +97,14 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void getData(RefreshLayout refreshLayout) {
         LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
-//        if (token != null) {
-//            token.observe(this, s -> {
-//                if (!Strings.isEmptyOrWhitespace(s)) {
-//                    LiveData<ApiResponse> subscribedAccounts = viewModel.getSubscribedAccounts(s);
-//                    subscribedAccounts.observe(this, response -> consumeApiResponse(response, subscribedAccounts));
-//                }
-//            });
-//        }
+        if (token != null) {
+            token.observe(this, s -> {
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(s);
+                    podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
+                }
+            });
+        }
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
@@ -141,7 +142,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     private void setDataFromResponse(@NonNull ApiResponse apiResponse, boolean isSwipedToRefresh) {
         if (apiResponse.data instanceof List) {
             viewModel.setTrendingPodcastsInAdapter((List<Object>) apiResponse.data);
-            if(((List<Object>) apiResponse.data).size() > 5) {
+            if (((List<Object>) apiResponse.data).size() > 5) {
                 addAds();
             }
             getAccountPodcasts((List<Podcast>) apiResponse.data, isSwipedToRefresh);
@@ -193,8 +194,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             return;
         }
 
-        if (((List<?>) apiResponse.data).get(0) instanceof Account) {
-            viewModel.setAccountsInAdapter((List<Account>) apiResponse.data);
+        if (((List<?>) apiResponse.data).get(0) instanceof PodcastChannel) {
+            viewModel.setPodcastChannelsInAdapter((List<PodcastChannel>) apiResponse.data);
             return;
         }
 
@@ -216,13 +217,13 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         });
     }
 
-    private void setAccountClick() {
-        viewModel.getSelectedAccount().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+    private void setChannelClick() {
+        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedAccount().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccount().get()));
-                    viewModel.getSelectedAccount().set(null);
+                if (viewModel.getSelectedChannel().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
+                    viewModel.getSelectedChannel().set(null);
                 }
             }
         });

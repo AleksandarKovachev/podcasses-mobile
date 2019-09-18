@@ -90,16 +90,17 @@
                 app:layout_constraintTop_toTopOf="@id/podcast_title" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/podcast_display_name"
-                android:layout_width="wrap_content"
+                android:id="@+id/podcast_channel"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:onClick="@{() -> viewModel.onAccountClickFromPodcast(position)}"
+                android:maxLines="3"
+                android:onClick="@{() -> viewModel.onChannelClick(position)}"
                 android:text="@{viewModel.getPodcastAt(position).channel}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/podcast_title"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/podcast_title" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

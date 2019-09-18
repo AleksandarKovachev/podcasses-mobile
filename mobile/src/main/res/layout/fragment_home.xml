@@ -38,15 +38,15 @@
                 tools:context=".view.AccountFragment">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/accounts_list"
+                    android:id="@+id/podcast_channels"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:setAdapter="@{viewModel.accountAdapter}"
-                    tools:listitem="@layout/item_account" />
+                    app:setAdapter="@{viewModel.podcastChannelAdapter}"
+                    tools:listitem="@layout/item_podcast_channel" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/description_card_view"
@@ -60,7 +60,7 @@
                     app:cardUseCompatPadding="true"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/accounts_list">
+                    app:layout_constraintTop_toBottomOf="@id/podcast_channels">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
