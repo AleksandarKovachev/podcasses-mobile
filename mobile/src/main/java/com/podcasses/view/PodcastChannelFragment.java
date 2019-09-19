@@ -58,6 +58,7 @@ public class PodcastChannelFragment extends BaseFragment {
 
     private static String podcastChannelId;
     private static PodcastChannel podcastChannel;
+    private static boolean isSubscribed;
 
     private MutableLiveData<String> token;
 
@@ -69,9 +70,10 @@ public class PodcastChannelFragment extends BaseFragment {
 
     private AdLoader adLoader;
 
-    static PodcastChannelFragment newInstance(int instance, String podcastChannelId, PodcastChannel podcastChannel) {
+    static PodcastChannelFragment newInstance(int instance, String podcastChannelId, PodcastChannel podcastChannel, boolean isSubscribed) {
         PodcastChannelFragment.podcastChannelId = podcastChannelId;
         PodcastChannelFragment.podcastChannel = podcastChannel;
+        PodcastChannelFragment.isSubscribed = isSubscribed;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         PodcastChannelFragment fragment = new PodcastChannelFragment();
@@ -119,10 +121,12 @@ public class PodcastChannelFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel.setIsSubscribed(isSubscribed);
+
         if (podcastChannel != null) {
             viewModel.setPodcastChannel(podcastChannel);
         } else {
-            podcastChannelResponse = viewModel.podcastChannel(podcastChannelId);
+            podcastChannelResponse = viewModel.podcastChannel(this, podcastChannelId);
             podcastChannelResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelResponse));
         }
 
@@ -219,6 +223,11 @@ public class PodcastChannelFragment extends BaseFragment {
         } else if (apiResponse.data instanceof PodcastChannel) {
             viewModel.setPodcastChannel((PodcastChannel) apiResponse.data);
             podcastChannel = (PodcastChannel) apiResponse.data;
+
+            if (apiResponse.status == ApiResponse.Status.DATABASE) {
+                viewModel.setIsSubscribed(podcastChannel.getIsSubscribed() == 1);
+            }
+
             if (token != null && token.getValue() != null && new JWT(token.getValue()).getSubject().equals(podcastChannel.getUserId())) {
                 viewModel.setIsMyPodcastChannel(true);
                 loadPodcasts(true, true);
@@ -317,7 +326,7 @@ public class PodcastChannelFragment extends BaseFragment {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
                 if (viewModel.getSelectedAuthor().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAuthor().get()));
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAuthor().get(), false));
                     viewModel.getSelectedAuthor().set(null);
                 }
             }
@@ -325,12 +334,12 @@ public class PodcastChannelFragment extends BaseFragment {
     }
 
     private void setChannelClick() {
-        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannel().get() != null) {
-                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
-                    viewModel.getSelectedChannel().set(null);
+                if (viewModel.getSelectedChannelId().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), null, false));
+                    viewModel.getSelectedChannelId().set(null);
                 }
             }
         });

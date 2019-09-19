@@ -180,12 +180,12 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void setChannelClick() {
-        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannel().get() != null) {
-                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
-                    viewModel.getSelectedChannel().set(null);
+                if (viewModel.getSelectedChannelId().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), null, false));
+                    viewModel.getSelectedChannelId().set(null);
                 }
             }
         });

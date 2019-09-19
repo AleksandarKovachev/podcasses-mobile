@@ -17,10 +17,11 @@ android {
         applicationId "com.podcasses"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.0.1"
+        versionCode 10
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        resConfigs "en", "bg"
     }
     dataBinding {
         enabled true
@@ -86,7 +87,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.23.2'
 
     // Data binding
-    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha10'
+    annotationProcessor 'androidx.databinding:databinding-compiler:3.6.0-alpha11'
 
     // Android Jetpack
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04'

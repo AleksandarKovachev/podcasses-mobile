@@ -11,7 +11,7 @@ import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountPodcastType;
 import com.podcasses.model.request.TrendingFilter;
-import com.podcasses.model.response.Account;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -20,7 +20,6 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

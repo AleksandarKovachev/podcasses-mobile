@@ -9,6 +9,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.podcasses.database.AppDatabase;
+import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastChannelDao;
 import com.podcasses.database.dao.PodcastDao;
@@ -140,8 +141,8 @@ public class NetModule {
     @Singleton
     @Provides
     LocalDataSource provideLocalDataSource(PodcastDao podcastDao, PodcastChannelDao podcastChannelDao,
-                                           AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao) {
-        return new LocalDataSource(podcastDao, podcastChannelDao, accountPodcastDao, podcastFileDao);
+                                           AccountPodcastDao accountPodcastDao, PodcastFileDao podcastFileDao, AccountDao accountDao) {
+        return new LocalDataSource(podcastDao, podcastChannelDao, accountPodcastDao, podcastFileDao, accountDao);
     }
 
     @Singleton
@@ -166,6 +167,12 @@ public class NetModule {
     @Provides
     PodcastFileDao providePodcastFileDao(AppDatabase appDatabase) {
         return appDatabase.podcastFileDao();
+    }
+
+    @Singleton
+    @Provides
+    AccountDao provideAccountDao(AppDatabase appDatabase) {
+        return appDatabase.accountDao();
     }
 
 }

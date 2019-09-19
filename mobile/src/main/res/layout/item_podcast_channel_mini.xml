@@ -24,7 +24,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="@{() -> viewModel.onChannelClick(position)}">
+        android:onClick="@{() -> viewModel.onPodcastChannelClick(position)}">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/podcast_channel_image"

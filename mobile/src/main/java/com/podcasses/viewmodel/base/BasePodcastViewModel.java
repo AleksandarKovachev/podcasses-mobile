@@ -8,17 +8,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.CollectionUtils;
-import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
 import com.podcasses.adapter.PodcastChannelAdapter;
 import com.podcasses.model.entity.PodcastChannel;
-import com.podcasses.model.response.Account;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.util.CustomViewBindings;
 import com.podcasses.util.PopupMenuUtil;
 
 import java.util.Collections;
@@ -31,7 +28,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
 
     private MutableLiveData<List<Object>> podcasts = new MutableLiveData<>();
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
-    private ObservableField<String> selectedChannel = new ObservableField<>();
+    private ObservableField<String> selectedChannelId = new ObservableField<>();
+    private ObservableField<PodcastChannel> selectedPodcastChannel = new ObservableField<>();
     private MutableLiveData<List<PodcastChannel>> podcastChannels = new MutableLiveData<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, R.layout.ad_native_account_podcast, this);
     private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, R.layout.ad_native_trending, this);
@@ -117,12 +115,20 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         selectedPodcast.setValue(podcast);
     }
 
-    public ObservableField<String> getSelectedChannel() {
-        return selectedChannel;
+    public ObservableField<String> getSelectedChannelId() {
+        return selectedChannelId;
     }
 
-    public void onChannelClick(Integer index) {
-        selectedChannel.set(((Podcast) podcasts.getValue().get(index)).getChannelId());
+    public ObservableField<PodcastChannel> getSelectedPodcastChannel() {
+        return selectedPodcastChannel;
+    }
+
+    public void onChannelIdClick(Integer index) {
+        selectedChannelId.set(((Podcast) podcasts.getValue().get(index)).getChannelId());
+    }
+
+    public void onPodcastChannelClick(Integer index) {
+        selectedPodcastChannel.set(podcastChannels.getValue().get(index));
     }
 
     public List<Object> getPodcasts() {

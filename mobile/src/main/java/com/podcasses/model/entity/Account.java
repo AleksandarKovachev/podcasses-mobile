@@ -1,12 +1,17 @@
-package com.podcasses.model.response;
+package com.podcasses.model.entity;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 /**
  * Created by aleksandar.kovachev.
  */
+@Entity
 public class Account {
 
+    @NonNull
+    @PrimaryKey
     private String id;
 
     private String username;

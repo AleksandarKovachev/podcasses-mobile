@@ -10,7 +10,7 @@ import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
-import com.podcasses.model.response.Account;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -48,6 +48,9 @@ public interface ApiCallInterface {
 
     @GET("/api-gateway/account/subscribes/{id}")
     Call<Integer> podcastChannelSubscribes(@Path("id") String id);
+
+    @POST("/api-gateway/account/subscribe/{channelId}")
+    Call<Integer> podcastChannelSubscribe(@Header("Authorization") String token, @Path("channelId") String channelId);
 
     @GET("/api-gateway/podcast/count")
     Call<Integer> podcastChannelEpisodes(@Header("Authorization") String token, @Query("channelId") String channelId);

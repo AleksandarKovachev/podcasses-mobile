@@ -24,7 +24,6 @@ import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentSearchBinding;
 import com.podcasses.model.entity.PodcastChannel;
-import com.podcasses.model.response.Account;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -55,7 +54,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
 
     private SearchViewModel viewModel;
     private LiveData<ApiResponse> podcastsResponse;
-    private LiveData<ApiResponse> accountsResponse;
+    private LiveData<ApiResponse> podcastChannelsResponse;
 
     private static String searchQuery;
 
@@ -96,10 +95,10 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void getData(RefreshLayout refreshLayout) {
-//        accountsResponse = viewModel.getAccounts(searchQuery);
+        podcastChannelsResponse = viewModel.getPodcastChannel(this, searchQuery);
         podcastsResponse = viewModel.podcasts(this, searchQuery, null, null, true, false, 0);
         podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
-//        accountsResponse.observe(this, response -> consumeResponse(response, accountsResponse, refreshLayout));
+        podcastChannelsResponse.observe(this, response -> consumeResponse(response, podcastChannelsResponse, refreshLayout));
     }
 
     void updateActionBar() {
@@ -163,12 +162,12 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setAccountClick() {
-        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannel().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get()));
-                    viewModel.getSelectedChannel().set(null);
+                if (viewModel.getSelectedChannelId().get() != null) {
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), false));
+                    viewModel.getSelectedChannelId().set(null);
                 }
             }
         });

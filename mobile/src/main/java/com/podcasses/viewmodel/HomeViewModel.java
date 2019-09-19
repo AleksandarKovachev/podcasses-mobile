@@ -29,7 +29,7 @@ public class HomeViewModel extends BasePodcastViewModel {
     }
 
     public LiveData<ApiResponse> getSubscribedPodcastChannels(String token) {
-        return repository.getSubscribedPodcastChannels(token);
+        return repository.getSubscribedPodcastChannels(lifecycleOwner, token);
     }
 
     public LiveData<List<Nomenclature>> getCategories() {

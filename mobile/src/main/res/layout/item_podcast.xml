@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/small_offset"
             android:layout_marginEnd="@dimen/small_offset"
-            android:onClick="@{() -> viewModel.onChannelClick(position)}"
+            android:onClick="@{() -> viewModel.onChannelIdClick(position)}"
             android:text="@{viewModel.getPodcastAt(position).channel}"
             app:layout_constraintBottom_toBottomOf="@id/podcast_image"
             app:layout_constraintStart_toEndOf="@id/podcast_image"

@@ -31,9 +31,9 @@ import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentAccountBinding;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.response.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
@@ -82,10 +82,11 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private static String accountId;
 
-    private boolean isMyAccount = false;
+    private static Boolean isMyAccount = false;
 
-    static AccountFragment newInstance(int instance, String openedAccountId) {
+    static AccountFragment newInstance(int instance, String openedAccountId, Boolean isMyAccount) {
         accountId = openedAccountId;
+        AccountFragment.isMyAccount = isMyAccount;
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
         AccountFragment fragment = new AccountFragment();
@@ -230,11 +231,11 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             isMyAccount = true;
         }
         if (isMyAccount) {
-            accountResponse = viewModel.account(null, accountId, refreshLayout != null);
+            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, true);
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
             podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else if (accountId != null) {
-            accountResponse = viewModel.account(null, accountId, refreshLayout != null);
+            accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
         }
 
         podcastChannelsResponse = viewModel.podcastChannels(this,
@@ -353,7 +354,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private void setPodcastChannelClick() {
         viewModel.getSelectedPodcastChannel().observe(this, podcastChannel -> {
             if (podcastChannel != null) {
-                fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel));
+                fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel, false));
                 viewModel.getSelectedPodcastChannel().setValue(null);
             }
         });

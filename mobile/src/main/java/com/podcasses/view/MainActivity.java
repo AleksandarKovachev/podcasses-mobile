@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity implements
             case INDEX_HOME:
                 return HomeFragment.newInstance(0);
             case INDEX_ACCOUNT:
-                return AccountFragment.newInstance(0, null);
+                return AccountFragment.newInstance(0, null, true);
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

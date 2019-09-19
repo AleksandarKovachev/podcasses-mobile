@@ -3,10 +3,12 @@ package com.podcasses.repository;
 import androidx.lifecycle.LiveData;
 
 import com.podcasses.constant.PodcastType;
+import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastChannelDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.DownloadedPodcast;
 import com.podcasses.model.entity.HistoryPodcast;
@@ -37,30 +39,54 @@ public class LocalDataSource {
 
     private PodcastFileDao podcastFileDao;
 
+    private AccountDao accountDao;
+
     @Inject
     public LocalDataSource(PodcastDao podcastDao, PodcastChannelDao podcastChannelDao, AccountPodcastDao accountPodcastDao,
-                           PodcastFileDao podcastFileDao) {
+                           PodcastFileDao podcastFileDao, AccountDao accountDao) {
         this.podcastDao = podcastDao;
         this.podcastChannelDao = podcastChannelDao;
         this.accountPodcastDao = accountPodcastDao;
         this.podcastFileDao = podcastFileDao;
+        this.accountDao = accountDao;
     }
 
-    LiveData<Podcast> getPodcastById(String id) {
-        return podcastDao.getPodcastById(id);
+    LiveData<Account> getAccount() {
+        return accountDao.getAccount();
+    }
+
+    void insertAccount(Account account) {
+        Executors.newSingleThreadExecutor().execute(() -> accountDao.insert(account));
+    }
+
+    LiveData<List<PodcastChannel>> getSubscribedPodcastChannels() {
+        return podcastChannelDao.getSubscribedPodcastChannels();
     }
 
     LiveData<List<Podcast>> getPodcastsByChannelId(String channelId, int page) {
         return podcastDao.getPodcastsByChannelId(channelId, page * 10);
     }
 
+    LiveData<PodcastChannel> getPodcastChannelById(String id) {
+        return podcastChannelDao.getPodcastChannelById(id);
+    }
+
     LiveData<List<PodcastChannel>> getPodcastChannelsByUserId(String userId) {
         return podcastChannelDao.getPodcastChannelsByUserId(userId);
     }
 
-
     void insertPodcastChannels(List<PodcastChannel> podcastChannels) {
-        Executors.newSingleThreadExecutor().execute(() -> podcastChannelDao.insertAll(podcastChannels));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            for (PodcastChannel podcastChannel : podcastChannels) {
+                if (podcastChannel.getIsSubscribed() != 1) {
+                    PodcastChannel localPodcastChannel = podcastChannelDao.getPodcastChannel(podcastChannel.getId());
+                    if (localPodcastChannel != null) {
+                        podcastChannel.setIsSubscribed(localPodcastChannel.getIsSubscribed());
+                    }
+                }
+            }
+            podcastChannelDao.insertAll(podcastChannels);
+        });
     }
 
     void deletePodcastChannelsByUserId(String userId) {
@@ -220,6 +246,7 @@ public class LocalDataSource {
             podcastChannelDao.deletePodcastChannels();
             podcastFileDao.deletePodcastFiles();
             accountPodcastDao.deleteAll();
+            accountDao.deleteAll();
         });
     }
 

@@ -29,7 +29,6 @@ import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
-import com.podcasses.model.response.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
@@ -86,7 +85,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         super.onViewCreated(view, savedInstanceState);
         getData(null);
         setListClick();
-        setChannelClick();
+        setChannelIdClick();
+        setPodcastChannelClick();
         setTrendingFilterChange();
     }
 
@@ -100,14 +100,20 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         if (token != null) {
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
-                    LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(s);
-                    podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
+                    getSubscribedPodcastChannels(s);
                 }
             });
+        } else {
+            getSubscribedPodcastChannels(null);
         }
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
+    }
+
+    private void getSubscribedPodcastChannels(String token) {
+        LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(token);
+        podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
     }
 
     private void getTrendingPodcasts(RefreshLayout refreshLayout, TrendingFilter trendingFilter) {
@@ -217,13 +223,26 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         });
     }
 
-    private void setChannelClick() {
-        viewModel.getSelectedChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+    private void setChannelIdClick() {
+        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannel().get() != null) {
-                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannel().get(), null));
-                    viewModel.getSelectedChannel().set(null);
+                if (viewModel.getSelectedChannelId().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), null, false));
+                    viewModel.getSelectedChannelId().set(null);
+                }
+            }
+        });
+    }
+
+    private void setPodcastChannelClick() {
+        viewModel.getSelectedPodcastChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if (viewModel.getSelectedPodcastChannel().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1,
+                            viewModel.getSelectedPodcastChannel().get().getId(), viewModel.getSelectedPodcastChannel().get(), true));
+                    viewModel.getSelectedPodcastChannel().set(null);
                 }
             }
         });

@@ -486,7 +486,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
                 if (viewModel.getSelectedAccountId().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get()));
+                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAccountId().get(), false));
                     viewModel.getSelectedAccountId().set(null);
                 }
             }

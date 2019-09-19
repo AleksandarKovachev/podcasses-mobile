@@ -3,7 +3,6 @@ package com.podcasses.viewmodel;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LifecycleOwner;
@@ -14,7 +13,7 @@ import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastFileAdapter;
 import com.podcasses.model.entity.PodcastFile;
-import com.podcasses.model.response.Account;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -53,11 +52,11 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
         repository.removeAllLocalData();
     }
 
-    public LiveData<ApiResponse> account(String username, String id, boolean isSwipedToRefresh) {
+    public LiveData<ApiResponse> account(LifecycleOwner lifecycleOwner, String username, String id, boolean isSwipedToRefresh, boolean isMyAccount) {
         if (!isSwipedToRefresh && account.getValue() != null && username != null && account.getValue().getUsername().equals(username)) {
             return new MutableLiveData<>(ApiResponse.fetched());
         }
-        return repository.getAccount(username, id, isSwipedToRefresh);
+        return repository.getAccount(lifecycleOwner, username, id, isSwipedToRefresh, isMyAccount);
     }
 
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {

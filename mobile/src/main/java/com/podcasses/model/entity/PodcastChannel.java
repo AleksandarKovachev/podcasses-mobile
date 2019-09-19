@@ -48,6 +48,8 @@ public class PodcastChannel {
 
     private int languageId;
 
+    private int isSubscribed;
+
     @TypeConverters({DateConverter.class})
     private Date createdTimestamp;
 
@@ -165,6 +167,14 @@ public class PodcastChannel {
 
     public void setLanguageId(int languageId) {
         this.languageId = languageId;
+    }
+
+    public int getIsSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setIsSubscribed(int isSubscribed) {
+        this.isSubscribed = isSubscribed;
     }
 
     public Date getCreatedTimestamp() {

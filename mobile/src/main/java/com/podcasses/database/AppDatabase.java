@@ -4,10 +4,12 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.podcasses.database.dao.AccountDao;
 import com.podcasses.database.dao.AccountPodcastDao;
 import com.podcasses.database.dao.PodcastChannelDao;
 import com.podcasses.database.dao.PodcastDao;
 import com.podcasses.database.dao.PodcastFileDao;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.DownloadedPodcast;
 import com.podcasses.model.entity.HistoryPodcast;
@@ -24,6 +26,7 @@ import com.podcasses.model.entity.base.Podcast;
  */
 @TypeConverters(DateConverter.class)
 @Database(entities = {
+        Account.class,
         Podcast.class,
         DownloadedPodcast.class,
         HistoryPodcast.class,
@@ -45,5 +48,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract PodcastFileDao podcastFileDao();
 
     public abstract PodcastChannelDao podcastChannelDao();
+
+    public abstract AccountDao accountDao();
 
 }
