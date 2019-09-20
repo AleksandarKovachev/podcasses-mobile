@@ -8,14 +8,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="accountId"
-            type="java.lang.String" />
-
-        <variable
-            name="token"
-            type="java.lang.String" />
-
-        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
@@ -176,6 +168,16 @@
                         app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
                         app:setAdapter="@{viewModel.podcastChannelAdapter}"
                         tools:listitem="@layout/item_podcast_channel" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/add_podcast_channel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/medium_offset"
+                        android:layout_marginBottom="@dimen/medium_offset"
+                        android:src="@drawable/ic_add"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>

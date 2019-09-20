@@ -11,6 +11,12 @@ android {
             keyAlias = 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('C:\\Users\\PC\\AndroidStudioProjects\\Podcasses\\podcasses.jks')
+            storePassword 'Podcasses123!@'
+            keyAlias = 'podcasses'
+            keyPassword 'Podcasses123!@'
+        }
     }
     compileSdkVersion 28
     defaultConfig {

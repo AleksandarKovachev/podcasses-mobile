@@ -68,6 +68,10 @@ public class MainDataRepository {
         return localDataSource.getPodcasts(type, page);
     }
 
+    public void insertPodcastChannel(PodcastChannel podcastChannel) {
+        localDataSource.insertPodcastChannels(Collections.singletonList(podcastChannel));
+    }
+
     public void insertPodcast(PodcastType type, Podcast podcast) {
         localDataSource.insertPodcasts(type, Collections.singletonList(podcast));
     }

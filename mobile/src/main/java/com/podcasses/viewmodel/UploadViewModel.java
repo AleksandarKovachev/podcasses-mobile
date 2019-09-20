@@ -1,6 +1,7 @@
 package com.podcasses.viewmodel;
 
 import androidx.databinding.Bindable;
+import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 

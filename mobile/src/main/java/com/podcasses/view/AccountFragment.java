@@ -103,6 +103,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
+        binding.addPodcastChannel.setOnClickListener(a ->
+                fragmentNavigation.pushFragment(PodcastChannelAddFragment.newInstance(fragmentCount + 1)));
         setHasOptionsMenu(true);
         return binding.getRoot();
     }
@@ -191,11 +193,9 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                     binding.refreshLayout.setVisibility(View.VISIBLE);
                     token.removeObservers(this);
                     JWT jwt = new JWT(s);
-                    binding.setToken(s);
                     if (accountId == null) {
                         accountId = jwt.getSubject();
                     }
-                    binding.setAccountId(accountId);
 
                     setAccountAdditionalData(jwt, additionalData);
                     getAccountData(s, null);

@@ -124,8 +124,8 @@ public class NetModule {
 
     @Provides
     @Singleton
-    ViewModelProvider.Factory provideViewModelFactory(MainDataRepository repository, ApiCallInterface apiCallInterface) {
-        return new ViewModelFactory(repository, apiCallInterface);
+    ViewModelProvider.Factory provideViewModelFactory(MainDataRepository repository, ApiCallInterface apiCallInterface, Gson gson) {
+        return new ViewModelFactory(repository, apiCallInterface, gson);
     }
 
     @Provides

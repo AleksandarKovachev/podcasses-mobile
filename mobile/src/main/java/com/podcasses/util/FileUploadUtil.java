@@ -6,10 +6,18 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
+import com.bumptech.glide.Glide;
 import com.podcasses.BuildConfig;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
 import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadStatusDelegate;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.UUID;
@@ -19,7 +27,7 @@ import java.util.UUID;
  */
 public class FileUploadUtil {
 
-    public static void uploadFileToServer(Context context, String token, File file, String url, String multipartName) {
+    public static void uploadFileToServer(Context context, String token, File file, String url, String multipartName, AppCompatImageView imageView) {
         try {
             MultipartUploadRequest request = new MultipartUploadRequest(
                     context,
@@ -30,6 +38,7 @@ public class FileUploadUtil {
             request.addFileToUpload(file.getPath(), multipartName);
             request.setNotificationConfig(new UploadNotificationConfig());
             request.setMaxRetries(2);
+            request.setDelegate(setImageOnCompleted(file, imageView));
             request.startUpload();
         } catch (Exception e) {
             Log.e(FileUploadUtil.class.getSimpleName(), "onFailure: ", e);
@@ -45,6 +54,35 @@ public class FileUploadUtil {
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             return cursor.getString(idx);
         }
+    }
+
+    @NotNull
+    private static UploadStatusDelegate setImageOnCompleted(File file, AppCompatImageView imageView) {
+        return new UploadStatusDelegate() {
+            @Override
+            public void onProgress(Context context, UploadInfo uploadInfo) {
+
+            }
+
+            @Override
+            public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+
+            }
+
+            @Override
+            public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+                if (imageView != null) {
+                    Glide.with(context)
+                            .load(file)
+                            .into(imageView);
+                }
+            }
+
+            @Override
+            public void onCancelled(Context context, UploadInfo uploadInfo) {
+
+            }
+        };
     }
 
 }

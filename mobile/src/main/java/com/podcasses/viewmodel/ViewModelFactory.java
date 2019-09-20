@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.gson.Gson;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 
@@ -16,11 +17,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private MainDataRepository repository;
     private ApiCallInterface apiCallInterface;
+    private Gson gson;
 
     @Inject
-    public ViewModelFactory(MainDataRepository repository, ApiCallInterface apiCallInterface) {
+    public ViewModelFactory(MainDataRepository repository, ApiCallInterface apiCallInterface, Gson gson) {
         this.repository = repository;
         this.apiCallInterface = apiCallInterface;
+        this.gson = gson;
     }
 
     @NonNull
@@ -46,6 +49,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new AgreementViewModel(repository);
         } else if (modelClass.isAssignableFrom(PodcastChannelViewModel.class)) {
             return (T) new PodcastChannelViewModel(repository, apiCallInterface);
+        } else if (modelClass.isAssignableFrom(PodcastChannelAddViewModel.class)) {
+            return (T) new PodcastChannelAddViewModel(repository, apiCallInterface, gson);
         }
         throw new IllegalArgumentException("Unknown class name");
     }

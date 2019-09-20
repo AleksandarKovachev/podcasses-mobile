@@ -8,6 +8,7 @@ import com.podcasses.model.request.AccountCommentRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
+import com.podcasses.model.request.PodcastChannelRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
 import com.podcasses.model.entity.Account;
@@ -15,6 +16,7 @@ import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.model.response.Nomenclature;
+import com.podcasses.model.response.RssFeedResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,12 @@ public interface ApiCallInterface {
 
     @GET("/api-gateway/account/subscribe/{id}")
     Call<Integer> checkPodcastChannelSubscribe(@Header("Authorization") String token, @Path("id") String id);
+
+    @GET("/api-gateway/podcast/feed/verify")
+    Call<RssFeedResponse> verifyRssFeed(@Query(value = "url", encoded = true) String url);
+
+    @POST("/api-gateway/podcast/podcastChannel")
+    Call<PodcastChannel> podcastChannel(@Header("Authorization") String token,@Body PodcastChannelRequest request);
 
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,

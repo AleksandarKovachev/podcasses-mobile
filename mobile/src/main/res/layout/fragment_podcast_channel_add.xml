@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="token"
+            type="java.lang.String" />
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.PodcastChannelAddViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/podcast_channel_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/cover_placeholder"
+                app:imageUrl="@{viewModel.podcastChannelRequest.imageUrl}"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/podcast_channel_image_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/medium_offset"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@id/podcast_channel_image"
+                app:layout_constraintEnd_toEndOf="@id/podcast_channel_image"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_image" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_channel_title_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/podcast_channel_add_title"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_image_upload"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcast_channel_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:singleLine="true"
+                    android:text="@={viewModel.podcastChannelRequest.title}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_channel_rss_feed_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/podcast_channel_add_rssFeedUrl"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_title_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcastChannelRssFeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.verifyRssFeed(podcastChannelRssFeed, text, podcastChannelEmail)}"
+                    android:singleLine="true"
+                    android:text="@={viewModel.podcastChannelRequest.rssFeedUrl}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_channel_email_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/podcast_channel_add_email"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_rss_feed_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcastChannelEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"
+                    android:text="@={viewModel.podcastChannelRequest.email}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/podcast_channel_author_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/podcast_channel_add_author"
+                android:padding="@dimen/medium_offset"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_email_input"
+                app:layout_constraintVertical_bias="0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/podcast_author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:singleLine="true"
+                    android:text="@={viewModel.podcastChannelRequest.author}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.onegravity.rteditor.RTEditText
+                android:id="@+id/podcast_channel_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:hint="@string/podcast_description"
+                android:imeOptions="actionDone|flagNoEnterAction"
+                android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
+                app:htmlText="@={viewModel.podcastChannelRequest.description}"
+                app:layout_constraintTop_toBottomOf="@id/rte_toolbar_container" />
+
+            <LinearLayout
+                android:id="@+id/rte_toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@id/podcast_channel_description"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_author_input">
+
+                <include
+                    layout="@layout/rte_toolbar_character_local"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <include
+                    layout="@layout/rte_toolbar_paragraph_local"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/podcast_channel_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/category"
+                android:spinnerMode="dialog"
+                app:categories="@{viewModel.categories}"
+                app:layout_constraintEnd_toStartOf="@id/podcast_channel_language"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_description"
+                app:selectedCategory="@={viewModel.podcastChannelRequest.categoryId}" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/podcast_channel_language"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/language"
+                android:spinnerMode="dialog"
+                app:languages="@{viewModel.languages}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/podcast_channel_category"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_description"
+                app:selectedLanguage="@={viewModel.podcastChannelRequest.languageId}" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/podcast_channel_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:onClick="@{(view) -> viewModel.onPodcastChannelAddClick(view, token)}"
+                android:text="@string/podcast_channel_add"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel_language"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

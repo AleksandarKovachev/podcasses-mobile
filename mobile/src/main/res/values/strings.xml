@@ -30,6 +30,14 @@
     <string name="trending_header">Trending podcastChannels</string>
     <string name="trending_filter">Change filter</string>
 
+    <string name="podcast_channel_add_title">Title</string>
+    <string name="podcast_channel_add_author">Author</string>
+    <string name="podcast_channel_add_description">Description</string>
+    <string name="podcast_channel_add_rssFeedUrl">RSS Feed URL</string>
+    <string name="podcast_channel_add_email">Email</string>
+    <string name="podcast_channel_add_rss_feed_verify">An email will be sent to the address from the RSS Feed to be verified</string>
+    <string name="podcast_channel_add">Add podcast channel</string>
+
     <string name="podcast_channel_author">Author: </string>
     <string name="podcast_channel_podcasts_count">Episodes</string>
     <string name="podcast_channel_subscribes">Subscribes</string>
@@ -61,6 +69,7 @@
     <string name="account_save_changes">Save changes</string>
 
     <string name="podcast_successfully_added">Successfully added podcast</string>
+    <string name="podcast_channel_successfully_added">Successfully added podcast channel</string>
 
     <string name="no_internet_connection">No internet connection!</string>
     <string name="could_not_fetch_data">Could not fetch data!</string>

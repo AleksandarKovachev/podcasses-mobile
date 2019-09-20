@@ -30,6 +30,14 @@
     <string name="trending_header">Популярни</string>
     <string name="trending_filter">Смени филтъра</string>
 
+    <string name="podcast_channel_add_title">Заглавие</string>
+    <string name="podcast_channel_add_author">Автор</string>
+    <string name="podcast_channel_add_description">Описание</string>
+    <string name="podcast_channel_add_rssFeedUrl">RSS Feed линк</string>
+    <string name="podcast_channel_add_email">Имейл</string>
+    <string name="podcast_channel_add_rss_feed_verify">Ще бъде изпратен имейл до адреса от предоставения RSS Feed, за да бъде потвърден</string>
+    <string name="podcast_channel_add">Добави подкаст канал</string>
+
     <string name="podcast_channel_author">Автор: </string>
     <string name="podcast_channel_podcasts_count">Подкасти</string>
     <string name="podcast_channel_subscribes">Последователи</string>
@@ -61,6 +69,7 @@
     <string name="account_save_changes">Запази промените</string>
 
     <string name="podcast_successfully_added">Подкаста е успешно добавен.</string>
+    <string name="podcast_channel_successfully_added">Подкаст канала е успешно добавен.</string>
 
     <string name="no_internet_connection">Няма интернет достъп!</string>
     <string name="could_not_fetch_data">Неуспешно извличане на данни!</string>

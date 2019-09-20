@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -202,14 +203,14 @@ public class UploadFragment extends BaseFragment {
         File podcast = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setPodcastFileName(podcast.getName());
 
-        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), podcast, "/podcast/upload", "podcastFile");
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), podcast, "/api-gateway/podcast/upload", "podcastFile", binder.podcastImage);
     }
 
     private void sendPodcastImageUploadRequest(Intent data) {
         File image = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setImageFileName(image.getName());
 
-        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), image, "/podcast/image", "imageFile");
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), image, "/api-gateway/podcast/image", "imageFile", null);
     }
 
     private View.OnClickListener onPodcastAdd = v -> {
@@ -223,6 +224,7 @@ public class UploadFragment extends BaseFragment {
                 if (response.isSuccessful()) {
                     Toasty.success(getContext(), getString(R.string.podcast_successfully_added), Toast.LENGTH_SHORT, true).show();
                     viewModel.savePodcast(response);
+                    fragmentNavigation.popFragment();
                 } else {
                     try {
                         ErrorResultResponse errorResponse = gson.fromJson(response.errorBody().string(), ErrorResultResponse.class);
