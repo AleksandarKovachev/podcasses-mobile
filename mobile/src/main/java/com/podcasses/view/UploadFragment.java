@@ -18,10 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.auth0.android.jwt.JWT;
+import com.google.android.gms.common.util.Strings;
 import com.google.gson.Gson;
 import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
@@ -30,7 +31,9 @@ import com.onegravity.rteditor.api.RTProxyImpl;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentUploadBinding;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.base.Podcast;
+import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -48,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -114,6 +118,25 @@ public class UploadFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         token = AuthenticationUtil.getAuthenticationToken(getContext());
+        if (token != null) {
+            token.observe(this, s -> {
+                token.removeObservers(this);
+                if (!Strings.isEmptyOrWhitespace(s)) {
+                    LiveData<ApiResponse> podcastChannelsResponse =
+                            viewModel.getPodcastChannels(this, s, new JWT(s).getSubject(), true);
+                    podcastChannelsResponse.observe(this, a -> {
+                        if (a.status == ApiResponse.Status.DATABASE) {
+                            viewModel.setPodcastChannels((List<PodcastChannel>) a.data);
+                        } else if (a.status == ApiResponse.Status.SUCCESS) {
+                            podcastChannelsResponse.removeObservers(this);
+                            viewModel.setPodcastChannels((List<PodcastChannel>) a.data);
+                        } else if (a.status == ApiResponse.Status.ERROR) {
+                            podcastChannelsResponse.removeObservers(this);
+                        }
+                    });
+                }
+            });
+        }
         RTApi rtApi = new RTApi(getContext(), new RTProxyImpl((Activity) getContext()), new RTMediaFactoryImpl(getContext(), true));
         rtManager = new RTManager(rtApi, savedInstanceState);
 
@@ -203,14 +226,14 @@ public class UploadFragment extends BaseFragment {
         File podcast = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setPodcastFileName(podcast.getName());
 
-        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), podcast, "/api-gateway/podcast/upload", "podcastFile", binder.podcastImage);
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), podcast, "/api-gateway/podcast/upload", "podcastFile", null);
     }
 
     private void sendPodcastImageUploadRequest(Intent data) {
         File image = new File(FileUploadUtil.getRealPathFromURIPath(data.getData(), getContext()));
         viewModel.getPodcast().setImageFileName(image.getName());
 
-        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), image, "/api-gateway/podcast/image", "imageFile", null);
+        FileUploadUtil.uploadFileToServer(getContext(), token.getValue(), image, "/api-gateway/podcast/image", "imageFile", binder.podcastImage);
     }
 
     private View.OnClickListener onPodcastAdd = v -> {

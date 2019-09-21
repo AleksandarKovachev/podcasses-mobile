@@ -51,14 +51,22 @@ public class LanguageAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         TextView label = (TextView) super.getView(position, convertView, parent);
-        label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
+        if (languages.get(position).getNativeName() != null) {
+            label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
+        } else {
+            label.setText(languages.get(position).getName());
+        }
         return label;
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
-        label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
+        if (languages.get(position).getNativeName() != null) {
+            label.setText(languages.get(position).getName() + " (" + languages.get(position).getNativeName() + ")");
+        } else {
+            label.setText(languages.get(position).getName());
+        }
         return label;
     }
 

@@ -26,9 +26,11 @@ import com.onegravity.rteditor.api.format.RTFormat;
 import com.podcasses.R;
 import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.adapter.NomenclatureAdapter;
+import com.podcasses.adapter.PodcastChannelDropdownAdapter;
 import com.podcasses.adapter.PodcastsPagerAdapter;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.manager.DownloadTracker;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.response.Language;
 
@@ -79,6 +81,43 @@ public class CustomViewBindings {
     @BindingAdapter(value = {"isDisliked"})
     public static void isDisliked(View view, boolean isDisliked) {
         view.setSelected(isDisliked);
+    }
+
+    @BindingAdapter(value = {"podcastChannels", "selectedPodcastChannel", "selectedPodcastChannelAttrChanged"}, requireAll = false)
+    public static void setLanguages(AppCompatSpinner spinner, List<PodcastChannel> podcastChannels, String selectedPodcastChannel, InverseBindingListener listener) {
+        if (podcastChannels == null) {
+            return;
+        }
+        int selectedPosition = 0;
+        if (selectedPodcastChannel != null) {
+            for (PodcastChannel podcastChannel : podcastChannels) {
+                if (podcastChannel.getId().equals(selectedPodcastChannel)) {
+                    selectedPosition = podcastChannels.indexOf(podcastChannel);
+                    break;
+                }
+            }
+        }
+        spinner.setAdapter(
+                new PodcastChannelDropdownAdapter(spinner.getContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        podcastChannels,
+                        spinner.getContext().getString(R.string.account_podcast_channels)));
+        spinner.setSelection(selectedPosition != -1 ? selectedPosition : spinner.getCount());
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                listener.onChange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    @InverseBindingAdapter(attribute = "selectedPodcastChannel", event = "selectedPodcastChannelAttrChanged")
+    public static String selectedPodcastChannel(AppCompatSpinner spinner) {
+        return ((PodcastChannel) spinner.getSelectedItem()).getId();
     }
 
     @BindingAdapter(value = {"languages", "selectedLanguage", "selectedLanguageAttrChanged"}, requireAll = false)

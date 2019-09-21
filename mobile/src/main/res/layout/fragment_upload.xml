@@ -104,6 +104,18 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/podcast_channel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/account_podcast_channels"
+                android:spinnerMode="dialog"
+                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
+                app:podcastChannels="@{viewModel.podcastChannels}"
+                app:selectedPodcastChannel="@={viewModel.podcast.channelId}" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/podcast_privacy"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -113,7 +125,7 @@
                 android:spinnerMode="dropdown"
                 app:layout_constraintEnd_toStartOf="@id/podcast_category"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel"
                 app:privacies="@{viewModel.privacies}"
                 app:selectedPrivacy="@={viewModel.podcast.privacyId}" />
 
@@ -128,7 +140,7 @@
                 app:categories="@{viewModel.categories}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/podcast_privacy"
-                app:layout_constraintTop_toBottomOf="@id/podcast_title_input"
+                app:layout_constraintTop_toBottomOf="@id/podcast_channel"
                 app:selectedCategory="@={viewModel.podcast.categoryId}" />
 
             <androidx.appcompat.widget.AppCompatSpinner
