@@ -29,6 +29,7 @@ import com.podcasses.R;
 import com.podcasses.adapter.PodcastMediaDescriptionAdapter;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.model.entity.AccountPodcast;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -61,12 +62,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     private MediaSessionConnector mediaSessionConnector;
     private MediaSessionCompat mediaSession;
 
-    private String podcastId;
-    private String podcastTitle;
-    private String podcastUrl;
-    private String podcastImageUrl;
-    private String podcastDuration;
-    private String podcastChannel;
+    private Podcast podcast;
 
     @Override
     public void onCreate() {
@@ -96,23 +92,18 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         if (intent != null) {
             Bundle bundle = intent.getBundleExtra("player");
             if (bundle != null) {
-                podcastId = bundle.getString("podcastId");
-                podcastTitle = bundle.getString("podcastTitle");
-                podcastImageUrl = bundle.getString("podcastImageUrl");
-                podcastUrl = bundle.getString("podcastUrl");
-                podcastDuration = bundle.getString("podcastDuration");
-                podcastChannel = bundle.getString("podcastChannel");
+                podcast = (Podcast) bundle.getSerializable("podcast");
             }
 
             DataSource.Factory dataSourceFactory = ((BaseApplication) getApplication()).buildDataSourceFactory();
-            player.prepare(new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource((Uri.parse(podcastUrl))));
+            player.prepare(new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource((Uri.parse(podcast.getPodcastUrl()))));
             player.setPlayWhenReady(true);
 
             playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(context,
                     "playback_channel",
                     R.string.app_name,
                     1,
-                    new PodcastMediaDescriptionAdapter(context, podcastTitle, podcastImageUrl, podcastDuration, podcastChannel),
+                    new PodcastMediaDescriptionAdapter(context, podcast),
                     new PlayerNotificationManager.NotificationListener() {
                         @Override
                         public void onNotificationCancelled(int notificationId, boolean dismissedByUser) {
@@ -143,9 +134,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
             token = AuthenticationUtil.getAuthenticationToken(this);
             if (token == null) {
-                accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, null, podcastId);
+                accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, null, podcast.getId());
             } else {
-                token.observe(this, t -> accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, t, podcastId));
+                token.observe(this, t -> accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, t, podcast.getId()));
             }
             accountPodcastLiveData.observe(this, a -> {
                 switch (a.status) {
@@ -200,8 +191,8 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         return binder;
     }
 
-    public String getPodcastId() {
-        return podcastId;
+    public Podcast getPodcast() {
+        return podcast;
     }
 
     public SimpleExoPlayer getPlayerInstance() {
@@ -212,17 +203,16 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         public AudioPlayerService getService() {
             return AudioPlayerService.this;
         }
-
     }
 
     private MediaDescriptionCompat getMediaDescription() {
         Bundle extras = new Bundle();
-        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, Uri.parse(podcastUrl));
-        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, Uri.parse(podcastUrl));
+        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, Uri.parse(podcast.getPodcastUrl()));
+        extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, Uri.parse(podcast.getPodcastUrl()));
         return new MediaDescriptionCompat.Builder()
-                .setMediaId(podcastId)
-                .setIconUri(Uri.parse(podcastImageUrl))
-                .setTitle(podcastTitle)
+                .setMediaId(podcast.getId())
+                .setIconUri(Uri.parse(podcast.getImageUrl()))
+                .setTitle(podcast.getTitle())
                 .setExtras(extras)
                 .build();
     }
@@ -245,7 +235,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     private void sendAccountPodcastToServer() {
         LiveData<ApiResponse> accountPodcastResponse =
                 NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
-                        token.getValue(), podcastId,
+                        token.getValue(), podcast.getId(),
                         player.getCurrentPosition(),
                         accountPodcast == null || accountPodcast.getViewTimestamp() == null);
         accountPodcastResponse.observe(this, response -> {
@@ -267,7 +257,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
     private void saveLocalAccountPodcast() {
         if (accountPodcast == null) {
             accountPodcast = new AccountPodcast();
-            accountPodcast.setPodcastId(podcastId);
+            accountPodcast.setPodcastId(podcast.getId());
             accountPodcast.setCreatedTimestamp(new Date());
         }
         if (accountPodcast.getViewTimestamp() == null) {

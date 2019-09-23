@@ -188,8 +188,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         SimpleExoPlayer player = service.getPlayerInstance();
 
-        if (player != null) {
-            playingPodcastId = service.getPodcastId();
+        if (player != null && service.getPodcast() != null) {
+            playingPodcastId = service.getPodcast().getId();
             player.addListener(this);
             setPlayingStatus(player.getPlayWhenReady());
         }
@@ -272,7 +272,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playingPodcastId = service.getPodcastId();
+        playingPodcastId = service.getPodcast().getId();
         setPlayingStatus(playWhenReady);
 
         if (playbackState == Player.STATE_READY) {

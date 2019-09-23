@@ -12,6 +12,7 @@ import androidx.room.TypeConverters;
 import com.podcasses.BR;
 import com.podcasses.database.DateConverter;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +22,7 @@ import java.util.Objects;
  * Created by aleksandar.kovachev.
  */
 @Entity(indices = {@Index(value = {"id"}, unique = true)})
-public class Podcast extends BaseLikeModel {
+public class Podcast extends BaseLikeModel implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private int internalId;

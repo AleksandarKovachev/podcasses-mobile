@@ -23,8 +23,8 @@ android {
         applicationId "com.podcasses"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 10
-        versionName "1.1.0"
+        versionCode 11
+        versionName "1.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         resConfigs "en", "bg"
@@ -52,10 +52,10 @@ android {
 
         debug {
             debuggable true
-            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.110:31000/auth/realms/podcast/protocol/openid-connect/"'
-            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.110:30010"'
+            buildConfigField 'String', 'KEYCLOAK_URL', '"http://192.168.99.100:31000/auth/realms/podcast/protocol/openid-connect/"'
+            buildConfigField 'String', 'API_GATEWAY_URL', '"http://192.168.99.100:30010"'
             buildConfigField 'String', 'KEYCLOAK_CLIENT_ID', '"android-app"'
-            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"6dca5c1d-379c-4b38-abd4-b1b558ab5adf"'
+            buildConfigField 'String', 'KEYCLOAK_CLIENT_SECRET', '"76030431-2c2f-4e0c-b4f5-96f09c4575f3"'
             buildConfigField 'String', 'TRENDING_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'
             buildConfigField 'String', 'ACCOUNT_PODCAST_CHANNELS_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'
             buildConfigField 'String', 'PODCAST_FROM_PODCAST_CHANNEL_NATIVE_ADS', '"ca-app-pub-3940256099942544/2247696110"'

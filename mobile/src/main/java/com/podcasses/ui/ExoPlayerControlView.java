@@ -8,7 +8,11 @@ import android.widget.CompoundButton;
 
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.AppCompatTextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.podcasses.R;
@@ -17,6 +21,8 @@ import com.podcasses.manager.SharedPreferencesManager;
 
 import java.util.Arrays;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by aleksandar.kovachev.
@@ -62,6 +68,16 @@ public class ExoPlayerControlView extends PlayerControlView implements AdapterVi
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    public void setPodcastTitle(String podcastTitle) {
+        AppCompatTextView title = findViewById(R.id.podcast_title);
+        title.setText(podcastTitle);
+    }
+
+    public void setPodcastImage(String imageUrl) {
+        Glide.with(findViewById(R.id.podcast_image)).load(imageUrl).apply(RequestOptions.placeholderOf(R.drawable.cover_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)).into((CircleImageView) findViewById(R.id.podcast_image));
     }
 
     private void init() {

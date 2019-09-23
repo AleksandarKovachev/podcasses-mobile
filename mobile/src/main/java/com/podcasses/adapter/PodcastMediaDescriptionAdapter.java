@@ -14,6 +14,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.view.MainActivity;
 
 /**
@@ -22,30 +23,22 @@ import com.podcasses.view.MainActivity;
 public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
 
     private Context context;
-    private String podcastTitle;
-    private String podcastImageUrl;
-    private String podcastDuration;
-    private String podcastChannel;
+    private Podcast podcast;
 
-    public PodcastMediaDescriptionAdapter(Context context,
-                                          String podcastTitle, String podcastImageUrl,
-                                          String podcastDuration, String podcastChannel) {
+    public PodcastMediaDescriptionAdapter(Context context, Podcast podcast) {
         this.context = context;
-        this.podcastTitle = podcastTitle;
-        this.podcastImageUrl = podcastImageUrl;
-        this.podcastDuration = podcastDuration;
-        this.podcastChannel = podcastChannel;
+        this.podcast = podcast;
     }
 
     @Override
     public String getCurrentContentTitle(Player player) {
-        return podcastTitle;
+        return podcast.getTitle();
     }
 
     @Nullable
     @Override
     public String getCurrentContentText(Player player) {
-        return podcastChannel;
+        return podcast.getChannel();
     }
 
     @Nullable
@@ -53,7 +46,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
         Glide.with(context)
                 .asBitmap()
-                .load(podcastImageUrl)
+                .load(podcast.getImageUrl())
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
@@ -74,7 +67,7 @@ public class PodcastMediaDescriptionAdapter implements PlayerNotificationManager
     @Nullable
     @Override
     public String getCurrentSubText(Player player) {
-        return podcastDuration;
+        return podcast.getDuration();
     }
 
 }

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +15,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.ferfalk.simplesearchview.SimpleOnQueryTextListener;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 import com.google.android.exoplayer2.Player;
@@ -68,7 +65,7 @@ public class MainActivity extends BaseActivity implements
     private SimpleExoPlayer player;
 
     private MainActivityBinding binder;
-    private String playingPodcastId;
+    private Podcast playingPodcast;
     private AudioPlayerService.LocalBinder localBinder;
 
     @Override
@@ -216,7 +213,7 @@ public class MainActivity extends BaseActivity implements
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             localBinder = (AudioPlayerService.LocalBinder) iBinder;
             service = localBinder.getService();
-            playingPodcastId = service.getPodcastId();
+            playingPodcast = service.getPodcast();
             initializePlayer(false);
         }
 
@@ -255,22 +252,17 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPodcast(Podcast podcast) {
-        if (playingPodcastId != null && playingPodcastId.equals(podcast.getId()) && player.getPlaybackState() == Player.STATE_READY) {
+        if (playingPodcast != null && podcast.getId().equals(playingPodcast.getId()) && player.getPlaybackState() == Player.STATE_READY) {
             player.setPlayWhenReady(!player.getPlayWhenReady());
         } else {
-            playingPodcastId = podcast.getId();
+            playingPodcast = podcast;
             startBackgroundService(podcast);
         }
     }
 
     private void startBackgroundService(Podcast podcast) {
         Bundle serviceBundle = new Bundle();
-        serviceBundle.putString("podcastId", podcast.getId());
-        serviceBundle.putString("podcastTitle", podcast.getTitle());
-        serviceBundle.putString("podcastImageUrl", podcast.getImageUrl());
-        serviceBundle.putString("podcastUrl", podcast.getPodcastUrl());
-        serviceBundle.putString("podcastDuration", podcast.getDuration());
-        serviceBundle.putString("podcastChannel", podcast.getChannel());
+        serviceBundle.putSerializable("podcast", podcast);
         intent.putExtra("player", serviceBundle);
         Util.startForegroundService(this, intent);
         initializePlayer(true);
@@ -283,7 +275,11 @@ public class MainActivity extends BaseActivity implements
             binder.exoplayerView.setPlayer(player);
             binder.exoplayerView.show();
             binder.exoplayerView.showContextMenu();
+            binder.exoplayerView.setPodcastTitle(playingPodcast.getTitle());
+            binder.exoplayerView.setPodcastImage(playingPodcast.getImageUrl());
             binder.exoplayerView.setVisibility(View.VISIBLE);
+            binder.exoplayerView.setOnClickListener(
+                    v -> fragNavController.pushFragment(PodcastFragment.newInstance(1, playingPodcast.getId(), playingPodcast)));
         }
     }
 

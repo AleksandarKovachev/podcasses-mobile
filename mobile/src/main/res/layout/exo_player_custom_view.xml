@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/play_pause"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,74 +15,103 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/player_speed"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:entries="@array/speeds"
-            android:gravity="center" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/podcast_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:civ_border_overlay="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/cover_placeholder" />
 
-        <ImageButton
-            android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/podcast_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_offset"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimaryText"
+            app:layout_constraintBottom_toBottomOf="@id/podcast_image"
+            app:layout_constraintEnd_toStartOf="@id/exo_play"
+            app:layout_constraintStart_toEndOf="@id/podcast_image"
+            app:layout_constraintTop_toTopOf="@id/podcast_image"
+            tools:text="Podcast test title" />
 
         <ImageButton
             android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play" />
+            style="@style/ExoMediaButton.Play"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@id/exo_pause"
-            style="@style/ExoMediaButton.Pause" />
+            style="@style/ExoMediaButton.Pause"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@id/exo_ffwd"
-            style="@style/ExoMediaButton.FastForward" />
-
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/trim_silence"
-            android:layout_width="100dp"
+        <LinearLayout
+            android:id="@+id/time_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/trim_silence"
-            android:tooltipText="@string/trim_silence_tooltip" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/podcast_image">
 
-    </LinearLayout>
+            <TextView
+                android:id="@id/exo_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textColor="#FFBEBEBE"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-    <LinearLayout
-        android:id="@+id/time_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/play_pause">
+            <com.google.android.exoplayer2.ui.DefaultTimeBar
+                android:id="@id/exo_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:unplayed_color="@color/colorAccent" />
 
-        <TextView
-            android:id="@id/exo_position"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@id/exo_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textColor="#FFBEBEBE"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            app:layout_constraintTop_toBottomOf="@id/time_bar">
 
-        <com.google.android.exoplayer2.ui.DefaultTimeBar
-            android:id="@id/exo_progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:unplayed_color="@color/colorAccent" />
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/trim_silence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trim_silence"
+                android:tooltipText="@string/trim_silence_tooltip"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@id/exo_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/player_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/speeds"
+                android:gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
