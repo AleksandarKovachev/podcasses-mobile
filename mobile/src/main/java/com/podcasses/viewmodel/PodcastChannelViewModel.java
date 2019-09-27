@@ -132,12 +132,12 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
         selectedAuthor.set(podcastChannel.getValue().getUserId());
     }
 
-    public void onSubscribeClick(View view, String token) {
+    public void onSubscribeClick(View view, String token, String deviceId) {
         if (token == null || !ConnectivityUtil.checkInternetConnection(view.getContext())) {
             return;
         }
 
-        Call<Integer> subscribeAccountCall = apiCallInterface.podcastChannelSubscribe("Bearer " + token, podcastChannel.getValue().getId());
+        Call<Integer> subscribeAccountCall = apiCallInterface.podcastChannelSubscribe("Bearer " + token, podcastChannel.getValue().getId(), deviceId);
         subscribeAccountCall.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {

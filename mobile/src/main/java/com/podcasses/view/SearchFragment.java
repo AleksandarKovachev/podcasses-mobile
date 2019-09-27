@@ -86,7 +86,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
         super.onViewCreated(view, savedInstanceState);
         getData(null);
         setListClick();
-        setAccountClick();
+        setPodcastChannelClick();
     }
 
     @Override
@@ -161,13 +161,13 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
         });
     }
 
-    private void setAccountClick() {
-        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+    private void setPodcastChannelClick() {
+        viewModel.getSelectedPodcastChannel().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannelId().get() != null) {
-                    fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), false));
-                    viewModel.getSelectedChannelId().set(null);
+                if (viewModel.getSelectedPodcastChannel().get() != null) {
+                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedPodcastChannel().get().getId(), viewModel.getSelectedPodcastChannel().get(), false));
+                    viewModel.getSelectedPodcastChannel().set(null);
                 }
             }
         });

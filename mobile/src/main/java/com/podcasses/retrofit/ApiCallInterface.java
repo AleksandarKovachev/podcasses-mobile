@@ -1,5 +1,6 @@
 package com.podcasses.retrofit;
 
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
@@ -11,7 +12,6 @@ import com.podcasses.model.request.CommentRequest;
 import com.podcasses.model.request.PodcastChannelRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -52,7 +52,9 @@ public interface ApiCallInterface {
     Call<Integer> podcastChannelSubscribes(@Path("id") String id);
 
     @POST("/api-gateway/account/subscribe/{channelId}")
-    Call<Integer> podcastChannelSubscribe(@Header("Authorization") String token, @Path("channelId") String channelId);
+    Call<Integer> podcastChannelSubscribe(@Header("Authorization") String token,
+                                          @Path("channelId") String channelId,
+                                          @Query(value = "deviceId") String deviceId);
 
     @GET("/api-gateway/podcast/count")
     Call<Integer> podcastChannelEpisodes(@Header("Authorization") String token, @Query("channelId") String channelId);
@@ -64,7 +66,7 @@ public interface ApiCallInterface {
     Call<RssFeedResponse> verifyRssFeed(@Query(value = "url", encoded = true) String url);
 
     @POST("/api-gateway/podcast/podcastChannel")
-    Call<PodcastChannel> podcastChannel(@Header("Authorization") String token,@Body PodcastChannelRequest request);
+    Call<PodcastChannel> podcastChannel(@Header("Authorization") String token, @Body PodcastChannelRequest request);
 
     @GET("/api-gateway/podcast/podcastChannels")
     Call<List<PodcastChannel>> podcastChannels(@Header("Authorization") String token,

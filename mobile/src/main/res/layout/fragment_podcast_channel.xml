@@ -12,6 +12,10 @@
             type="java.lang.String" />
 
         <variable
+            name="deviceId"
+            type="java.lang.String" />
+
+        <variable
             name="viewModel"
             type="com.podcasses.viewmodel.PodcastChannelViewModel" />
     </data>
@@ -78,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/medium_offset"
-            android:onClick="@{(view) -> viewModel.onSubscribeClick(view, token)}"
+            android:onClick="@{(view) -> viewModel.onSubscribeClick(view, token, deviceId)}"
             android:scaleType="fitXY"
             android:src="@drawable/ic_record_voice_over"
             android:visibility="@{viewModel.isMyPodcastChannel ? View.GONE : View.VISIBLE}"

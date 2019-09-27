@@ -24,6 +24,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
@@ -93,6 +94,15 @@ public class PodcastChannelFragment extends BaseFragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setHasOptionsMenu(true);
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful() || task.getResult() == null) {
+                        Log.e(getTag(), "getInstanceId failed", task.getException());
+                        return;
+                    }
+                    binding.setDeviceId(task.getResult().getToken());
+                });
 
         setPodcastClick();
         setAuthorClick();
