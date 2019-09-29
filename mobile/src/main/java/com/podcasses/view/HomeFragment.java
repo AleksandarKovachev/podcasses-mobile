@@ -70,6 +70,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         viewModel.setLifecycleOwner(this);
+        viewModel.setFragmentManager(getParentFragmentManager());
         binder.setViewModel(viewModel);
         binder.setLifecycleOwner(this);
         binder.setFragmentManager(getChildFragmentManager());

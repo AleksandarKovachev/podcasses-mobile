@@ -6,6 +6,7 @@ import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.AccountCommentRequest;
+import com.podcasses.model.request.AccountListRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.CommentRequest;
@@ -13,6 +14,7 @@ import com.podcasses.model.request.PodcastChannelRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.UserRegistrationRequest;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.model.response.Nomenclature;
@@ -154,5 +156,14 @@ public interface ApiCallInterface {
 
     @GET("/api-gateway/contact/privacypolicy")
     Call<Map<String, String>> privacyPolicy();
+
+    @GET("/api-gateway/account/list")
+    Call<List<AccountList>> getAccountLists(@Header("Authorization") String token);
+
+    @GET("/api-gateway/account/list/{podcastId}")
+    Call<List<AccountList>> getAccountLists(@Header("Authorization") String token, @Path("podcastId") String podcastId);
+
+    @POST("/api-gateway/account/list")
+    Call<AccountList> accountList(@Header("Authorization") String token, @Body AccountListRequest accountListRequest);
 
 }

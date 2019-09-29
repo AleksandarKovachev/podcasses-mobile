@@ -8,16 +8,20 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
+import com.podcasses.model.request.AccountListRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountPodcastType;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
 import com.podcasses.model.response.Nomenclature;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -448,6 +452,35 @@ class NetworkDataSource {
                 callback.onFailure(t, call.request().url().toString());
             }
         });
+    }
+
+    void getAccountLists(String token, IDataCallback<List<AccountList>> callback) {
+        Call<List<AccountList>> call = apiCallInterface.getAccountLists("Bearer " + token);
+        call.enqueue(getAccountListsCallback(callback));
+    }
+
+    void getAccountLists(String token, String podcastId, IDataCallback<List<AccountList>> callback) {
+        Call<List<AccountList>> call = apiCallInterface.getAccountLists("Bearer " + token, podcastId);
+        call.enqueue(getAccountListsCallback(callback));
+    }
+
+    private Callback<List<AccountList>> getAccountListsCallback(IDataCallback<List<AccountList>> callback) {
+        return new Callback<List<AccountList>>() {
+            @Override
+            public void onResponse(Call<List<AccountList>> call, Response<List<AccountList>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AccountList>> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        };
     }
 
     private Callback<Map<String, String>> agreementCallback(IDataCallback<String> callback) {

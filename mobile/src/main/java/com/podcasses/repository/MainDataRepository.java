@@ -17,6 +17,7 @@ import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.AccountComment;
+import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.model.response.Language;
@@ -369,6 +370,32 @@ public class MainDataRepository {
         }
 
         return accountPodcastsResponse;
+    }
+
+    public LiveData<ApiResponse> getAccountLists(String token, String podcastId) {
+        MutableLiveData<ApiResponse> accountLists = new MutableLiveData<>(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context) && token != null) {
+            IDataCallback<List<AccountList>> iDataCallback = new IDataCallback<List<AccountList>>() {
+                @Override
+                public void onSuccess(List<AccountList> data, String url) {
+                    accountLists.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    accountLists.setValue(ApiResponse.error(error, url));
+                }
+            };
+
+            if (podcastId != null) {
+                networkDataSource.getAccountLists(token, podcastId, iDataCallback);
+            } else {
+                networkDataSource.getAccountLists(token, iDataCallback);
+            }
+        }
+
+        return accountLists;
     }
 
     public LiveData<List<Nomenclature>> getCategories() {

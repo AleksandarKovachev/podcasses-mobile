@@ -255,6 +255,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     DialogUtil.createReportDialog(getContext(), podcast.getId(), apiCallInterface, token.getValue(), true);
                 }
                 break;
+            case R.id.navigation_list:
+                PodcastListDialogFragment.newInstance(podcast.getId()).show(getParentFragmentManager(), null);
+                break;
         }
         return true;
     }

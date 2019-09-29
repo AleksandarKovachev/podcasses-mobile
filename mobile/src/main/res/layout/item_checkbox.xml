@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="position"
+            type="java.lang.Integer" />
+
+        <variable
+            name="viewModel"
+            type="com.podcasses.viewmodel.PodcastListDialogViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="@{viewModel.getPodcastListCheckboxAt(position).checked}"
+            android:maxLines="3"
+            android:onClick="@{(view) -> viewModel.onCheckedChange(view, position)}"
+            android:text="@{viewModel.getPodcastListCheckboxAt(position).name}"
+            android:textAppearance="?android:textAppearanceLarge"
+            tools:text="Podcast list checkbox" />
+
+    </LinearLayout>
+</layout>

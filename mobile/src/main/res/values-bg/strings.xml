@@ -51,6 +51,13 @@
     <string name="podcast_add_comment">Добави коментар</string>
     <string name="podcast_views">Слушания: </string>
 
+    <string name="podcast_add_to_list">Добави в списък</string>
+    <string name="podcast_add_to_list_name">Име на списъка</string>
+    <string name="podcast_add_to_list_new">Създай нов списък</string>
+    <string name="podcast_add_list_button">Създай списъка</string>
+    <string name="podcast_successfully_added_to_list">Подкаста е успешно добавен в списъка!</string>
+    <string name="podcast_successfully_created_list">Успешно създаден списък!</string>
+
     <string name="history">История</string>
     <string name="liked_podcasts">Харесани подкасти</string>
     <string name="my_podcasts">Мои подкасти</string>

@@ -84,7 +84,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="5dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:onClick="@{v -> viewModel.onOptionsButtonClick(v, position)}"
+                android:onClick="@{v -> viewModel.onOptionsButtonClick(v, position, viewModel.fragmentManager)}"
                 android:src="@drawable/ic_more_options"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/podcast_title" />

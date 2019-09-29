@@ -7,12 +7,14 @@ import android.view.View;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
 
 import com.podcasses.R;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.view.PodcastListDialogFragment;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.Date;
@@ -20,7 +22,8 @@ import java.util.Date;
 public class PopupMenuUtil {
 
     @SuppressLint("RestrictedApi")
-    public static void podcastPopupMenu(BasePodcastViewModel viewModel, View view, Podcast podcast, ApiCallInterface apiCallInterface, String token) {
+    public static void podcastPopupMenu(BasePodcastViewModel viewModel, View view, Podcast podcast,
+                                        ApiCallInterface apiCallInterface, String token, FragmentManager fragmentManager) {
         PopupMenu popupOptions = new PopupMenu(view.getContext(), view);
         popupOptions.getMenuInflater()
                 .inflate(R.menu.podcast_options_menu, popupOptions.getMenu());
@@ -48,6 +51,9 @@ public class PopupMenuUtil {
                         viewModel.saveAccountPodcast(accountPodcast);
                         podcast.setMarkAsPlayed(!podcast.isMarkAsPlayed());
                     }
+                    break;
+                case R.id.navigation_list:
+                    PodcastListDialogFragment.newInstance(podcast.getId()).show(fragmentManager, null);
                     break;
                 case R.id.navigation_report:
                     DialogUtil.createReportDialog(view.getContext(), podcast.getId(), apiCallInterface, token, true);

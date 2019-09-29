@@ -3,14 +3,15 @@ package com.podcasses.viewmodel;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Language;
+import com.podcasses.model.response.Nomenclature;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.DialogUtil;
@@ -75,4 +76,5 @@ public class HomeViewModel extends BasePodcastViewModel {
     public void setLifecycleOwner(LifecycleOwner lifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner;
     }
+
 }

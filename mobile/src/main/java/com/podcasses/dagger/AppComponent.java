@@ -11,6 +11,7 @@ import com.podcasses.view.MainActivity;
 import com.podcasses.view.PodcastChannelAddFragment;
 import com.podcasses.view.PodcastChannelFragment;
 import com.podcasses.view.PodcastFragment;
+import com.podcasses.view.PodcastListDialogFragment;
 import com.podcasses.view.PodcastsPageFragment;
 import com.podcasses.view.RegistrationActivity;
 import com.podcasses.view.SearchFragment;
@@ -61,4 +62,6 @@ public interface AppComponent {
     void inject(PodcastChannelFragment podcastChannelFragment);
 
     void inject(PodcastChannelAddFragment podcastChannelAddFragment);
+
+    void inject(PodcastListDialogFragment podcastListDialogFragment);
 }

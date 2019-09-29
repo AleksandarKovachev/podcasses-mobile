@@ -3,6 +3,7 @@ package com.podcasses.viewmodel.base;
 import android.view.View;
 
 import androidx.databinding.ObservableField;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -34,6 +35,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, R.layout.ad_native_account_podcast, this);
     private PodcastAdapter trendingPodcastAdapter = new PodcastAdapter(R.layout.item_trending_podcast, R.layout.ad_native_trending, this);
     private PodcastChannelAdapter podcastChannelAdapter = new PodcastChannelAdapter(this);
+
+    private FragmentManager fragmentManager;
 
     private ApiCallInterface apiCallInterface;
     private String token;
@@ -149,8 +152,16 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         return null;
     }
 
-    public void onOptionsButtonClick(View view, Integer position) {
-        PopupMenuUtil.podcastPopupMenu(this, view, (Podcast) podcasts.getValue().get(position), apiCallInterface, token);
+    public void onOptionsButtonClick(View view, Integer position, FragmentManager fragmentManager) {
+        PopupMenuUtil.podcastPopupMenu(this, view, (Podcast) podcasts.getValue().get(position), apiCallInterface, token, fragmentManager);
+    }
+
+    public FragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 
 }
