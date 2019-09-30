@@ -64,15 +64,6 @@ public class PodcastListAdapter extends RecyclerView.Adapter<PodcastListAdapter.
         notifyDataSetChanged();
     }
 
-    public void addPodcastListCheckBox(PodcastListCheckbox podcastListCheckbox) {
-        this.podcastListCheckboxes.add(podcastListCheckbox);
-        notifyDataSetChanged();
-    }
-
-    public List<PodcastListCheckbox> getPodcastListCheckboxes() {
-        return this.podcastListCheckboxes;
-    }
-
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ItemCheckboxBinding binding;

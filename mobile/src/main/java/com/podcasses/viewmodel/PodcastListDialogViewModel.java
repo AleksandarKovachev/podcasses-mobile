@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastListAdapter;
 import com.podcasses.model.dto.PodcastListCheckbox;
@@ -54,9 +55,9 @@ public class PodcastListDialogViewModel extends BaseViewModel {
         this.podcastListAdapter.setPodcastListCheckBoxes(podcastListCheckboxes);
     }
 
-    public void addPodcastListCheckBox(PodcastListCheckbox podcastListCheckbox) {
+    void addPodcastListCheckBox(PodcastListCheckbox podcastListCheckbox) {
         this.podcastListCheckboxes.getValue().add(podcastListCheckbox);
-        this.podcastListAdapter.addPodcastListCheckBox(podcastListCheckbox);
+        this.podcastListAdapter.setPodcastListCheckBoxes(podcastListCheckboxes.getValue());
     }
 
     public List<PodcastListCheckbox> getPodcastListCheckboxes() {
@@ -75,9 +76,41 @@ public class PodcastListDialogViewModel extends BaseViewModel {
     }
 
     public void onCheckedChange(View view, Integer index) {
-        if (podcastListAdapter.getPodcastListCheckboxes() != null && index != null && podcastListAdapter.getPodcastListCheckboxes().size() > index) {
-            podcastListAdapter.getPodcastListCheckboxes().get(index).setChecked(!podcastListAdapter.getPodcastListCheckboxes().get(index).isChecked());
+        if (podcastListCheckboxes.getValue() != null && index != null && podcastListCheckboxes.getValue().size() > index) {
+            podcastListCheckboxes.getValue().get(index).setChecked(!podcastListCheckboxes.getValue().get(index).isChecked());
         }
+    }
+
+    public void onCreateNewPodcastList(View view, String token, TextInputEditText name) {
+        if (token == null) {
+            return;
+        }
+
+        AccountListRequest accountListRequest = new AccountListRequest();
+        accountListRequest.setName(name.getText().toString());
+
+        Call<AccountList> accountListCall = apiCallInterface.accountList("Bearer " + token, accountListRequest);
+        accountListCall.enqueue(new Callback<AccountList>() {
+            @Override
+            public void onResponse(Call<AccountList> call, Response<AccountList> response) {
+                name.setText("");
+                if (response.isSuccessful()) {
+                    PodcastListCheckbox podcastListCheckbox = new PodcastListCheckbox();
+                    podcastListCheckbox.setId(response.body().getId());
+                    podcastListCheckbox.setName(response.body().getName());
+                    addPodcastListCheckBox(podcastListCheckbox);
+                    Toasty.success(view.getContext(), view.getContext().getString(R.string.podcast_successfully_created_list), Toast.LENGTH_SHORT, true).show();
+                } else {
+                    LogErrorResponseUtil.logErrorResponse(response, view.getContext());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountList> call, Throwable t) {
+                name.setText("");
+                LogErrorResponseUtil.logFailure(t, view.getContext());
+            }
+        });
     }
 
     public void onAddPodcastListButtonClick(View view, String token, String podcastId, DialogFragment dialogFragment) {
@@ -85,7 +118,7 @@ public class PodcastListDialogViewModel extends BaseViewModel {
             return;
         }
 
-        for (PodcastListCheckbox podcastListCheckbox : podcastListAdapter.getPodcastListCheckboxes()) {
+        for (PodcastListCheckbox podcastListCheckbox : podcastListCheckboxes.getValue()) {
             if (shouldSkip(podcastListCheckbox)) continue;
 
             AccountListRequest accountListRequest = new AccountListRequest();

@@ -89,7 +89,7 @@ public class PodcastListDialogFragment extends DialogFragment {
                                     viewModel.setCheckedAccountLists((List<AccountList>) podcastLists.data);
 
                                     for (AccountList accountList : (List<AccountList>) podcastLists.data) {
-                                        for (PodcastListCheckbox podcastListCheckbox : viewModel.getPodcastListAdapter().getPodcastListCheckboxes()) {
+                                        for (PodcastListCheckbox podcastListCheckbox : viewModel.getPodcastListCheckboxes()) {
                                             if (accountList.getId().equals(podcastListCheckbox.getId())) {
                                                 podcastListCheckbox.setChecked(true);
                                             }

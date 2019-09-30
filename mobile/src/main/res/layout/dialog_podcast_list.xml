@@ -71,7 +71,7 @@
             app:layout_constraintTop_toBottomOf="@id/delimiter" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/podcast_list_new_input"
+            android:id="@+id/list_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/podcast_add_to_list_name"
@@ -80,7 +80,7 @@
             app:layout_constraintTop_toBottomOf="@id/podcast_list_create_new">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/podcast_list_new"
+                android:id="@+id/listName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true" />
@@ -91,10 +91,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/medium_offset"
+            android:onClick="@{(view) -> viewModel.onCreateNewPodcastList(view, token, listName)}"
             android:text="@string/podcast_add_to_list_new"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/podcast_list_new_input" />
+            app:layout_constraintTop_toBottomOf="@id/list_name_input" />
 
         <View
             android:id="@+id/delimiter_action"
