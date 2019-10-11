@@ -90,13 +90,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
     }
 
     public void setPodcastChannelsInAdapter(List<PodcastChannel> podcastChannels) {
-        if (CollectionUtils.isEmpty(this.podcastChannels.getValue())) {
-            this.podcastChannels.setValue(podcastChannels);
-        } else {
-            podcastChannels.removeAll(this.podcastChannels.getValue());
-            this.podcastChannels.getValue().addAll(podcastChannels);
-        }
-        this.podcastChannelAdapter.setPodcastChannels(Collections.singletonList(this.podcastChannels.getValue()));
+        this.podcastChannels.setValue(podcastChannels);
+        this.podcastChannelAdapter.setPodcastChannels((List<Object>) (Object) this.podcastChannels.getValue());
     }
 
     public void setPodcastsInAdapter(List<Object> podcasts) {

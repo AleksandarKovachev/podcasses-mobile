@@ -66,8 +66,8 @@ public class NetModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache, Application application) {
-        return OkHttpUtil.getTrustedOkHttpClient(application)
+    OkHttpClient provideOkHttpClient(Cache cache) {
+        return OkHttpUtil.getTrustedOkHttpClient()
                 .addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
     }
 
@@ -90,8 +90,8 @@ public class NetModule {
     @Provides
     @Singleton
     @Named("authenticationOkHttp")
-    OkHttpClient provideAuthenticationOkHttpClient(Cache cache, Application application) {
-        return OkHttpUtil.getTrustedOkHttpClient(application)
+    OkHttpClient provideAuthenticationOkHttpClient(Cache cache) {
+        return OkHttpUtil.getTrustedOkHttpClient()
                 .addInterceptor(
                         new BasicAuthInterceptor(AuthenticationCallInterface.CLIENT_ID, AuthenticationCallInterface.CLIENT_SECRET))
                 .addInterceptor(new AcceptLanguageHeaderInterceptor())
