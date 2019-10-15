@@ -17,16 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/settings_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:text="@string/title_settings"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <LinearLayout
                 android:id="@+id/language_select"
                 android:layout_width="match_parent"
@@ -36,11 +26,10 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:minHeight="60dp"
-                android:onClick="@{v -> viewModel.onLocaleClick(v)}"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/medium_offset"
                 android:paddingRight="@dimen/medium_offset"
-                app:layout_constraintTop_toBottomOf="@id/settings_title">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"

@@ -114,19 +114,6 @@ public class DialogUtil {
         alertDialogBuilder.create().show();
     }
 
-    public static void createLocaleDialog(Context context, List<Language> languages) {
-        AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setAdapter(new LanguageAdapter(context, android.R.layout.simple_dropdown_item_1line, languages,
-                context.getString(R.string.language)), (d, pos) -> {
-            SharedPreferencesManager sharedPreferencesManager =
-                    ((BaseApplication) context.getApplicationContext()).getSharedPreferencesManager();
-            sharedPreferencesManager.setLocale(languages.get(pos).getIso639_1());
-        });
-        dialog = builder.create();
-        dialog.show();
-    }
-
     public static void openDatePicker(AppCompatEditText view) {
         final Calendar calendar = Calendar.getInstance();
         int yy = calendar.get(Calendar.YEAR);

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.podcasses.model.response.Language;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class LanguageAdapter extends ArrayAdapter {
     public LanguageAdapter(Context context, int textViewResourceId, List<Language> languages, String prompt) {
         super(context, textViewResourceId, languages);
         this.languages = languages;
-        if (languages.size() > 0 && languages.get(languages.size() - 1).getId() != -1) {
+        if (!CollectionUtils.isEmpty(languages) && languages.get(languages.size() - 1).getId() != -1) {
             Language language = new Language();
             language.setName(prompt);
             language.setId(-1);
@@ -33,7 +34,7 @@ public class LanguageAdapter extends ArrayAdapter {
 
     @Override
     public int getCount() {
-        return languages.size() > 0 ? languages.size() - 1 : languages.size();
+        return !CollectionUtils.isEmpty(languages) ? languages.size() - 1 : 0;
     }
 
     @Nullable

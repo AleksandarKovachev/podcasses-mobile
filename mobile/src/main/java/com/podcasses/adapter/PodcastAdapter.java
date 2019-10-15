@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
@@ -103,14 +104,14 @@ public class PodcastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void addElement(Object element) {
-        if(podcasts != null && !podcasts.isEmpty()) {
+        if (podcasts != null && !podcasts.isEmpty()) {
             this.podcasts.add(element);
             notifyDataSetChanged();
         }
     }
 
     public void addElement(Object element, int index) {
-        if(podcasts != null && !podcasts.isEmpty()) {
+        if (podcasts != null && !podcasts.isEmpty()) {
             this.podcasts.add(index, element);
             notifyDataSetChanged();
         }
@@ -131,6 +132,10 @@ public class PodcastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             adView.setIconView(adView.findViewById(R.id.ad_icon));
             adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
             adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+            if (adLayout == R.layout.ad_native_trending) {
+                adView.setMediaView(adView.findViewById(R.id.media_view));
+            }
         }
     }
 
@@ -171,13 +176,15 @@ public class PodcastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void populateNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
         ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
-        NativeAd.Image icon = nativeAd.getIcon();
 
-        if (icon == null) {
-            adView.getIconView().setVisibility(View.INVISIBLE);
-        } else {
-            ((ImageView) adView.getIconView()).setImageDrawable(icon.getDrawable());
-            adView.getIconView().setVisibility(View.VISIBLE);
+        if (adLayout != R.layout.ad_native_trending) {
+            NativeAd.Image icon = nativeAd.getIcon();
+            if (icon == null) {
+                adView.getIconView().setVisibility(View.INVISIBLE);
+            } else {
+                ((ImageView) adView.getIconView()).setImageDrawable(icon.getDrawable());
+                adView.getIconView().setVisibility(View.VISIBLE);
+            }
         }
 
         if (adView.getStarRatingView() != null) {

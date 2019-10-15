@@ -55,6 +55,8 @@ public class MainActivity extends BaseActivity implements
     private static final int INDEX_ACCOUNT = FragNavController.TAB2;
     public static final int FRAGMENTS_COUNT = 2;
 
+    private int CURRENT_TAB = INDEX_HOME;
+
     @Inject
     AuthenticationCallInterface authenticationCall;
 
@@ -130,8 +132,7 @@ public class MainActivity extends BaseActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                fragNavController.pushFragment(SettingsFragment.newInstance(1, getLocale()));
                 break;
             case R.id.navigation_upload:
             case R.id.navigation_history:
@@ -151,9 +152,17 @@ public class MainActivity extends BaseActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.navigation_home:
+                if(CURRENT_TAB == INDEX_HOME) {
+                    fragNavController.popFragments(fragNavController.getSize());
+                }
+                CURRENT_TAB = INDEX_HOME;
                 fragNavController.switchTab(INDEX_HOME);
                 break;
             case R.id.navigation_account:
+                if(CURRENT_TAB == INDEX_ACCOUNT) {
+                    fragNavController.popFragments(fragNavController.getSize());
+                }
+                CURRENT_TAB = INDEX_ACCOUNT;
                 fragNavController.switchTab(INDEX_ACCOUNT);
                 break;
         }

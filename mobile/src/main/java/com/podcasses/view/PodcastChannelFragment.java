@@ -4,6 +4,8 @@ import android.accounts.AccountManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -169,6 +171,13 @@ public class PodcastChannelFragment extends BaseFragment {
             loadPodcasts(false, false);
             setInfiniteScrollListener(false);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.podcast_channel_menu, menu);
     }
 
     private void processPodcastChannelStatisticData(String token) {

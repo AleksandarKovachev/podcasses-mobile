@@ -3,9 +3,14 @@ package com.podcasses.viewmodel;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.LiveData;
 
+import com.podcasses.R;
+import com.podcasses.adapter.LanguageAdapter;
+import com.podcasses.dagger.BaseApplication;
+import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.response.Language;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.util.DialogUtil;
@@ -42,8 +47,8 @@ public class SettingsViewModel extends BaseViewModel {
         this.languages = languages;
     }
 
-    public void onLocaleClick(View view) {
-        DialogUtil.createLocaleDialog(view.getContext(), languages);
+    public List<Language> getLanguages() {
+        return languages;
     }
 
     public void termOfServiceClick(View view) {

@@ -50,23 +50,13 @@
             android:label="@string/app_name" />
 
         <activity
-            android:name=".view.SettingsActivity"
-            android:label="@string/title_settings"
-            android:parentActivityName=".view.MainActivity"
-            android:theme="@style/DarkAppThemeActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.MainActivity" />
-        </activity>
-
-        <activity
             android:name=".view.AgreementActivity"
             android:label="@string/title_agreement"
-            android:parentActivityName=".view.SettingsActivity"
+            android:parentActivityName=".view.SettingsFragment"
             android:theme="@style/DarkAppThemeActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.SettingsActivity" />
+                android:value=".view.SettingsFragment" />
         </activity>
 
         <activity
