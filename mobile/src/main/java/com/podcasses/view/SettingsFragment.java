@@ -1,6 +1,8 @@
 package com.podcasses.view;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,6 +76,7 @@ public class SettingsFragment extends BaseFragment {
                 SharedPreferencesManager sharedPreferencesManager =
                         ((BaseApplication) getActivity().getApplication()).getSharedPreferencesManager();
                 sharedPreferencesManager.setLocale(viewModel.getLanguages().get(pos).getIso639_1());
+
                 Intent intent = getActivity().getIntent();
                 getActivity().finish();
                 startActivity(intent);

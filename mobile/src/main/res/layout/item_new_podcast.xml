@@ -12,7 +12,7 @@
 
         <variable
             name="viewModel"
-            type="com.podcasses.viewmodel.base.BasePodcastViewModel" />
+            type="com.podcasses.viewmodel.HomeViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -26,7 +26,7 @@
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:minHeight="300dp"
-        android:onClick="@{() -> viewModel.onPodcastClick(position)}"
+        android:onClick="@{() -> viewModel.onNewPodcastClick(position)}"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
         app:cardPreventCornerOverlap="false"
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="150dp"
                 android:scaleType="fitXY"
-                app:imageUrl='@{viewModel.getPodcastAt(position).imageUrl}'
+                app:imageUrl='@{viewModel.getNewPodcastAt(position).imageUrl}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:background="#99000000"
                 android:src="@drawable/ic_iconfinder_check_circle_outline_326568"
-                android:visibility="@{viewModel.getPodcastAt(position).markAsPlayed ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.getNewPodcastAt(position).markAsPlayed ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="@id/podcast_image"
                 app:layout_constraintTop_toTopOf="@id/podcast_image" />
 
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#99000000"
-                android:text="@{viewModel.getPodcastAt(position).duration}"
+                android:text="@{viewModel.getNewPodcastAt(position).duration}"
                 android:textColor="@color/colorPrimaryText"
                 app:layout_constraintBottom_toBottomOf="@id/podcast_image"
                 app:layout_constraintEnd_toEndOf="@id/podcast_image" />
@@ -72,9 +72,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="4"
+                android:maxLines="3"
                 android:padding="10dp"
-                android:text="@{viewModel.getPodcastAt(position).title}"
+                android:text="@{viewModel.getNewPodcastAt(position).title}"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/options_button"
                 app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +87,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="5dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:onClick="@{v -> viewModel.onOptionsButtonClick(v, position, viewModel.fragmentManager)}"
+                android:onClick="@{v -> viewModel.onNewPodcastOptionsButtonClick(v, position, viewModel.fragmentManager)}"
                 android:src="@drawable/ic_more_options"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/podcast_title" />
@@ -99,8 +99,8 @@
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="3"
-                android:onClick="@{() -> viewModel.onChannelIdClick(position)}"
-                android:text="@{viewModel.getPodcastAt(position).channel}"
+                android:onClick="@{() -> viewModel.onNewPodcastChannelIdClick(position)}"
+                android:text="@{viewModel.getNewPodcastAt(position).channel}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/podcast_title"

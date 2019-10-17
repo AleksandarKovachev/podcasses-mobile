@@ -8,6 +8,9 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.podcasses.R;
+import com.podcasses.adapter.PodcastAdapter;
+import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Language;
@@ -15,21 +18,41 @@ import com.podcasses.model.response.Nomenclature;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.DialogUtil;
+import com.podcasses.util.PopupMenuUtil;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
 
 public class HomeViewModel extends BasePodcastViewModel {
 
+    private MutableLiveData<List<Object>> newPodcasts = new MutableLiveData<>();
     private MutableLiveData<TrendingFilter> trendingFilterMutableLiveData = new MutableLiveData<>();
+
+    private PodcastAdapter newPodcastAdapter = new PodcastAdapter(R.layout.item_new_podcast, R.layout.ad_native_trending, this);
+
     private Integer categoryId = -1, languageId = -1;
     private LifecycleOwner lifecycleOwner;
 
+    private String token;
+
+    private ApiCallInterface apiCallInterface;
+
     HomeViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository, apiCallInterface);
+        this.apiCallInterface = apiCallInterface;
+    }
+
+    public PodcastAdapter getNewPodcastAdapter() {
+        return newPodcastAdapter;
+    }
+
+    public void setNewPodcastsInAdapter(List<Object> podcasts) {
+        this.newPodcasts.setValue(podcasts);
+        this.newPodcastAdapter.setPodcasts(newPodcasts.getValue());
     }
 
     public LiveData<ApiResponse> getSubscribedPodcastChannels(String token) {
+        this.token = token;
         return repository.getSubscribedPodcastChannels(lifecycleOwner, token);
     }
 
@@ -45,12 +68,36 @@ public class HomeViewModel extends BasePodcastViewModel {
         return repository.getTrendingPodcasts(lifecycleOwner, filter, isSwipedToRefresh);
     }
 
+    public LiveData<ApiResponse> newPodcasts() {
+        return repository.getNewPodcasts();
+    }
+
     public MutableLiveData<TrendingFilter> getTrendingFilterMutableLiveData() {
         return trendingFilterMutableLiveData;
     }
 
     public void onFilterButtonClick(View view) {
         DialogUtil.createTrendingFilterDialog(view.getContext(), trendingFilterMutableLiveData, this, lifecycleOwner);
+    }
+
+    public Podcast getNewPodcastAt(Integer index) {
+        if (newPodcasts.getValue() != null && index != null && newPodcasts.getValue().size() > index) {
+            return (Podcast) newPodcasts.getValue().get(index);
+        }
+        return null;
+    }
+
+    public void onNewPodcastOptionsButtonClick(View view, Integer position, FragmentManager fragmentManager) {
+        PopupMenuUtil.podcastPopupMenu(this, view, (Podcast) newPodcasts.getValue().get(position), apiCallInterface, token, fragmentManager);
+    }
+
+    public void onNewPodcastChannelIdClick(Integer index) {
+        super.getSelectedChannelId().set(((Podcast) newPodcasts.getValue().get(index)).getChannelId());
+    }
+
+    public void onNewPodcastClick(Integer index) {
+        Podcast podcast = (Podcast) newPodcasts.getValue().get(index);
+        super.getSelectedPodcast().setValue(podcast);
     }
 
     public void openDatePicker(View view) {

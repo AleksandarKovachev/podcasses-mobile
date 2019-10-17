@@ -27,6 +27,8 @@
 
     <string name="podcast_files_title">Непубликувани качени подкаст файлове</string>
 
+    <string name="new_podcasts">Нови подкасти</string>
+
     <string name="trending_header">Популярни</string>
     <string name="trending_filter">Смени филтъра</string>
 

@@ -27,7 +27,9 @@
 
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
-    <string name="trending_header">Trending podcastChannels</string>
+    <string name="new_podcasts">New podcasts</string>
+    
+    <string name="trending_header">Trending podcasts</string>
     <string name="trending_filter">Change filter</string>
 
     <string name="podcast_channel_add_title">Title</string>
@@ -64,7 +66,7 @@
     <string name="trending_podcasts">Trending</string>
     <string name="downloaded_podcasts">Downloaded</string>
     <string name="podcasts_in_progress">In progress</string>
-    <string name="podcasts_from_subscribe">New podcastChannels</string>
+    <string name="podcasts_from_subscribe">New podcasts</string>
 
     <string name="account_podcast_channels">Podcast channels</string>
 

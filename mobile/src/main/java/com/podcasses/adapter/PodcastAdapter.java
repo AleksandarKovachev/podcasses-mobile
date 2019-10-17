@@ -14,13 +14,14 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.podcasses.R;
+import com.podcasses.databinding.ItemNewPodcastBinding;
 import com.podcasses.databinding.ItemPodcastBinding;
 import com.podcasses.databinding.ItemTrendingPodcastBinding;
+import com.podcasses.viewmodel.HomeViewModel;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
 import java.util.List;
@@ -168,6 +169,9 @@ public class PodcastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 } else if (layoutId == R.layout.item_trending_podcast) {
                     ((ItemTrendingPodcastBinding) binding).setViewModel(viewModel);
                     ((ItemTrendingPodcastBinding) binding).setPosition(position);
+                } else if (layoutId == R.layout.item_new_podcast) {
+                    ((ItemNewPodcastBinding) binding).setViewModel((HomeViewModel) viewModel);
+                    ((ItemNewPodcastBinding) binding).setPosition(position);
                 }
             }
         }

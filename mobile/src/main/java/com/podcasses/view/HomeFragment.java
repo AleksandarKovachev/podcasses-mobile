@@ -49,6 +49,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     @Inject
     ViewModelFactory viewModelFactory;
 
+    private FragmentHomeBinding binder;
+
     private HomeViewModel viewModel;
     private LiveData<ApiResponse> trendingPodcasts;
 
@@ -66,7 +68,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentHomeBinding binder = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        binder = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         viewModel.setLifecycleOwner(this);
@@ -101,12 +103,15 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         if (token != null) {
             token.observe(this, s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
+                    binder.userHomeCard.setVisibility(View.VISIBLE);
                     getSubscribedPodcastChannels(s);
                 }
             });
         } else {
             getSubscribedPodcastChannels(null);
         }
+
+        getNewPodcasts();
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
@@ -115,6 +120,19 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     private void getSubscribedPodcastChannels(String token) {
         LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(token);
         podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
+    }
+
+    private void getNewPodcasts() {
+        LiveData<ApiResponse> newPodcasts = viewModel.newPodcasts();
+        newPodcasts.observe(this, apiResponse -> {
+            if (apiResponse.status == ApiResponse.Status.SUCCESS) {
+                newPodcasts.removeObservers(this);
+                viewModel.setNewPodcastsInAdapter((List<Object>) apiResponse.data);
+            } else if (apiResponse.status == ApiResponse.Status.ERROR) {
+                newPodcasts.removeObservers(this);
+                Log.e(getTag(), "getNewPodcasts: ", apiResponse.error);
+            }
+        });
     }
 
     private void getTrendingPodcasts(RefreshLayout refreshLayout, TrendingFilter trendingFilter) {

@@ -49,13 +49,14 @@
                     tools:listitem="@layout/item_podcast_channel" />
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/description_card_view"
+                    android:id="@+id/user_home_card"
                     style="@style/Widget.MaterialComponents.CardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/medium_offset"
                     android:clickable="true"
                     android:focusable="true"
+                    android:visibility="gone"
                     app:cardCornerRadius="10dp"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -73,7 +74,7 @@
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:pager="@{(viewpager)}"
+                            app:pager="@{viewpager}"
                             app:tabMode="fixed" />
 
                         <androidx.viewpager.widget.ViewPager
@@ -88,13 +89,38 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/new_podcasts_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_offset"
+                    android:text="@string/new_podcasts"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/user_home_card" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/new_podcasts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/new_podcasts_header"
+                    app:setAdapter="@{viewModel.newPodcastAdapter}"
+                    tools:listitem="@layout/item_trending_podcast" />
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/trending_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/small_offset"
                     android:text="@string/trending_header"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    app:layout_constraintEnd_toStartOf="@id/trending_filter_button"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/description_card_view" />
+                    app:layout_constraintTop_toBottomOf="@id/new_podcasts" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/trending_filter_button"
@@ -106,10 +132,11 @@
                     android:text="@string/trending_filter"
                     app:layout_constraintBottom_toBottomOf="@id/trending_header"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/trending_header"
                     app:layout_constraintTop_toTopOf="@id/trending_header" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/podcast_list"
+                    android:id="@+id/trending_podcasts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -26,6 +27,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
@@ -103,8 +105,20 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AccountViewModel.class);
         binding.setViewModel(viewModel);
         binding.refreshLayout.setOnRefreshListener(this);
-        binding.addPodcastChannel.setOnClickListener(a ->
-                fragmentNavigation.pushFragment(PodcastChannelAddFragment.newInstance(fragmentCount + 1)));
+
+        binding.add.addActionItem(
+                new SpeedDialActionItem.Builder(
+                        R.id.add_podcast_channel,
+                        R.drawable.ic_add_podcast_channel)
+                        .setLabel(R.string.podcast_channel_add).create());
+        binding.add.setOnActionSelectedListener(actionItem -> {
+            if (actionItem.getId() == R.id.add_podcast_channel) {
+                fragmentNavigation.pushFragment(PodcastChannelAddFragment.newInstance(fragmentCount + 1));
+            } else {
+                fragmentNavigation.pushFragment(UploadFragment.newInstance(fragmentCount + 1));
+            }
+            return false;
+        });
         setHasOptionsMenu(true);
         return binding.getRoot();
     }
@@ -131,7 +145,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 setAuthenticationToken(true);
             }
         }
-
         setPodcastChannelClick();
     }
 
@@ -142,6 +155,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             if (token == null) {
                 token = new MutableLiveData<>();
             }
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
             token.setValue(data.getStringExtra(AccountManager.KEY_AUTHTOKEN));
             binding.notAuthenticatedView.setVisibility(View.GONE);
             binding.refreshLayout.setVisibility(View.VISIBLE);
@@ -161,9 +175,6 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.navigation_upload:
-                fragmentNavigation.pushFragment(UploadFragment.newInstance(fragmentCount + 1));
-                break;
             case R.id.navigation_history:
                 fragmentNavigation.pushFragment(HistoryFragment.newInstance(fragmentCount + 1));
                 break;
@@ -286,6 +297,13 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 return;
             }
             if (((List) apiResponse.data).get(0) instanceof PodcastChannel) {
+                if (binding.add.getActionItems().size() < 2) {
+                    binding.add.addActionItem(
+                            new SpeedDialActionItem.Builder(
+                                    R.id.add_podcast,
+                                    R.drawable.ic_headset_white)
+                                    .setLabel(R.string.podcast_add).create());
+                }
                 viewModel.clearPodcastChannelsInAdapter();
                 viewModel.setPodcastChannelsInAdapter((List<Object>) apiResponse.data);
                 viewModel.setPodcastChannels(((List<Object>) apiResponse.data).size());
@@ -361,6 +379,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void handleNotAuthenticatedView() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         binding.bannerAdView.loadAd(new AdRequest.Builder().build());
         binding.notAuthenticatedView.setVisibility(View.VISIBLE);
         binding.refreshLayout.setVisibility(View.GONE);

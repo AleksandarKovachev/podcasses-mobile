@@ -296,6 +296,26 @@ public class MainDataRepository {
         return podcastsResponse;
     }
 
+    public LiveData<ApiResponse> getNewPodcasts() {
+        MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context)) {
+            networkDataSource.getNewPodcasts(new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data, String url) {
+                    podcastsResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    podcastsResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        }
+
+        return podcastsResponse;
+    }
+
     public LiveData<ApiResponse> getPodcastsByPodcastType(LifecycleOwner lifecycleOwner, String token, Integer likeStatus,
                                                           PodcastType podcastType, boolean isSwipedToRefresh, int page) {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
@@ -365,7 +385,7 @@ public class MainDataRepository {
 
         if (ConnectivityUtil.checkInternetConnection(context) && token != null && !CollectionUtils.isEmpty(podcastIds)) {
             fetchAccountPodcastsOnNetwork(token, podcastIds, accountPodcastsResponse);
-        } else if (isSwipedToRefresh && token != null) {
+        } else if (isSwipedToRefresh && token != null && !CollectionUtils.isEmpty(podcastIds)) {
             accountPodcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
         }
 

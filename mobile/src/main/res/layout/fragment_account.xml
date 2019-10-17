@@ -161,23 +161,24 @@
                         android:clipToPadding="false"
                         android:isScrollContainer="false"
                         android:orientation="vertical"
-                        app:spanCount="2"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
                         app:setAdapter="@{viewModel.podcastChannelAdapter}"
+                        app:spanCount="2"
                         tools:listitem="@layout/item_podcast_channel" />
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/add_podcast_channel"
+                    <com.leinardi.android.speeddial.SpeedDialView
+                        android:id="@+id/add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
                         android:layout_marginEnd="@dimen/medium_offset"
                         android:layout_marginBottom="@dimen/medium_offset"
-                        android:src="@drawable/ic_add"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:sdMainFabClosedSrc="@drawable/ic_add" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>
@@ -202,10 +203,10 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_person_outline"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/not_authenticated_text"
@@ -229,14 +230,14 @@
                 app:layout_constraintTop_toBottomOf="@id/not_authenticated_text" />
 
             <com.google.android.gms.ads.AdView
-            android:id="@+id/banner_ad_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:adSize="BANNER"
-            app:adUnitId="@string/AUTHENTICATION_BANNER_ADS"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+                android:id="@+id/banner_ad_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:adSize="BANNER"
+                app:adUnitId="@string/AUTHENTICATION_BANNER_ADS"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

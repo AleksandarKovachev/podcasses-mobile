@@ -134,7 +134,6 @@ public class MainActivity extends BaseActivity implements
             case R.id.navigation_settings:
                 fragNavController.pushFragment(SettingsFragment.newInstance(1, getLocale()));
                 break;
-            case R.id.navigation_upload:
             case R.id.navigation_history:
             case R.id.navigation_logout:
             case R.id.navigation_share:
