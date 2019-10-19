@@ -27,8 +27,12 @@
 
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
+    <string name="subscribed_podcast_channels">Subscribed podcast channels</string>
+
+    <string name="new_podcast_channels">Podcast channels</string>
+
     <string name="new_podcasts">New podcasts</string>
-    
+
     <string name="trending_header">Trending podcasts</string>
     <string name="trending_filter">Change filter</string>
 
@@ -130,11 +134,12 @@
     <string name="settings_privacy_policy">Privacy Policy</string>
 
     <string-array name="trendingFilter">
-        <item>Choose:</item>
+        <item>Choose a date period:</item>
         <item>DAILY</item>
         <item>WEEKLY</item>
         <item>MONTHLY</item>
         <item>YEARLY</item>
+        <item>Custom</item>
     </string-array>
 
 </resources>

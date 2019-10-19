@@ -37,6 +37,18 @@
                 android:layout_height="match_parent"
                 tools:context=".view.AccountFragment">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/subscribed_podcast_channels_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_offset"
+                    android:text="@string/subscribed_podcast_channels"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/podcast_channels"
                     android:layout_width="match_parent"
@@ -44,7 +56,7 @@
                     android:clipToPadding="false"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/subscribed_podcast_channels_header"
                     app:setAdapter="@{viewModel.podcastChannelAdapter}"
                     tools:listitem="@layout/item_podcast_channel" />
 
@@ -89,6 +101,29 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/new_podcast_channels_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_offset"
+                    android:text="@string/new_podcast_channels"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/user_home_card" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/new_podcast_channels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/new_podcast_channels_header"
+                    app:setAdapter="@{viewModel.newPodcastChannelAdapter}"
+                    tools:listitem="@layout/item_new_podcast_channel_mini" />
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/new_podcasts_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,7 +132,7 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/user_home_card" />
+                    app:layout_constraintTop_toBottomOf="@id/new_podcast_channels" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/new_podcasts"

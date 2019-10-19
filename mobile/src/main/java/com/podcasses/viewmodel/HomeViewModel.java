@@ -10,6 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastAdapter;
+import com.podcasses.adapter.PodcastChannelAdapter;
+import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.response.ApiResponse;
@@ -27,7 +29,9 @@ public class HomeViewModel extends BasePodcastViewModel {
 
     private MutableLiveData<List<Object>> newPodcasts = new MutableLiveData<>();
     private MutableLiveData<TrendingFilter> trendingFilterMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<PodcastChannel>> newPodcastChannels = new MutableLiveData<>();
 
+    private PodcastChannelAdapter newPodcastChannelsAdapter = new PodcastChannelAdapter(R.layout.item_new_podcast_channel_mini, this);
     private PodcastAdapter newPodcastAdapter = new PodcastAdapter(R.layout.item_new_podcast, R.layout.ad_native_trending, this);
 
     private Integer categoryId = -1, languageId = -1;
@@ -56,6 +60,26 @@ public class HomeViewModel extends BasePodcastViewModel {
         return repository.getSubscribedPodcastChannels(lifecycleOwner, token);
     }
 
+    public PodcastChannelAdapter getNewPodcastChannelAdapter() {
+        return newPodcastChannelsAdapter;
+    }
+
+    public void setNewPodcastChannelsInAdapter(List<PodcastChannel> podcastChannels) {
+        this.newPodcastChannels.setValue(podcastChannels);
+        this.newPodcastChannelsAdapter.setPodcastChannels((List<Object>) (Object) this.newPodcastChannels.getValue());
+    }
+
+    public void onNewPodcastChannelClick(Integer index) {
+        super.getSelectedPodcastChannel().set(newPodcastChannels.getValue().get(index));
+    }
+
+    public PodcastChannel getNewPodcastChannelAt(Integer index) {
+        if (newPodcastChannels.getValue() != null && index != null && newPodcastChannels.getValue().size() > index) {
+            return newPodcastChannels.getValue().get(index);
+        }
+        return null;
+    }
+
     public LiveData<List<Nomenclature>> getCategories() {
         return repository.getCategories();
     }
@@ -66,6 +90,10 @@ public class HomeViewModel extends BasePodcastViewModel {
 
     public LiveData<ApiResponse> trendingPodcasts(LifecycleOwner lifecycleOwner, TrendingFilter filter, boolean isSwipedToRefresh) {
         return repository.getTrendingPodcasts(lifecycleOwner, filter, isSwipedToRefresh);
+    }
+
+    public LiveData<ApiResponse> podcastChannels() {
+        return repository.getPodcastChannel(null, null, null, null, false, false);
     }
 
     public LiveData<ApiResponse> newPodcasts() {

@@ -18,8 +18,10 @@ import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.podcasses.R;
+import com.podcasses.databinding.ItemNewPodcastChannelMiniBinding;
 import com.podcasses.databinding.ItemPodcastChannelBinding;
 import com.podcasses.databinding.ItemPodcastChannelMiniBinding;
+import com.podcasses.viewmodel.HomeViewModel;
 import com.podcasses.viewmodel.base.BasePodcastChannelViewModel;
 import com.podcasses.viewmodel.base.BasePodcastViewModel;
 
@@ -42,6 +44,11 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         this.layoutId = layoutId;
         this.podcastChannelViewModel = podcastChannelViewModel;
         this.adLayout = adLayout;
+    }
+
+    public PodcastChannelAdapter(@LayoutRes int layoutId, BasePodcastViewModel podcastViewModel) {
+        this.layoutId = layoutId;
+        this.podcastViewModel = podcastViewModel;
     }
 
     public PodcastChannelAdapter(BasePodcastViewModel podcastViewModel) {
@@ -161,8 +168,13 @@ public class PodcastChannelAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         void setData(BasePodcastViewModel viewModel, int position) {
             if (binding != null) {
-                ((ItemPodcastChannelMiniBinding) binding).setViewModel(viewModel);
-                ((ItemPodcastChannelMiniBinding) binding).setPosition(position);
+                if (layoutId == R.layout.item_podcast_channel_mini) {
+                    ((ItemPodcastChannelMiniBinding) binding).setViewModel(viewModel);
+                    ((ItemPodcastChannelMiniBinding) binding).setPosition(position);
+                } else if (layoutId == R.layout.item_new_podcast_channel_mini) {
+                    ((ItemNewPodcastChannelMiniBinding) binding).setViewModel((HomeViewModel) viewModel);
+                    ((ItemNewPodcastChannelMiniBinding) binding).setPosition(position);
+                }
             }
         }
 

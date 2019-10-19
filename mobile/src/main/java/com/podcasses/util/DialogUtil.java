@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,15 +18,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
-import com.podcasses.adapter.LanguageAdapter;
-import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.DialogTrendingFilterBinding;
-import com.podcasses.manager.SharedPreferencesManager;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
-import com.podcasses.model.response.Language;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.viewmodel.HomeViewModel;
 
@@ -33,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import es.dmoral.toasty.Toasty;
@@ -78,8 +74,25 @@ public class DialogUtil {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setView(binding.getRoot());
 
+        binding.trendingFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == binding.trendingFilterSpinner.getCount() - 1) {
+                    binding.fromDate.setVisibility(View.VISIBLE);
+                    binding.toDate.setVisibility(View.VISIBLE);
+                } else {
+                    binding.fromDate.setVisibility(View.GONE);
+                    binding.toDate.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         alertDialogBuilder
-                .setCancelable(false)
                 .setPositiveButton(context.getString(R.string.set),
                         (dialog, id) -> {
                             TrendingReport trendingReport = null;
@@ -110,7 +123,6 @@ public class DialogUtil {
                         })
                 .setNegativeButton(context.getString(R.string.cancel),
                         (dialog, id) -> dialog.cancel());
-
         alertDialogBuilder.create().show();
     }
 

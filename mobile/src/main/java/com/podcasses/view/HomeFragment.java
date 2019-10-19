@@ -111,6 +111,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             getSubscribedPodcastChannels(null);
         }
 
+        getNewPodcastChannels();
         getNewPodcasts();
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
@@ -120,6 +121,19 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     private void getSubscribedPodcastChannels(String token) {
         LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(token);
         podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
+    }
+
+    private void getNewPodcastChannels() {
+        LiveData<ApiResponse> newPodcasts = viewModel.podcastChannels();
+        newPodcasts.observe(this, apiResponse -> {
+            if (apiResponse.status == ApiResponse.Status.SUCCESS) {
+                newPodcasts.removeObservers(this);
+                viewModel.setNewPodcastChannelsInAdapter((List<PodcastChannel>) apiResponse.data);
+            } else if (apiResponse.status == ApiResponse.Status.ERROR) {
+                newPodcasts.removeObservers(this);
+                Log.e(getTag(), "getNewPodcastChannels: ", apiResponse.error);
+            }
+        });
     }
 
     private void getNewPodcasts() {
@@ -220,6 +234,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         }
 
         if (((List<?>) apiResponse.data).get(0) instanceof PodcastChannel) {
+            binder.subscribedPodcastChannelsHeader.setVisibility(View.VISIBLE);
             viewModel.setPodcastChannelsInAdapter((List<PodcastChannel>) apiResponse.data);
             return;
         }

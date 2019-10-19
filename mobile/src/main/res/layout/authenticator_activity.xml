@@ -104,24 +104,26 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/small_text_size"
                 app:backgroundTint="@android:color/holo_blue_dark"
-                app:cornerRadius="@dimen/large_offset"
+                app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/description_card_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/description_card_view"
                 app:layout_constraintVertical_bias="1" />
 
-            <com.google.android.material.button.MaterialButton
+            <!--<com.google.android.material.button.MaterialButton
                 android:id="@+id/forgot_password"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/medium_offset"
+                android:gravity="start"
                 android:text="@string/forgot_password"
                 android:textAllCaps="false"
+                android:textColor="@color/defaultTextColor"
                 app:layout_constraintEnd_toStartOf="@id/register"
                 app:layout_constraintStart_toStartOf="@id/description_card_view"
-                app:layout_constraintTop_toBottomOf="@+id/login_input" />
+                app:layout_constraintTop_toBottomOf="@+id/login_input" />-->
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/register"
@@ -129,10 +131,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/medium_offset"
+                android:gravity="end"
                 android:text="@string/register"
                 android:textAllCaps="false"
+                android:textColor="@color/defaultTextColor"
                 app:layout_constraintEnd_toEndOf="@id/description_card_view"
-                app:layout_constraintStart_toEndOf="@id/forgot_password"
                 app:layout_constraintTop_toBottomOf="@+id/login_input" />
 
             <!--<androidx.appcompat.widget.AppCompatTextView

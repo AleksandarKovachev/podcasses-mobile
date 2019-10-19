@@ -169,7 +169,11 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.account_navigation, menu);
+        if (token == null || token.getValue().isEmpty()) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        } else {
+            getActivity().getMenuInflater().inflate(R.menu.account_navigation, menu);
+        }
     }
 
     @Override
