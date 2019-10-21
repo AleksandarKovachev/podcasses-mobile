@@ -1,8 +1,10 @@
 package com.podcasses.util;
 
+import android.accounts.AccountManager;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +20,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
+import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.databinding.DialogTrendingFilterBinding;
 import com.podcasses.model.request.CommentReportRequest;
 import com.podcasses.model.request.PodcastReportRequest;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.view.AuthenticatorActivity;
 import com.podcasses.viewmodel.HomeViewModel;
 
 import java.text.ParseException;
@@ -38,6 +42,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
 /**
  * Created by aleksandar.kovachev.
@@ -55,14 +60,24 @@ public class DialogUtil {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(context.getString(R.string.report));
 
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_report, null);
+        View view;
+        if (Strings.isEmptyOrWhitespace(token)) {
+            view = LayoutInflater.from(context).inflate(R.layout.dialog_not_authenticated, null);
+            view.findViewById(R.id.not_authenticated_view).setOnClickListener(v -> {
+                Intent intent = new Intent(context, AuthenticatorActivity.class);
+                intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
+                intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
+                context.startActivity(intent);
+            });
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.dialog_report, null);
+            EditText input = view.findViewById(R.id.report);
+
+            builder.setPositiveButton(context.getString(R.string.send), (dialog, which) ->
+                    sendReport(context, apiCallInterface, token, id, input.getText().toString(), isPodcast));
+            builder.setNegativeButton(context.getString(R.string.cancel), (dialog, which) -> dialog.cancel());
+        }
         builder.setView(view);
-
-        EditText input = view.findViewById(R.id.report);
-
-        builder.setPositiveButton(context.getString(R.string.send), (dialog, which) ->
-                sendReport(context, apiCallInterface, token, id, input.getText().toString(), isPodcast));
-        builder.setNegativeButton(context.getString(R.string.cancel), (dialog, which) -> dialog.cancel());
         builder.show();
     }
 

@@ -27,94 +27,146 @@
         android:layout_height="match_parent"
         android:minWidth="350dp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/podcast_list_add_title"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/podcast_list_add_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingStart="@dimen/medium_offset"
-            android:paddingTop="@dimen/medium_offset"
-            android:paddingEnd="@dimen/medium_offset"
-            android:text="@string/podcast_add_to_list"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/podcast_list_items"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:isScrollContainer="false"
-            android:padding="@dimen/medium_offset"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/podcast_list_add_title"
-            app:setAdapter="@{viewModel.podcastListAdapter}"
-            tools:listitem="@layout/item_checkbox" />
-
-        <View
-            android:id="@+id/delimiter"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/podcast_list_items" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/podcast_list_create_new"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingStart="@dimen/medium_offset"
-            android:paddingTop="@dimen/medium_offset"
-            android:paddingEnd="@dimen/medium_offset"
-            android:text="@string/podcast_add_to_list_new"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-            app:layout_constraintTop_toBottomOf="@id/delimiter" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/list_name_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/podcast_add_to_list_name"
-            android:paddingStart="@dimen/medium_offset"
-            android:paddingEnd="@dimen/medium_offset"
-            app:layout_constraintTop_toBottomOf="@id/podcast_list_create_new">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/listName"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_list_add_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:gravity="center"
+                android:paddingStart="@dimen/medium_offset"
+                android:paddingTop="@dimen/medium_offset"
+                android:paddingEnd="@dimen/medium_offset"
+                android:text="@string/podcast_add_to_list"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_new_podcast_list_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/medium_offset"
-            android:onClick="@{(view) -> viewModel.onCreateNewPodcastList(view, token, listName)}"
-            android:text="@string/podcast_add_to_list_new"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/list_name_input" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/podcast_list_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:isScrollContainer="false"
+                android:padding="@dimen/medium_offset"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/podcast_list_add_title"
+                app:setAdapter="@{viewModel.podcastListAdapter}"
+                tools:listitem="@layout/item_checkbox" />
 
-        <View
-            android:id="@+id/delimiter_action"
+            <View
+                android:id="@+id/delimiter"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintTop_toBottomOf="@id/podcast_list_items" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/podcast_list_create_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="@dimen/medium_offset"
+                android:paddingTop="@dimen/medium_offset"
+                android:paddingEnd="@dimen/medium_offset"
+                android:text="@string/podcast_add_to_list_new"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+                app:layout_constraintTop_toBottomOf="@id/delimiter" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/list_name_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/podcast_add_to_list_name"
+                android:paddingStart="@dimen/medium_offset"
+                android:paddingEnd="@dimen/medium_offset"
+                app:layout_constraintTop_toBottomOf="@id/podcast_list_create_new">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/listName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_new_podcast_list_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:onClick="@{(view) -> viewModel.onCreateNewPodcastList(view, token, listName)}"
+                android:text="@string/podcast_add_to_list_new"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_name_input" />
+
+            <View
+                android:id="@+id/delimiter_action"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_margin="@dimen/medium_offset"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintTop_toBottomOf="@id/add_new_podcast_list_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_podcast_list_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_offset"
+                android:onClick="@{(view) -> viewModel.onAddPodcastListButtonClick(view, token, podcastId, dialogFragment)}"
+                android:text="@string/podcast_add_to_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/delimiter_action" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/not_authenticated_view"
             android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_margin="@dimen/medium_offset"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/add_new_podcast_list_button" />
+            android:layout_height="match_parent"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:fitsSystemWindows="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minWidth="350dp"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_podcast_list_button"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/medium_offset"
-            android:text="@string/podcast_add_to_list"
-            android:onClick="@{(view) -> viewModel.onAddPodcastListButtonClick(view, token, podcastId, dialogFragment)}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/delimiter_action" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/account_icon"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_person_outline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/not_authenticated_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_authenticated"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_icon" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/click_to_authenticate_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/click_to_authenticate"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/not_authenticated_text" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

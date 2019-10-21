@@ -1,7 +1,6 @@
 package com.podcasses.view;
 
 import android.accounts.AccountManager;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -120,7 +119,6 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         return fragment;
     }
 
-    @SuppressLint("RestrictedApi")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -177,6 +175,8 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                     setAccountPodcast(s);
                 }
             });
+        } else {
+            binding.commentsView.setVisibility(View.GONE);
         }
 
         commentsResponse = viewModel.comments(id);

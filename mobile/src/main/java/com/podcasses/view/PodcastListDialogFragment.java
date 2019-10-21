@@ -1,5 +1,7 @@
 package com.podcasses.view;
 
+import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
+import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.DialogPodcastListBinding;
 import com.podcasses.model.dto.PodcastListCheckbox;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
 /**
  * Created by aleksandar.kovachev.
@@ -104,6 +109,15 @@ public class PodcastListDialogFragment extends DialogFragment {
                         }
                     });
                 }
+            });
+        } else {
+            binding.podcastListAddView.setVisibility(View.GONE);
+            binding.notAuthenticatedView.setVisibility(View.VISIBLE);
+            binding.notAuthenticatedView.setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
+                intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
+                intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
+                startActivity(intent);
             });
         }
     }
