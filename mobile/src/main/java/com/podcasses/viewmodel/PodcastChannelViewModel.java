@@ -71,7 +71,9 @@ public class PodcastChannelViewModel extends BasePodcastViewModel {
 
     @Bindable
     public String getPodcastsCount() {
-        return podcastsCount.get().toString();
+        if (podcastsCount.get() != null)
+            return podcastsCount.get().toString();
+        return "0";
     }
 
     @Bindable

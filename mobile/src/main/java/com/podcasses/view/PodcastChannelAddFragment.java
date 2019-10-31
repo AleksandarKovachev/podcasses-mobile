@@ -30,7 +30,7 @@ import com.podcasses.R;
 import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastChannelAddBinding;
-import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.FileUploadUtil;
 import com.podcasses.view.base.BaseFragment;
@@ -59,7 +59,7 @@ public class PodcastChannelAddFragment extends BaseFragment {
     ViewModelFactory viewModelFactory;
 
     @Inject
-    ApiCallInterface apiCallInterface;
+    AuthenticationCallInterface authenticationCallInterface;
 
     @Inject
     OkHttpClient okHttpClient;
@@ -100,9 +100,9 @@ public class PodcastChannelAddFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        token = AuthenticationUtil.getAuthenticationToken(getContext());
+        token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binder.setToken(s);
                     token.removeObservers(this);

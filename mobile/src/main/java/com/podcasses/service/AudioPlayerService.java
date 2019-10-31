@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
 import com.podcasses.adapter.PodcastMediaDescriptionAdapter;
 import com.podcasses.dagger.BaseApplication;
@@ -33,6 +34,7 @@ import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.ConnectivityUtil;
 import com.podcasses.util.NetworkRequestsUtil;
@@ -51,6 +53,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private LiveData<String> token;
     private LiveData<ApiResponse> accountPodcastLiveData;
@@ -132,7 +137,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
             playerNotificationManager.setUseNavigationActionsInCompactView(false);
             playerNotificationManager.setPlayer(player);
 
-            token = AuthenticationUtil.getAuthenticationToken(this);
+            token = AuthenticationUtil.getAuthenticationToken(this, authenticationCallInterface);
             if (token == null) {
                 accountPodcastLiveData = mainDataRepository.getAccountPodcast(this, null, podcast.getId());
             } else {
@@ -211,7 +216,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, Uri.parse(podcast.getPodcastUrl()));
         return new MediaDescriptionCompat.Builder()
                 .setMediaId(podcast.getId())
-                .setIconUri(Uri.parse(podcast.getImageUrl()))
+                .setIconUri(Strings.isEmptyOrWhitespace(podcast.getImageUrl()) ?
+                        null :
+                        Uri.parse(podcast.getImageUrl()))
                 .setTitle(podcast.getTitle())
                 .setExtras(extras)
                 .build();

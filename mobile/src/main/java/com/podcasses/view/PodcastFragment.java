@@ -36,10 +36,8 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
-import com.google.android.material.snackbar.Snackbar;
 import com.podcasses.BuildConfig;
 import com.podcasses.R;
-import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.constant.LikeStatus;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastBinding;
@@ -50,6 +48,7 @@ import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.service.AudioPlayerService;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.CustomViewBindings;
@@ -78,7 +77,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
-import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
 
 /**
  * Created by aleksandar.kovachev.
@@ -90,6 +88,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private FragmentPodcastBinding binding;
 
@@ -162,13 +163,13 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             viewModel.setPodcast(podcast);
         } else {
             podcastResponse = viewModel.podcast(this, id, false);
-            podcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastResponse));
+            podcastResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastResponse));
         }
 
         setAccountPodcast(null);
-        token = AuthenticationUtil.getAuthenticationToken(getContext());
+        token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     JWT jwt = new JWT(s);
                     viewModel.setAccountId(jwt.getSubject());
@@ -180,7 +181,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
         }
 
         commentsResponse = viewModel.comments(id);
-        commentsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, commentsResponse));
+        commentsResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, commentsResponse));
 
         binding.likeButton.setOnClickListener(onLikeClickListener);
         binding.dislikeButton.setOnClickListener(onDislikeClickListener);
@@ -226,7 +227,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 if (token != null) {
                     LiveData<AccountPodcast> accountPodcast =
                             NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel, item, getContext(), apiCallInterface, podcast, token.getValue());
-                    accountPodcast.observe(this, a -> {
+                    accountPodcast.observe(getViewLifecycleOwner(), a -> {
                         if (a != null) {
                             this.accountPodcast = a;
                         }
@@ -250,9 +251,9 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 break;
             case R.id.navigation_report:
                 if (token == null) {
-                    showAuthenticationSnackbar();
+                    AuthenticationUtil.showAuthenticationSnackbar(binding.getRoot(), getContext(), this);
                 } else {
-                    DialogUtil.createReportDialog(getContext(), podcast.getId(), apiCallInterface, token.getValue(), true);
+                    DialogUtil.createReportDialog(binding.getRoot(), podcast.getId(), apiCallInterface, token.getValue(), true);
                 }
                 break;
             case R.id.navigation_list:
@@ -292,7 +293,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
                 } else {
                     LiveData<ApiResponse> accountPodcastResponse =
                             NetworkRequestsUtil.sendPodcastViewRequest(getContext(), apiCallInterface, token.getValue(), id, 0, true);
-                    accountPodcastResponse.observe(this, response -> {
+                    accountPodcastResponse.observe(getViewLifecycleOwner(), response -> {
                         switch (response.status) {
                             case SUCCESS:
                                 accountPodcastResponse.removeObservers(this);
@@ -327,7 +328,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     private void setAccountPodcast(String token) {
         accountPodcastResponse = viewModel.accountPodcasts(this, token, id);
-        accountPodcastResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountPodcastResponse));
+        accountPodcastResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, accountPodcastResponse));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData) {
@@ -381,7 +382,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             }
 
             accountCommentsResponse = viewModel.accountComments(token.getValue(), commentIds);
-            accountCommentsResponse.observe(this, accountComments -> consumeAccountCommentsResponse(accountComments, accountCommentsResponse));
+            accountCommentsResponse.observe(getViewLifecycleOwner(), accountComments -> consumeAccountCommentsResponse(accountComments, accountCommentsResponse));
         }
     }
 
@@ -418,7 +419,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     private View.OnClickListener onLikeClickListener = v -> {
         if (token == null) {
-            showAuthenticationSnackbar();
+            AuthenticationUtil.showAuthenticationSnackbar(binding.getRoot(), getContext(), this);
         } else {
             sendLikeDislikeRequest(LikeStatus.LIKE.getValue(), R.string.successfully_liked);
         }
@@ -426,21 +427,11 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
     private View.OnClickListener onDislikeClickListener = v -> {
         if (token == null) {
-            showAuthenticationSnackbar();
+            AuthenticationUtil.showAuthenticationSnackbar(binding.getRoot(), getContext(), this);
         } else {
             sendLikeDislikeRequest(LikeStatus.DISLIKE.getValue(), R.string.successful_dislike);
         }
     };
-
-    private void showAuthenticationSnackbar() {
-        Snackbar.make(binding.getRoot(), getText(R.string.not_authenticated), Snackbar.LENGTH_SHORT)
-                .setAction(getText(R.string.click_to_authenticate), view -> {
-                    Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
-                    intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-                    intent.putExtra(AUTH_TOKEN_TYPE, AUTH_TOKEN_TYPE);
-                    startActivityForResult(intent, 22);
-                }).show();
-    }
 
     private void sendLikeDislikeRequest(int likeStatus, int successfulChangeMessage) {
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();

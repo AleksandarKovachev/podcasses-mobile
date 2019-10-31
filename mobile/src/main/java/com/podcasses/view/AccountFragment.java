@@ -134,7 +134,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        token = AuthenticationUtil.getAuthenticationToken(getContext());
+        token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token == null && accountId == null) {
             handleNotAuthenticatedView();
         } else {
@@ -169,7 +169,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        if (token == null || token.getValue().isEmpty()) {
+        if (token == null || Strings.isEmptyOrWhitespace(token.getValue())) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         } else {
             getActivity().getMenuInflater().inflate(R.menu.account_navigation, menu);
@@ -199,10 +199,10 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
 
     private void setAuthenticationToken(boolean additionalData) {
         if (token == null || token.getValue() != null && new JWT(token.getValue()).isExpired(0)) {
-            token = AuthenticationUtil.getAuthenticationToken(getContext());
+            token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         }
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binding.notAuthenticatedView.setVisibility(View.GONE);
                     binding.refreshLayout.setVisibility(View.VISIBLE);
@@ -248,7 +248,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         if (isMyAccount) {
             accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, true);
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
-            podcastFiles.observe(this, apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
+            podcastFiles.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
         } else if (accountId != null) {
             accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
         }
@@ -256,8 +256,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         podcastChannelsResponse = viewModel.podcastChannels(this,
                 token != null ? token : this.token.getValue(), accountId, null, isMyAccount, refreshLayout != null);
 
-        podcastChannelsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelsResponse, refreshLayout));
-        accountResponse.observe(this, apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
+        podcastChannelsResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastChannelsResponse, refreshLayout));
+        accountResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, accountResponse, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData
@@ -374,7 +374,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setPodcastChannelClick() {
-        viewModel.getSelectedPodcastChannel().observe(this, podcastChannel -> {
+        viewModel.getSelectedPodcastChannel().observe(getViewLifecycleOwner(), podcastChannel -> {
             if (podcastChannel != null) {
                 fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel, false));
                 viewModel.getSelectedPodcastChannel().setValue(null);

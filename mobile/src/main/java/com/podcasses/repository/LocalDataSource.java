@@ -216,8 +216,10 @@ public class LocalDataSource {
     }
 
     void insertAccountPodcasts(AccountPodcast... accountPodcasts) {
-        Executors.newSingleThreadExecutor().execute(() ->
-                accountPodcastDao.insertAll(accountPodcasts));
+        if (accountPodcasts != null) {
+            Executors.newSingleThreadExecutor().execute(() ->
+                    accountPodcastDao.insertAll(accountPodcasts));
+        }
     }
 
     LiveData<List<PodcastFile>> getPodcastFiles() {

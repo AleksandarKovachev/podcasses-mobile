@@ -62,7 +62,7 @@ public class SettingsFragment extends BaseFragment {
         binder.setViewModel(viewModel);
         viewModel.setLocale(locale.getDisplayLanguage() + " " + locale.getCountry());
         LiveData<List<Language>> languages = viewModel.getLocales();
-        languages.observe(this, l -> {
+        languages.observe(getViewLifecycleOwner(), l -> {
             if (l != null) {
                 languages.removeObservers(this);
                 viewModel.setLanguages(l);

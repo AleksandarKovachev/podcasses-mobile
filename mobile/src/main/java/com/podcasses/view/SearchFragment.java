@@ -97,8 +97,8 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     private void getData(RefreshLayout refreshLayout) {
         podcastChannelsResponse = viewModel.getPodcastChannel(this, searchQuery);
         podcastsResponse = viewModel.podcasts(this, searchQuery, null, null, true, false, 0);
-        podcastsResponse.observe(this, response -> consumeResponse(response, podcastsResponse, refreshLayout));
-        podcastChannelsResponse.observe(this, response -> consumeResponse(response, podcastChannelsResponse, refreshLayout));
+        podcastsResponse.observe(getViewLifecycleOwner(), response -> consumeResponse(response, podcastsResponse, refreshLayout));
+        podcastChannelsResponse.observe(getViewLifecycleOwner(), response -> consumeResponse(response, podcastChannelsResponse, refreshLayout));
     }
 
     void updateActionBar() {
@@ -153,7 +153,7 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setListClick() {
-        viewModel.getSelectedPodcast().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(getViewLifecycleOwner(), podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);

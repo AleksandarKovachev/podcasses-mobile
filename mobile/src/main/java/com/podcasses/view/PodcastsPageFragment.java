@@ -21,6 +21,7 @@ import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.FragmentPodcastsPageBinding;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
@@ -40,6 +41,9 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private PodcastsPageViewModel viewModel;
 
@@ -87,7 +91,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
                 type == PodcastType.LIKED_PODCASTS ||
                 type == PodcastType.FROM_SUBSCRIPTIONS ||
                 type == PodcastType.IN_PROGRESS) {
-            token = AuthenticationUtil.getAuthenticationToken(this.getContext());
+            token = AuthenticationUtil.getAuthenticationToken(this.getContext(), authenticationCallInterface);
             if (token != null) {
                 token.observe(getViewLifecycleOwner(), s -> {
                     if (!Strings.isEmptyOrWhitespace(s)) {
@@ -107,7 +111,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getDownloadedPodcasts() {
-        viewModel.getDownloadedPodcasts(page).observe(this, podcasts -> viewModel.setPodcastsInAdapter((List<Object>) (Object) podcasts));
+        viewModel.getDownloadedPodcasts(page).observe(getViewLifecycleOwner(), podcasts -> viewModel.setPodcastsInAdapter((List<Object>) (Object) podcasts));
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
@@ -171,7 +175,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void setPodcastClick() {
-        viewModel.getSelectedPodcast().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(getViewLifecycleOwner(), podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);

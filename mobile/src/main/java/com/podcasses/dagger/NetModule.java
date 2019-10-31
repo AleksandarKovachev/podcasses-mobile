@@ -20,6 +20,7 @@ import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.retrofit.interceptor.AcceptLanguageHeaderInterceptor;
 import com.podcasses.retrofit.interceptor.BasicAuthInterceptor;
+import com.podcasses.retrofit.interceptor.UnauthorizedInterceptor;
 import com.podcasses.util.OkHttpUtil;
 import com.podcasses.viewmodel.ViewModelFactory;
 
@@ -66,9 +67,11 @@ public class NetModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache) {
+    OkHttpClient provideOkHttpClient(Cache cache, Application application, AuthenticationCallInterface authenticationCallInterface) {
         return OkHttpUtil.getTrustedOkHttpClient()
-                .addInterceptor(new AcceptLanguageHeaderInterceptor()).cache(cache).build();
+                .addInterceptor(new AcceptLanguageHeaderInterceptor())
+                .addInterceptor(new UnauthorizedInterceptor(application, authenticationCallInterface))
+                .cache(cache).build();
     }
 
     @Provides

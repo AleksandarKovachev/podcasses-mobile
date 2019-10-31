@@ -81,6 +81,9 @@ public class ExoPlayerControlView extends PlayerControlView implements AdapterVi
     }
 
     private void init() {
+        setFastForwardIncrementMs(10000);
+        setRewindIncrementMs(10000);
+
         sharedPreferencesManager = ((BaseApplication) getContext().getApplicationContext()).getSharedPreferencesManager();
         speeds = Arrays.asList(getResources().getStringArray(R.array.speed_values));
 
@@ -97,6 +100,12 @@ public class ExoPlayerControlView extends PlayerControlView implements AdapterVi
             trimSilenceCheckbox.setChecked(trimSilence);
             trimSilenceCheckbox.setOnCheckedChangeListener(this);
         }
+
+        findViewById(R.id.exo_close).setOnClickListener(v -> {
+            if (getPlayer() != null) {
+                getPlayer().stop();
+            }
+        });
     }
 
 }

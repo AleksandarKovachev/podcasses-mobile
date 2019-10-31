@@ -9,6 +9,7 @@ import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.base.Podcast;
@@ -53,10 +54,14 @@ public class PopupMenuUtil {
                     }
                     break;
                 case R.id.navigation_list:
-                    PodcastListDialogFragment.newInstance(podcast.getId()).show(fragmentManager, null);
+                    if (Strings.isEmptyOrWhitespace(token)) {
+                        AuthenticationUtil.showAuthenticationSnackbar(view, view.getContext());
+                    } else {
+                        PodcastListDialogFragment.newInstance(podcast.getId()).show(fragmentManager, null);
+                    }
                     break;
                 case R.id.navigation_report:
-                    DialogUtil.createReportDialog(view.getContext(), podcast.getId(), apiCallInterface, token, true);
+                    DialogUtil.createReportDialog(view, podcast.getId(), apiCallInterface, token, true);
                     break;
             }
             return true;
@@ -74,7 +79,7 @@ public class PopupMenuUtil {
         menuHelper.setGravity(Gravity.END);
         popupOptions.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.report) {
-                DialogUtil.createReportDialog(view.getContext(), comment.getId(), apiCallInterface, token, false);
+                DialogUtil.createReportDialog(view, comment.getId(), apiCallInterface, token, false);
             }
             return true;
         });

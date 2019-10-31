@@ -30,6 +30,7 @@ import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.request.TrendingFilter;
 import com.podcasses.model.request.TrendingReport;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
@@ -48,6 +49,9 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private FragmentHomeBinding binder;
 
@@ -99,9 +103,9 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void getData(RefreshLayout refreshLayout) {
-        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
+        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binder.userHomeCard.setVisibility(View.VISIBLE);
                     getSubscribedPodcastChannels(s);
@@ -120,12 +124,12 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void getSubscribedPodcastChannels(String token) {
         LiveData<ApiResponse> podcastChannels = viewModel.getSubscribedPodcastChannels(token);
-        podcastChannels.observe(this, response -> consumeApiResponse(response, podcastChannels));
+        podcastChannels.observe(getViewLifecycleOwner(), response -> consumeApiResponse(response, podcastChannels));
     }
 
     private void getNewPodcastChannels() {
         LiveData<ApiResponse> newPodcasts = viewModel.podcastChannels();
-        newPodcasts.observe(this, apiResponse -> {
+        newPodcasts.observe(getViewLifecycleOwner(), apiResponse -> {
             if (apiResponse.status == ApiResponse.Status.SUCCESS) {
                 newPodcasts.removeObservers(this);
                 viewModel.setNewPodcastChannelsInAdapter((List<PodcastChannel>) apiResponse.data);
@@ -138,7 +142,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void getNewPodcasts() {
         LiveData<ApiResponse> newPodcasts = viewModel.newPodcasts();
-        newPodcasts.observe(this, apiResponse -> {
+        newPodcasts.observe(getViewLifecycleOwner(), apiResponse -> {
             if (apiResponse.status == ApiResponse.Status.SUCCESS) {
                 newPodcasts.removeObservers(this);
                 viewModel.setNewPodcastsInAdapter((List<Object>) apiResponse.data);
@@ -151,7 +155,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
 
     private void getTrendingPodcasts(RefreshLayout refreshLayout, TrendingFilter trendingFilter) {
         trendingPodcasts = viewModel.trendingPodcasts(this, trendingFilter, refreshLayout != null);
-        trendingPodcasts.observe(this, apiResponse -> consumeResponse(apiResponse, trendingPodcasts, refreshLayout));
+        trendingPodcasts.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, trendingPodcasts, refreshLayout));
     }
 
     private void consumeResponse(@NonNull ApiResponse apiResponse, LiveData liveData, RefreshLayout refreshLayout) {
@@ -194,15 +198,15 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             podcastIds.add(podcast.getId());
         }
 
-        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
+        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token == null) {
             LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, null, podcastIds, isSwipedToRefresh);
-            accountPodcasts.observe(this, response -> consumeApiResponse(response, accountPodcasts));
+            accountPodcasts.observe(getViewLifecycleOwner(), response -> consumeApiResponse(response, accountPodcasts));
         } else {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, s, podcastIds, isSwipedToRefresh);
-                    accountPodcasts.observe(this, response -> consumeApiResponse(response, accountPodcasts));
+                    accountPodcasts.observe(getViewLifecycleOwner(), response -> consumeApiResponse(response, accountPodcasts));
                 }
             });
         }
@@ -249,7 +253,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setListClick() {
-        viewModel.getSelectedPodcast().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(getViewLifecycleOwner(), podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);
@@ -283,7 +287,7 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
     }
 
     private void setTrendingFilterChange() {
-        viewModel.getTrendingFilterMutableLiveData().observe(this, trendingFilter ->
+        viewModel.getTrendingFilterMutableLiveData().observe(getViewLifecycleOwner(), trendingFilter ->
                 getTrendingPodcasts(null, trendingFilter)
         );
     }

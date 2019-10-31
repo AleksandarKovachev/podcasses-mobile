@@ -37,6 +37,7 @@ import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.ErrorResultResponse;
 import com.podcasses.model.response.FieldErrorResponse;
 import com.podcasses.retrofit.ApiCallInterface;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.DialogUtil;
 import com.podcasses.util.FileUploadUtil;
@@ -74,6 +75,9 @@ public class UploadFragment extends BaseFragment {
 
     @Inject
     ApiCallInterface apiCallInterface;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     @Inject
     OkHttpClient okHttpClient;
@@ -117,14 +121,14 @@ public class UploadFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        token = AuthenticationUtil.getAuthenticationToken(getContext());
+        token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 token.removeObservers(this);
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     LiveData<ApiResponse> podcastChannelsResponse =
                             viewModel.getPodcastChannels(this, s, new JWT(s).getSubject(), true);
-                    podcastChannelsResponse.observe(this, a -> {
+                    podcastChannelsResponse.observe(getViewLifecycleOwner(), a -> {
                         if (a.status == ApiResponse.Status.DATABASE) {
                             viewModel.setPodcastChannels((List<PodcastChannel>) a.data);
                         } else if (a.status == ApiResponse.Status.SUCCESS) {

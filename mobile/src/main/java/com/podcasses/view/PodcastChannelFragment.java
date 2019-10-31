@@ -36,6 +36,7 @@ import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.base.Podcast;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.LogErrorResponseUtil;
 import com.podcasses.view.base.BaseFragment;
@@ -55,6 +56,9 @@ public class PodcastChannelFragment extends BaseFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private FragmentPodcastChannelBinding binding;
     private PodcastChannelViewModel viewModel;
@@ -139,12 +143,12 @@ public class PodcastChannelFragment extends BaseFragment {
             viewModel.setPodcastChannel(podcastChannel);
         } else {
             podcastChannelResponse = viewModel.podcastChannel(this, podcastChannelId);
-            podcastChannelResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelResponse));
+            podcastChannelResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastChannelResponse));
         }
 
-        token = AuthenticationUtil.getAuthenticationToken(getContext());
+        token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     token.removeObservers(this);
                     JWT jwt = new JWT(s);
@@ -158,7 +162,7 @@ public class PodcastChannelFragment extends BaseFragment {
                     binding.setToken(s);
                     processPodcastChannelStatisticData(s);
                     podcastChannelSubscribeStatus = viewModel.checkPodcastChannelSubscribe(s, podcastChannelId);
-                    podcastChannelSubscribeStatus.observe(this, apiResponse -> consumeResponse(apiResponse, podcastChannelSubscribeStatus));
+                    podcastChannelSubscribeStatus.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastChannelSubscribeStatus));
                 } else if (AccountManager.get(getContext()).getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE).length != 0) {
                     token.removeObservers(this);
                     processPodcastChannelStatisticData(null);
@@ -185,7 +189,7 @@ public class PodcastChannelFragment extends BaseFragment {
         LiveData<ApiResponse> podcastChannelSubscribes = viewModel.podcastChannelSubscribes(podcastChannelId);
         LiveData<ApiResponse> podcastChannelEpisodes = viewModel.podcastChannelEpisodes(token, podcastChannelId);
 
-        podcastChannelViews.observe(this, a -> {
+        podcastChannelViews.observe(getViewLifecycleOwner(), a -> {
             if (a.status == ApiResponse.Status.SUCCESS) {
                 podcastChannelViews.removeObservers(this);
                 viewModel.setViews((Integer) a.data);
@@ -195,7 +199,7 @@ public class PodcastChannelFragment extends BaseFragment {
             }
         });
 
-        podcastChannelSubscribes.observe(this, a -> {
+        podcastChannelSubscribes.observe(getViewLifecycleOwner(), a -> {
             if (a.status == ApiResponse.Status.SUCCESS) {
                 podcastChannelSubscribes.removeObservers(this);
                 viewModel.setSubscribes((Integer) a.data);
@@ -205,7 +209,7 @@ public class PodcastChannelFragment extends BaseFragment {
             }
         });
 
-        podcastChannelEpisodes.observe(this, a -> {
+        podcastChannelEpisodes.observe(getViewLifecycleOwner(), a -> {
             if (a.status == ApiResponse.Status.SUCCESS) {
                 podcastChannelEpisodes.removeObservers(this);
                 viewModel.setPodcastsCount((Integer) a.data);
@@ -279,7 +283,7 @@ public class PodcastChannelFragment extends BaseFragment {
         }
 
         LiveData<ApiResponse> accountPodcasts = viewModel.accountPodcasts(this, token.getValue(), podcastIds, isSwipedToRefresh);
-        accountPodcasts.observe(this, response -> consumeAccountPodcasts(response, accountPodcasts));
+        accountPodcasts.observe(getViewLifecycleOwner(), response -> consumeAccountPodcasts(response, accountPodcasts));
     }
 
     private void consumeAccountPodcasts(ApiResponse accountPodcastsResponse, LiveData<ApiResponse> liveData) {
@@ -328,11 +332,11 @@ public class PodcastChannelFragment extends BaseFragment {
 
     private void loadPodcasts(boolean isSwipedToRefresh, boolean shouldSavePodcasts) {
         podcastsResponse = viewModel.podcasts(this, null, null, podcastChannelId, isSwipedToRefresh, shouldSavePodcasts, page);
-        podcastsResponse.observe(this, apiResponse -> consumeResponse(apiResponse, podcastsResponse));
+        podcastsResponse.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastsResponse));
     }
 
     private void setPodcastClick() {
-        viewModel.getSelectedPodcast().observe(this, podcast -> {
+        viewModel.getSelectedPodcast().observe(getViewLifecycleOwner(), podcast -> {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);

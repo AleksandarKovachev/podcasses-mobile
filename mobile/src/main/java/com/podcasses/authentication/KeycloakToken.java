@@ -9,8 +9,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class KeycloakToken {
 
-    public static final String PREFERRED_USERNAME_CLAIMS = "preferred_username";
-
     @SerializedName("access_token")
     private String accessToken;
 

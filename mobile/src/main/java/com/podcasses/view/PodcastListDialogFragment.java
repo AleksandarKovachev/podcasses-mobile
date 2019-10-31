@@ -1,7 +1,5 @@
 package com.podcasses.view;
 
-import android.accounts.AccountManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +14,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
-import com.podcasses.authentication.AccountAuthenticator;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.databinding.DialogPodcastListBinding;
 import com.podcasses.model.dto.PodcastListCheckbox;
 import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.ApiResponse;
+import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.viewmodel.PodcastListDialogViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
@@ -31,8 +29,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.podcasses.authentication.AccountAuthenticator.AUTH_TOKEN_TYPE;
-
 /**
  * Created by aleksandar.kovachev.
  */
@@ -40,6 +36,9 @@ public class PodcastListDialogFragment extends DialogFragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    AuthenticationCallInterface authenticationCallInterface;
 
     private PodcastListDialogViewModel viewModel;
     private DialogPodcastListBinding binding;
@@ -69,13 +68,13 @@ public class PodcastListDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext());
+        LiveData<String> token = AuthenticationUtil.getAuthenticationToken(getContext(), authenticationCallInterface);
         if (token != null) {
-            token.observe(this, s -> {
+            token.observe(getViewLifecycleOwner(), s -> {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binding.setToken(s);
                     LiveData<ApiResponse> accountListsResponse = viewModel.accountLists(s, null);
-                    accountListsResponse.observe(this, accountLists -> {
+                    accountListsResponse.observe(getViewLifecycleOwner(), accountLists -> {
                         if (accountLists.status == ApiResponse.Status.SUCCESS) {
                             accountListsResponse.removeObservers(this);
                             List<PodcastListCheckbox> podcastListCheckboxes = new ArrayList<>();
@@ -88,7 +87,7 @@ public class PodcastListDialogFragment extends DialogFragment {
                             viewModel.setPodcastListCheckboxes(podcastListCheckboxes);
 
                             LiveData<ApiResponse> podcastListsResponse = viewModel.accountLists(s, podcastId);
-                            podcastListsResponse.observe(this, podcastLists -> {
+                            podcastListsResponse.observe(getViewLifecycleOwner(), podcastLists -> {
                                 if (podcastLists.status == ApiResponse.Status.SUCCESS) {
                                     podcastListsResponse.removeObservers(this);
                                     viewModel.setCheckedAccountLists((List<AccountList>) podcastLists.data);
@@ -109,15 +108,6 @@ public class PodcastListDialogFragment extends DialogFragment {
                         }
                     });
                 }
-            });
-        } else {
-            binding.podcastListAddView.setVisibility(View.GONE);
-            binding.notAuthenticatedView.setVisibility(View.VISIBLE);
-            binding.notAuthenticatedView.setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
-                intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-                intent.putExtra(AUTH_TOKEN_TYPE, AccountAuthenticator.AUTH_TOKEN_TYPE);
-                startActivity(intent);
             });
         }
     }
