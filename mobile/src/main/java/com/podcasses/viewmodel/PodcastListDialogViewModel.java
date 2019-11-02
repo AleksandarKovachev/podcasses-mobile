@@ -7,9 +7,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.podcasses.R;
-import com.podcasses.adapter.PodcastListAdapter;
+import com.podcasses.adapter.PodcastListCheckboxAdapter;
 import com.podcasses.model.dto.PodcastListCheckbox;
 import com.podcasses.model.request.AccountListRequest;
 import com.podcasses.model.response.AccountList;
@@ -35,15 +36,15 @@ public class PodcastListDialogViewModel extends BaseViewModel {
 
     private MutableLiveData<List<AccountList>> checkedAccountLists = new MutableLiveData<>();
     private MutableLiveData<List<PodcastListCheckbox>> podcastListCheckboxes = new MutableLiveData<>();
-    private PodcastListAdapter podcastListAdapter = new PodcastListAdapter(this);
+    private PodcastListCheckboxAdapter podcastListCheckboxAdapter = new PodcastListCheckboxAdapter(this);
 
     PodcastListDialogViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
         super(repository);
         this.apiCallInterface = apiCallInterface;
     }
 
-    public PodcastListAdapter getPodcastListAdapter() {
-        return podcastListAdapter;
+    public PodcastListCheckboxAdapter getPodcastListCheckboxAdapter() {
+        return podcastListCheckboxAdapter;
     }
 
     public LiveData<ApiResponse> accountLists(String token, String podcastId) {
@@ -52,12 +53,14 @@ public class PodcastListDialogViewModel extends BaseViewModel {
 
     public void setPodcastListCheckboxes(List<PodcastListCheckbox> podcastListCheckboxes) {
         this.podcastListCheckboxes.setValue(podcastListCheckboxes);
-        this.podcastListAdapter.setPodcastListCheckBoxes(podcastListCheckboxes);
+        this.podcastListCheckboxAdapter.setPodcastListCheckBoxes(podcastListCheckboxes);
     }
 
     void addPodcastListCheckBox(PodcastListCheckbox podcastListCheckbox) {
-        this.podcastListCheckboxes.getValue().add(podcastListCheckbox);
-        this.podcastListAdapter.setPodcastListCheckBoxes(podcastListCheckboxes.getValue());
+        if (podcastListCheckbox != null) {
+            this.podcastListCheckboxes.getValue().add(podcastListCheckbox);
+            this.podcastListCheckboxAdapter.setPodcastListCheckBoxes(podcastListCheckboxes.getValue());
+        }
     }
 
     public List<PodcastListCheckbox> getPodcastListCheckboxes() {
@@ -153,11 +156,13 @@ public class PodcastListDialogViewModel extends BaseViewModel {
 
     private boolean shouldSkip(PodcastListCheckbox podcastListCheckbox) {
         boolean isPodcastListCheckboxInitiallyChecked = false;
-        for (AccountList accountList : checkedAccountLists.getValue()) {
-            if (podcastListCheckbox.getId() == accountList.getId()) {
-                isPodcastListCheckboxInitiallyChecked = true;
+
+        if (!CollectionUtils.isEmpty(checkedAccountLists.getValue()))
+            for (AccountList accountList : checkedAccountLists.getValue()) {
+                if (podcastListCheckbox.getId() == accountList.getId()) {
+                    isPodcastListCheckboxInitiallyChecked = true;
+                }
             }
-        }
 
         return podcastListCheckbox.isChecked() && isPodcastListCheckboxInitiallyChecked ||
                 !podcastListCheckbox.isChecked() && !isPodcastListCheckboxInitiallyChecked;

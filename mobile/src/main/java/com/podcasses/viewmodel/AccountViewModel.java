@@ -11,9 +11,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.podcasses.BR;
 import com.podcasses.R;
+import com.podcasses.adapter.AccountListAdapter;
 import com.podcasses.adapter.PodcastFileAdapter;
-import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.Account;
+import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
@@ -34,17 +36,22 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
 
     private ApiCallInterface apiCallInterface;
 
+    private MutableLiveData<AccountList> selectedAccountList = new MutableLiveData<>();
+
     private MutableLiveData<Account> account = new MutableLiveData<>();
     private ObservableField<String> profileImage = new ObservableField<>();
     private ObservableField<Integer> podcastChannels = new ObservableField<>(0);
 
     private MutableLiveData<List<PodcastFile>> podcastFiles = new MutableLiveData<>();
+    private MutableLiveData<List<AccountList>> accountLists = new MutableLiveData<>();
+
     private PodcastFileAdapter podcastFileAdapter = new PodcastFileAdapter(this);
+    private AccountListAdapter accountListAdapter = new AccountListAdapter(this);
 
     private String token;
 
     AccountViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
-        super(repository, apiCallInterface);
+        super(repository);
         this.apiCallInterface = apiCallInterface;
     }
 
@@ -62,9 +69,16 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
     public LiveData<ApiResponse> podcastFiles(LifecycleOwner lifecycleOwner, String token, boolean isSwipedToRefresh) {
         this.token = token;
         if (!isSwipedToRefresh && podcastFiles.getValue() != null && !podcastFiles.getValue().isEmpty()) {
-            return new MutableLiveData<>(ApiResponse.fetched());
+            return new MutableLiveData<>(ApiResponse.success(podcastFiles.getValue(), null));
         }
         return repository.getPodcastFiles(lifecycleOwner, token, isSwipedToRefresh);
+    }
+
+    public LiveData<ApiResponse> accountLists(String token, boolean isSwipedToRefresh) {
+        if (!isSwipedToRefresh && accountLists.getValue() != null && !accountLists.getValue().isEmpty()) {
+            return new MutableLiveData<>(ApiResponse.success(accountLists.getValue(), null));
+        }
+        return repository.getAccountLists(token, null);
     }
 
     @Bindable
@@ -120,6 +134,30 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
                 LogErrorResponseUtil.logFailure(t, view.getContext());
             }
         });
+    }
+
+    public AccountListAdapter getAccountListAdapter() {
+        return accountListAdapter;
+    }
+
+    public void setAccountListsInAdapter(List<AccountList> accountLists) {
+        this.accountLists.setValue(accountLists);
+        this.accountListAdapter.setAccountLists(accountLists);
+    }
+
+    public AccountList getAccountListAt(Integer index) {
+        if (accountLists.getValue() != null && index != null && accountLists.getValue().size() > index) {
+            return accountLists.getValue().get(index);
+        }
+        return null;
+    }
+
+    public void onAccountListClick(Integer index) {
+        selectedAccountList.setValue(accountLists.getValue().get(index));
+    }
+
+    public MutableLiveData<AccountList> getSelectedAccountList() {
+        return selectedAccountList;
     }
 
     public void setProfileImage(String url) {

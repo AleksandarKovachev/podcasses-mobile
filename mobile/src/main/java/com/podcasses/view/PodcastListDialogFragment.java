@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
 import com.podcasses.R;
 import com.podcasses.dagger.BaseApplication;
@@ -25,6 +26,7 @@ import com.podcasses.viewmodel.PodcastListDialogViewModel;
 import com.podcasses.viewmodel.ViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,6 +79,11 @@ public class PodcastListDialogFragment extends DialogFragment {
                     accountListsResponse.observe(getViewLifecycleOwner(), accountLists -> {
                         if (accountLists.status == ApiResponse.Status.SUCCESS) {
                             accountListsResponse.removeObservers(this);
+
+                            if (CollectionUtils.isEmpty((Collection<?>) accountLists.data)) {
+                                return;
+                            }
+
                             List<PodcastListCheckbox> podcastListCheckboxes = new ArrayList<>();
                             for (AccountList accountList : (List<AccountList>) accountLists.data) {
                                 PodcastListCheckbox podcastListCheckbox = new PodcastListCheckbox();
@@ -90,6 +97,11 @@ public class PodcastListDialogFragment extends DialogFragment {
                             podcastListsResponse.observe(getViewLifecycleOwner(), podcastLists -> {
                                 if (podcastLists.status == ApiResponse.Status.SUCCESS) {
                                     podcastListsResponse.removeObservers(this);
+
+                                    if (CollectionUtils.isEmpty((Collection<?>) podcastLists.data)) {
+                                        return;
+                                    }
+
                                     viewModel.setCheckedAccountLists((List<AccountList>) podcastLists.data);
 
                                     for (AccountList accountList : (List<AccountList>) podcastLists.data) {

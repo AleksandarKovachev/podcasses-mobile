@@ -36,6 +36,7 @@ import com.podcasses.databinding.FragmentAccountBinding;
 import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
+import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
@@ -81,6 +82,7 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
     private LiveData<ApiResponse> accountResponse;
     private LiveData<ApiResponse> podcastChannelsResponse;
     private LiveData<ApiResponse> podcastFiles;
+    private LiveData<ApiResponse> accountLists;
 
     private static String accountId;
 
@@ -146,6 +148,8 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             }
         }
         setPodcastChannelClick();
+        setAccountListClick();
+        setAuthorClick();
     }
 
     @Override
@@ -247,8 +251,12 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
         }
         if (isMyAccount) {
             accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, true);
+
             podcastFiles = viewModel.podcastFiles(this, token != null ? token : this.token.getValue(), refreshLayout != null);
             podcastFiles.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, podcastFiles, refreshLayout));
+
+            accountLists = viewModel.accountLists(token != null ? token : this.token.getValue(), refreshLayout != null);
+            accountLists.observe(getViewLifecycleOwner(), apiResponse -> consumeResponse(apiResponse, accountLists, refreshLayout));
         } else if (accountId != null) {
             accountResponse = viewModel.account(this, null, accountId, refreshLayout != null, false);
         }
@@ -315,6 +323,9 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
                 if (((List<Object>) apiResponse.data).size() >= 3) {
                     addAds();
                 }
+            } else if (((List) apiResponse.data).get(0) instanceof AccountList) {
+                viewModel.setAccountListsInAdapter((List<AccountList>) apiResponse.data);
+                binding.accountListsView.setVisibility(View.VISIBLE);
             } else {
                 viewModel.setPodcastFilesInAdapter((List<PodcastFile>) apiResponse.data);
                 binding.podcastFilesCardView.setVisibility(View.VISIBLE);
@@ -378,6 +389,24 @@ public class AccountFragment extends BaseFragment implements OnRefreshListener {
             if (podcastChannel != null) {
                 fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcastChannel.getId(), podcastChannel, false));
                 viewModel.getSelectedPodcastChannel().setValue(null);
+            }
+        });
+    }
+
+    private void setAccountListClick() {
+        viewModel.getSelectedAccountList().observe(getViewLifecycleOwner(), accountList -> {
+            if (accountList != null) {
+                fragmentNavigation.pushFragment(PodcastsPageFragment.newInstance(fragmentCount + 1, 0, accountList.getId()));
+                viewModel.getSelectedAccountList().setValue(null);
+            }
+        });
+    }
+
+    private void setAuthorClick() {
+        viewModel.getSelectedAuthor().observe(getViewLifecycleOwner(), author -> {
+            if (author != null) {
+                fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, author, accountId.equals(author)));
+                viewModel.getSelectedAuthor().setValue(null);
             }
         });
     }

@@ -146,6 +146,28 @@ public class MainDataRepository {
         return podcastChannelsResponse;
     }
 
+    public LiveData<ApiResponse> getPodcastsFromList(String token, Long accountListId, int page) {
+        MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
+
+        if (ConnectivityUtil.checkInternetConnection(context) && !Strings.isEmptyOrWhitespace(token)) {
+            networkDataSource.getPodcastsFromList(token, accountListId, page, new IDataCallback<List<Podcast>>() {
+                @Override
+                public void onSuccess(List<Podcast> data, String url) {
+                    podcastsResponse.setValue(ApiResponse.success(data, url));
+                }
+
+                @Override
+                public void onFailure(Throwable error, String url) {
+                    podcastsResponse.setValue(ApiResponse.error(error, url));
+                }
+            });
+        } else {
+            podcastsResponse.setValue(ApiResponse.error(new ConnectException(), null));
+        }
+
+        return podcastsResponse;
+    }
+
     public LiveData<ApiResponse> getPodcastChannel(LifecycleOwner lifecycleOwner, String token, String userId, String name,
                                                    boolean isMyAccount, boolean isSwipedToRefresh) {
         MutableLiveData<ApiResponse> podcastChannelsResponse = new MutableLiveData<>(ApiResponse.loading());

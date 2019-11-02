@@ -48,7 +48,7 @@
             android:padding="@dimen/medium_offset"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/podcast_list_add_title"
-            app:setAdapter="@{viewModel.podcastListAdapter}"
+            app:setAdapter="@{viewModel.podcastListCheckboxAdapter}"
             tools:listitem="@layout/item_checkbox" />
 
         <View

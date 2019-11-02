@@ -16,7 +16,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/medium_offset">
+        android:layout_marginBottom="@dimen/medium_offset"
+        android:background="?attr/selectableItemBackground">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/account_image"

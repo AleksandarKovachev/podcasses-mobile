@@ -4,15 +4,14 @@ import android.content.Context;
 
 import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.common.util.Strings;
+import com.podcasses.model.entity.Account;
 import com.podcasses.model.entity.AccountPodcast;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.entity.PodcastFile;
 import com.podcasses.model.entity.base.Podcast;
-import com.podcasses.model.request.AccountListRequest;
 import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.request.AccountPodcastType;
 import com.podcasses.model.request.TrendingFilter;
-import com.podcasses.model.entity.Account;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.AccountList;
 import com.podcasses.model.response.Comment;
@@ -20,8 +19,6 @@ import com.podcasses.model.response.Language;
 import com.podcasses.model.response.Nomenclature;
 import com.podcasses.retrofit.ApiCallInterface;
 import com.podcasses.util.LogErrorResponseUtil;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +90,45 @@ class NetworkDataSource {
 
                         @Override
                         public void onFailure(Call<List<PodcastChannel>> call, Throwable t) {
+                            callback.onFailure(t, call.request().url().toString());
+                        }
+                    });
+                } else {
+                    callback.onSuccess(null, response.raw().request().url().toString());
+                    LogErrorResponseUtil.logErrorResponse(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                callback.onFailure(t, call.request().url().toString());
+            }
+        });
+    }
+
+    void getPodcastsFromList(String token, Long id, int page, IDataCallback<List<Podcast>> callback) {
+        Call<List<String>> call = apiCallInterface.getPodcastsByListId("Bearer " + token, id);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if (response.isSuccessful()) {
+                    if (CollectionUtils.isEmpty(response.body())) {
+                        callback.onSuccess(null, response.raw().request().url().toString());
+                        return;
+                    }
+                    apiCallInterface.podcast(null, null, null, response.body(), page).enqueue(new Callback<List<Podcast>>() {
+                        @Override
+                        public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                            if (response.isSuccessful()) {
+                                callback.onSuccess(response.body(), response.raw().request().url().toString());
+                            } else {
+                                callback.onSuccess(null, response.raw().request().url().toString());
+                                LogErrorResponseUtil.logErrorResponse(response, context);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Podcast>> call, Throwable t) {
                             callback.onFailure(t, call.request().url().toString());
                         }
                     });

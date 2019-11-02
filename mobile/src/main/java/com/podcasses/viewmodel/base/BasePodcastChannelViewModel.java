@@ -10,7 +10,6 @@ import com.podcasses.adapter.PodcastChannelAdapter;
 import com.podcasses.model.entity.PodcastChannel;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.repository.MainDataRepository;
-import com.podcasses.retrofit.ApiCallInterface;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,16 +19,14 @@ import java.util.List;
  */
 public class BasePodcastChannelViewModel extends BaseViewModel {
 
+    private MutableLiveData<String> selectedAuthor = new MutableLiveData<>();
     private MutableLiveData<List<Object>> podcastChannels = new MutableLiveData<>();
     private MutableLiveData<PodcastChannel> selectedPodcastChannel = new MutableLiveData<>();
     private PodcastChannelAdapter podcastChannelAdapter = new PodcastChannelAdapter(R.layout.item_podcast_channel,
             R.layout.ad_native_podcast_channel, this);
 
-    private ApiCallInterface apiCallInterface;
-
-    public BasePodcastChannelViewModel(MainDataRepository repository, ApiCallInterface apiCallInterface) {
+    public BasePodcastChannelViewModel(MainDataRepository repository) {
         super(repository);
-        this.apiCallInterface = apiCallInterface;
     }
 
     public PodcastChannelAdapter getPodcastChannelAdapter() {
@@ -75,11 +72,14 @@ public class BasePodcastChannelViewModel extends BaseViewModel {
     }
 
     public void onAuthorClick(Integer index) {
-
+        selectedAuthor.setValue(((PodcastChannel) podcastChannels.getValue().get(index)).getUserId());
     }
 
     public MutableLiveData<PodcastChannel> getSelectedPodcastChannel() {
         return selectedPodcastChannel;
     }
 
+    public MutableLiveData<String> getSelectedAuthor() {
+        return selectedAuthor;
+    }
 }

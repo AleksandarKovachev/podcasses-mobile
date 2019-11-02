@@ -50,23 +50,24 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     private FragmentPodcastsPageBinding binder;
     private LiveData<ApiResponse> podcasts;
     private LiveData<String> token;
-    private PodcastType type;
+
+    private static PodcastType type;
+    private static Long accountListId;
 
     private int page = 0;
 
     public static PodcastsPageFragment newInstance(int type) {
-        Bundle args = new Bundle();
-        args.putInt(BaseFragment.ARGS_INSTANCE, 0);
-        args.putInt("type", type);
-        PodcastsPageFragment fragment = new PodcastsPageFragment();
-        fragment.setArguments(args);
-        return fragment;
+        return newInstance(0, type, null);
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        type = PodcastType.getPodcastType(getArguments().getInt("type"));
+    public static PodcastsPageFragment newInstance(int instance, int type, Long accountListId) {
+        Bundle args = new Bundle();
+        args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        PodcastsPageFragment fragment = new PodcastsPageFragment();
+        PodcastsPageFragment.type = PodcastType.getPodcastType(type);
+        PodcastsPageFragment.accountListId = accountListId;
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -85,7 +86,17 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (type == PodcastType.DOWNLOADED) {
+        if (accountListId != null) {
+            token = AuthenticationUtil.getAuthenticationToken(this.getContext(), authenticationCallInterface);
+            if (token != null) {
+                token.observe(getViewLifecycleOwner(), s -> {
+                    if (!Strings.isEmptyOrWhitespace(s)) {
+                        token.removeObservers(getViewLifecycleOwner());
+                        getPodcasts(s, null);
+                    }
+                });
+            }
+        } else if (type == PodcastType.DOWNLOADED) {
             getDownloadedPodcasts();
         } else if (type == PodcastType.HISTORY ||
                 type == PodcastType.LIKED_PODCASTS ||
@@ -115,7 +126,9 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
-        if (type == PodcastType.FROM_SUBSCRIPTIONS) {
+        if (accountListId != null) {
+            podcasts = viewModel.getPodcastsFromAccountList(token, accountListId, page);
+        } else if (type == PodcastType.FROM_SUBSCRIPTIONS) {
             podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null, page);
         } else {
             podcasts = viewModel.getPodcastsByType(this, token, type == PodcastType.LIKED_PODCASTS ? 1 : null,

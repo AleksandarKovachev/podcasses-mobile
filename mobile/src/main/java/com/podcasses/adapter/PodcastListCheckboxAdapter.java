@@ -19,26 +19,26 @@ import java.util.List;
 /**
  * Created by aleksandar.kovachev.
  */
-public class PodcastListAdapter extends RecyclerView.Adapter<PodcastListAdapter.ViewHolder> {
+public class PodcastListCheckboxAdapter extends RecyclerView.Adapter<PodcastListCheckboxAdapter.ViewHolder> {
 
     private List<PodcastListCheckbox> podcastListCheckboxes;
 
     private PodcastListDialogViewModel viewModel;
 
-    public PodcastListAdapter(PodcastListDialogViewModel viewModel) {
+    public PodcastListCheckboxAdapter(PodcastListDialogViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
     @NonNull
     @Override
-    public PodcastListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PodcastListCheckboxAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_checkbox,
                 new FrameLayout(parent.getContext()), false);
-        return new PodcastListAdapter.ViewHolder(itemView);
+        return new PodcastListCheckboxAdapter.ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PodcastListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PodcastListCheckboxAdapter.ViewHolder holder, int position) {
         holder.setData(viewModel, position);
     }
 
@@ -48,13 +48,13 @@ public class PodcastListAdapter extends RecyclerView.Adapter<PodcastListAdapter.
     }
 
     @Override
-    public void onViewAttachedToWindow(PodcastListAdapter.ViewHolder holder) {
+    public void onViewAttachedToWindow(PodcastListCheckboxAdapter.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         holder.bind();
     }
 
     @Override
-    public void onViewDetachedFromWindow(PodcastListAdapter.ViewHolder holder) {
+    public void onViewDetachedFromWindow(PodcastListCheckboxAdapter.ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         holder.unbind();
     }

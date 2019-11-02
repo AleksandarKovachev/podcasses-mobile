@@ -169,4 +169,7 @@ public interface ApiCallInterface {
     @POST("/api-gateway/account/list")
     Call<AccountList> accountList(@Header("Authorization") String token, @Body AccountListRequest accountListRequest);
 
+    @GET("/api-gateway/account/list/podcasts/{id}")
+    Call<List<String>> getPodcastsByListId(@Header("Authorization") String token, @Path("id") Long id);
+
 }

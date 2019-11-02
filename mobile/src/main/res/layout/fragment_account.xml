@@ -47,7 +47,8 @@
                         app:imageUrl="@{viewModel.profileImage}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@drawable/profile_placeholder" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/display_name"
@@ -61,7 +62,8 @@
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/account_profile_image" />
+                        app:layout_constraintTop_toBottomOf="@id/account_profile_image"
+                        tools:text="Account name" />
 
                     <View
                         android:id="@+id/profile_delimiter"
@@ -73,9 +75,9 @@
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/podcast_channels_group"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/medium_offset"
+                        android:layout_marginTop="@dimen/medium_offset"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
@@ -90,7 +92,8 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:text="@{viewModel.podcastChannels}"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline" />
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                            tools:text="10" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="wrap_content"
@@ -153,6 +156,49 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/account_lists_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/medium_offset"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/account_lists_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/small_offset"
+                            android:text="@string/account_lists_title"
+                            android:textSize="@dimen/small_text_size"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/account_lists"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:isScrollContainer="false"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/account_lists_title"
+                            app:setAdapter="@{viewModel.accountListAdapter}"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/item_account_list" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginTop="@dimen/medium_offset"
+                            android:background="@android:color/darker_gray"
+                            app:layout_constraintTop_toBottomOf="@id/account_lists" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/podcast_channels_list"
                         android:layout_width="match_parent"
@@ -164,7 +210,7 @@
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/podcast_files_card_view"
+                        app:layout_constraintTop_toBottomOf="@id/account_lists_view"
                         app:setAdapter="@{viewModel.podcastChannelAdapter}"
                         app:spanCount="2"
                         tools:listitem="@layout/item_podcast_channel" />

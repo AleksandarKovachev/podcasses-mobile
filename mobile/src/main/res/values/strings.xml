@@ -27,6 +27,8 @@
 
     <string name="podcast_files_title">Unpublished uploaded podcast files</string>
 
+    <string name="account_lists_title">Lists</string>
+
     <string name="subscribed_podcast_channels">Subscribed podcast channels</string>
 
     <string name="new_podcast_channels">Podcast channels</string>

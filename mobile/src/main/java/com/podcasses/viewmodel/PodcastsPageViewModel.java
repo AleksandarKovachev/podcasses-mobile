@@ -34,4 +34,8 @@ public class PodcastsPageViewModel extends BasePodcastViewModel {
         return repository.getPodcastsFromSubscriptions(lifecycleOwner, token, isSwipedToRefresh, page);
     }
 
+    public LiveData<ApiResponse> getPodcastsFromAccountList(String token, Long accountListId, int page) {
+        return repository.getPodcastsFromList(token, accountListId, page);
+    }
+
 }

@@ -10,24 +10,26 @@
 
         <variable
             name="viewModel"
-            type="com.podcasses.viewmodel.PodcastListDialogViewModel" />
+            type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
+        android:onClick="@{v -> viewModel.onAccountListClick(position)}"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatCheckBox
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="@{viewModel.getPodcastListCheckboxAt(position).checked}"
             android:maxLines="3"
-            android:onClick="@{(view) -> viewModel.onCheckedChange(view, position)}"
-            android:text="@{viewModel.getPodcastListCheckboxAt(position).name}"
+            android:paddingTop="@dimen/small_offset"
+            android:paddingBottom="@dimen/small_offset"
+            android:text="@{viewModel.getAccountListAt(position).name}"
             android:textAppearance="?android:textAppearanceLarge"
-            tools:text="Podcast list checkbox" />
-
+            tools:text="Podcast list" />
     </LinearLayout>
 </layout>
