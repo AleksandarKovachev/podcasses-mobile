@@ -66,6 +66,9 @@
     <string name="podcast_successfully_added_to_list">Подкаста е успешно добавен в списъка!</string>
     <string name="podcast_successfully_created_list">Успешно създаден списък!</string>
 
+    <string name="account_list_successfully_deleted">Списъка беше успешно изтрит!</string>
+    <string name="undo">Върни</string>
+
     <string name="history">История</string>
     <string name="liked_podcasts">Харесани подкасти</string>
     <string name="my_podcasts">Мои подкасти</string>

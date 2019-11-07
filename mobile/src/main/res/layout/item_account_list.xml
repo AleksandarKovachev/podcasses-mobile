@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -13,23 +14,37 @@
             type="com.podcasses.viewmodel.AccountViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{v -> viewModel.onAccountListClick(position)}"
         android:clickable="true"
         android:focusable="true"
-        android:orientation="vertical">
+        android:onClick="@{v -> viewModel.onAccountListClick(position)}">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
+            android:id="@+id/account_list_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:maxLines="3"
             android:paddingTop="@dimen/small_offset"
             android:paddingBottom="@dimen/small_offset"
             android:text="@{viewModel.getAccountListAt(position).name}"
             android:textAppearance="?android:textAppearanceLarge"
+            app:layout_constraintEnd_toStartOf="@id/account_list_delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Podcast list" />
-    </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/account_list_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v) -> viewModel.onDeleteAccountList(v, position)}"
+            android:src="@drawable/ic_delete"
+            app:backgroundTint="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/account_list_title"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

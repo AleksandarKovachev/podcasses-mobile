@@ -172,4 +172,10 @@ public interface ApiCallInterface {
     @GET("/api-gateway/account/list/podcasts/{id}")
     Call<List<String>> getPodcastsByListId(@Header("Authorization") String token, @Path("id") Long id);
 
+    @DELETE("/api-gateway/account/list/{id}")
+    Call<Void> deleteAccountList(@Header("Authorization") String token, @Path("id") Long id);
+
+    @POST("/api-gateway/account/list/{id}")
+    Call<Void> activateAccountList(@Header("Authorization") String token, @Path("id") Long id);
+
 }

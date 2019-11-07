@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.podcasses.BR;
 import com.podcasses.R;
 import com.podcasses.adapter.AccountListAdapter;
@@ -154,6 +155,40 @@ public class AccountViewModel extends BasePodcastChannelViewModel {
 
     public void onAccountListClick(Integer index) {
         selectedAccountList.setValue(accountLists.getValue().get(index));
+    }
+
+    public void onDeleteAccountList(View view, Integer index) {
+        List<AccountList> listOfAccountLists = accountLists.getValue();
+        AccountList accountList = listOfAccountLists.get(index);
+        apiCallInterface.deleteAccountList("Bearer " + token, accountList.getId()).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    listOfAccountLists.remove(accountList);
+                    accountListAdapter.setAccountLists(listOfAccountLists);
+                    Snackbar.make(view, view.getContext().getText(R.string.account_list_successfully_deleted), Snackbar.LENGTH_LONG)
+                            .setAction(view.getContext().getText(R.string.undo), v -> apiCallInterface.activateAccountList("Bearer " + token, accountList.getId()).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        listOfAccountLists.add(index, accountList);
+                                        accountListAdapter.setAccountLists(listOfAccountLists);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    LogErrorResponseUtil.logFailure(t, view.getContext());
+                                }
+                            })).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                LogErrorResponseUtil.logFailure(t, view.getContext());
+            }
+        });
     }
 
     public MutableLiveData<AccountList> getSelectedAccountList() {

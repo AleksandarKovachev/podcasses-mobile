@@ -66,6 +66,9 @@
     <string name="podcast_successfully_added_to_list">The podcast was successfully added to the list!</string>
     <string name="podcast_successfully_created_list">Successfully created list!</string>
 
+    <string name="account_list_successfully_deleted">The list was successfully deleted!</string>
+    <string name="undo">Undo</string>
+
     <string name="history">History</string>
     <string name="liked_podcasts">Liked</string>
     <string name="my_podcasts">My podcastChannels</string>
