@@ -63,11 +63,20 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     public static PodcastsPageFragment newInstance(int instance, int type, Long accountListId) {
         Bundle args = new Bundle();
         args.putInt(BaseFragment.ARGS_INSTANCE, instance);
+        args.putInt("type", type);
+        if (accountListId != null) {
+            args.putLong("accountListId", accountListId);
+        }
         PodcastsPageFragment fragment = new PodcastsPageFragment();
-        PodcastsPageFragment.type = PodcastType.getPodcastType(type);
-        PodcastsPageFragment.accountListId = accountListId;
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        type = PodcastType.getPodcastType(getArguments().getInt("type"));
+        accountListId = getArguments().getLong("accountListId");
     }
 
     @Nullable
@@ -86,7 +95,9 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (accountListId != null) {
+        type = PodcastType.getPodcastType(getArguments().getInt("type"));
+        accountListId = getArguments().getLong("accountListId", -1);
+        if (accountListId != -1) {
             token = AuthenticationUtil.getAuthenticationToken(this.getContext(), authenticationCallInterface);
             if (token != null) {
                 token.observe(getViewLifecycleOwner(), s -> {
@@ -126,7 +137,7 @@ public class PodcastsPageFragment extends BaseFragment implements OnRefreshListe
     }
 
     private void getPodcasts(String token, RefreshLayout refreshLayout) {
-        if (accountListId != null) {
+        if (accountListId != null && accountListId != -1) {
             podcasts = viewModel.getPodcastsFromAccountList(token, accountListId, page);
         } else if (type == PodcastType.FROM_SUBSCRIPTIONS) {
             podcasts = viewModel.getPodcastsFromSubscriptions(this, token, refreshLayout != null, page);

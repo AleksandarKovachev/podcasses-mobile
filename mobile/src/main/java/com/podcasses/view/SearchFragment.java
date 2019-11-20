@@ -14,6 +14,8 @@ import androidx.databinding.Observable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.ads.mediation.facebook.FacebookAdapter;
+import com.google.ads.mediation.facebook.FacebookExtras;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -190,7 +192,9 @@ public class SearchFragment extends BaseFragment implements OnRefreshListener {
                 .withNativeAdOptions(new NativeAdOptions.Builder()
                         .build())
                 .build();
-        adLoader.loadAds(new AdRequest.Builder().build(), 1);
+        adLoader.loadAds(new AdRequest.Builder().addNetworkExtrasBundle(FacebookAdapter.class, new FacebookExtras()
+                .setNativeBanner(true)
+                .build()).build(), 1);
     }
 
 }

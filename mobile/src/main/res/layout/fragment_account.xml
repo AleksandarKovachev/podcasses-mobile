@@ -58,7 +58,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center_horizontal"
-                        android:text="@{viewModel.account.displayName}"
+                        android:text="@{viewModel.account.displayName != null ? viewModel.account.displayName : viewModel.account.email}"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

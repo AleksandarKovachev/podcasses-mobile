@@ -138,14 +138,14 @@
                 app:layout_constraintEnd_toEndOf="@id/description_card_view"
                 app:layout_constraintTop_toBottomOf="@+id/login_input" />
 
-            <!--<androidx.appcompat.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/or_text_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/or_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/forgot_password" />
+                app:layout_constraintTop_toBottomOf="@+id/register" />
 
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/facebook_login"
@@ -154,17 +154,17 @@
                 android:layout_margin="@dimen/small_offset"
                 app:layout_constraintEnd_toEndOf="@id/description_card_view"
                 app:layout_constraintStart_toStartOf="@id/description_card_view"
-                app:layout_constraintTop_toBottomOf="@+id/or_text_field" />
+                app:layout_constraintTop_toBottomOf="@id/or_text_field" />
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/google_login"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_margin="@dimen/small_offset"
                 app:buttonSize="wide"
                 app:layout_constraintEnd_toEndOf="@id/description_card_view"
                 app:layout_constraintStart_toStartOf="@id/description_card_view"
-                app:layout_constraintTop_toBottomOf="@+id/facebook_login" />-->
+                app:layout_constraintTop_toBottomOf="@+id/facebook_login" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
