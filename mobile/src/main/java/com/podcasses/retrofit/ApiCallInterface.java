@@ -146,7 +146,10 @@ public interface ApiCallInterface {
     Call<List<Podcast>> trendingPodcasts(@QueryMap Map<String, Object> query);
 
     @GET("/api-gateway/podcast/new")
-    Call<List<Podcast>> newPodcasts();
+    Call<List<Podcast>> newPodcasts(@Header("Authorization") String token);
+
+    @GET("/api-gateway/podcast/subscription")
+    Call<List<Podcast>> podcastSubscription(@Header("Authorization") String token, @Query(value = "page") Integer page);
 
     @POST("/api-gateway/podcast/view/{podcastId}")
     Call<Void> podcastView(@Path("podcastId") String podcastId);

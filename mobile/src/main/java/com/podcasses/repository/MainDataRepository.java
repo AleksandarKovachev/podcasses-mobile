@@ -318,11 +318,11 @@ public class MainDataRepository {
         return podcastsResponse;
     }
 
-    public LiveData<ApiResponse> getNewPodcasts() {
+    public LiveData<ApiResponse> getNewPodcasts(String token) {
         MutableLiveData<ApiResponse> podcastsResponse = new MutableLiveData<>(ApiResponse.loading());
 
         if (ConnectivityUtil.checkInternetConnection(context)) {
-            networkDataSource.getNewPodcasts(new IDataCallback<List<Podcast>>() {
+            networkDataSource.getNewPodcasts(token, new IDataCallback<List<Podcast>>() {
                 @Override
                 public void onSuccess(List<Podcast> data, String url) {
                     podcastsResponse.setValue(ApiResponse.success(data, url));

@@ -96,8 +96,8 @@ public class HomeViewModel extends BasePodcastViewModel {
         return repository.getPodcastChannel(null, null, null, null, false, false);
     }
 
-    public LiveData<ApiResponse> newPodcasts() {
-        return repository.getNewPodcasts();
+    public LiveData<ApiResponse> newPodcasts(String token) {
+        return repository.getNewPodcasts(token);
     }
 
     public MutableLiveData<TrendingFilter> getTrendingFilterMutableLiveData() {

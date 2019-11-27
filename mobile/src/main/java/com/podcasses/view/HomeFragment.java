@@ -111,14 +111,15 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
                 if (!Strings.isEmptyOrWhitespace(s)) {
                     binder.userHomeCard.setVisibility(View.VISIBLE);
                     getSubscribedPodcastChannels(s);
+                    getNewPodcasts(s);
                 }
             });
         } else {
             getSubscribedPodcastChannels(null);
+            getNewPodcasts(null);
         }
 
         getNewPodcastChannels();
-        getNewPodcasts();
 
         TrendingFilter trendingFilter = new TrendingFilter(TrendingReport.WEEKLY, null, null, null, null);
         getTrendingPodcasts(refreshLayout, trendingFilter);
@@ -142,8 +143,8 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         });
     }
 
-    private void getNewPodcasts() {
-        LiveData<ApiResponse> newPodcasts = viewModel.newPodcasts();
+    private void getNewPodcasts(String token) {
+        LiveData<ApiResponse> newPodcasts = viewModel.newPodcasts(token);
         newPodcasts.observe(getViewLifecycleOwner(), apiResponse -> {
             if (apiResponse.status == ApiResponse.Status.SUCCESS) {
                 newPodcasts.removeObservers(this);

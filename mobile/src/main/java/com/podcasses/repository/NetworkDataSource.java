@@ -267,28 +267,12 @@ class NetworkDataSource {
     }
 
     void getPodcastsFromSubscriptions(String token, int page, IDataCallback<List<Podcast>> callback) {
-        Call<List<String>> subscriptionsCall = apiCallInterface.getSubscriptions("Bearer " + token);
-        subscriptionsCall.enqueue(new Callback<List<String>>() {
+        Call<List<Podcast>> podcastsCall = apiCallInterface.podcastSubscription("Bearer " + token, page);
+        podcastsCall.enqueue(new Callback<List<Podcast>>() {
             @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if (response.isSuccessful() && !CollectionUtils.isEmpty(response.body())) {
-                    Call<List<Podcast>> podcastsCall = apiCallInterface.podcast(null, null, response.body(), null, page);
-                    podcastsCall.enqueue(new Callback<List<Podcast>>() {
-                        @Override
-                        public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
-                            if (response.isSuccessful()) {
-                                callback.onSuccess(response.body(), response.raw().request().url().toString());
-                            } else {
-                                callback.onSuccess(null, response.raw().request().url().toString());
-                                LogErrorResponseUtil.logErrorResponse(response, context);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Podcast>> call, Throwable t) {
-                            callback.onFailure(t, call.request().url().toString());
-                        }
-                    });
+            public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body(), response.raw().request().url().toString());
                 } else {
                     callback.onSuccess(null, response.raw().request().url().toString());
                     LogErrorResponseUtil.logErrorResponse(response, context);
@@ -296,7 +280,7 @@ class NetworkDataSource {
             }
 
             @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
+            public void onFailure(Call<List<Podcast>> call, Throwable t) {
                 callback.onFailure(t, call.request().url().toString());
             }
         });
@@ -322,8 +306,8 @@ class NetworkDataSource {
         });
     }
 
-    void getNewPodcasts(IDataCallback<List<Podcast>> callback) {
-        Call<List<Podcast>> call = apiCallInterface.newPodcasts();
+    void getNewPodcasts(String token, IDataCallback<List<Podcast>> callback) {
+        Call<List<Podcast>> call = apiCallInterface.newPodcasts(Strings.isEmptyOrWhitespace(token) ? null : "Bearer " + token);
         call.enqueue(new Callback<List<Podcast>>() {
             @Override
             public void onResponse(Call<List<Podcast>> call, Response<List<Podcast>> response) {
