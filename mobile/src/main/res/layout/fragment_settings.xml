@@ -9,108 +9,123 @@
             type="com.podcasses.viewmodel.SettingsViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/language_select"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:minHeight="60dp"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/medium_offset"
-                android:paddingRight="@dimen/medium_offset"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/language_select"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="60dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/medium_offset"
+                    android:paddingRight="@dimen/medium_offset"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_select_language"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.locale}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/more_delimiter"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@android:color/darker_gray"
+                    app:layout_constraintTop_toBottomOf="@id/language_select" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="0dp"
+                    android:id="@+id/more"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/settings_select_language"
+                    android:layout_margin="@dimen/medium_offset"
+                    android:text="@string/settings_more"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/more_delimiter" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/terms_of_service"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{viewModel.locale}"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-            </LinearLayout>
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="60dp"
+                    android:onClick="@{v -> viewModel.termOfServiceClick(v)}"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/medium_offset"
+                    android:paddingRight="@dimen/medium_offset"
+                    app:layout_constraintTop_toBottomOf="@id/more">
 
-            <View
-                android:id="@+id/more_delimiter"
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@android:color/darker_gray"
-                app:layout_constraintTop_toBottomOf="@id/language_select" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_terms_of_service"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/more"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_offset"
-                android:text="@string/settings_more"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/more_delimiter" />
+                </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/terms_of_service"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:minHeight="60dp"
-                android:onClick="@{v -> viewModel.termOfServiceClick(v)}"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/medium_offset"
-                android:paddingRight="@dimen/medium_offset"
-                app:layout_constraintTop_toBottomOf="@id/more">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/privacy_policy"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_terms_of_service"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="60dp"
+                    android:onClick="@{v -> viewModel.privacyPolicyClick(v)}"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/medium_offset"
+                    android:paddingRight="@dimen/medium_offset"
+                    app:layout_constraintTop_toBottomOf="@id/terms_of_service">
 
-            </LinearLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_privacy_policy"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-            <LinearLayout
-                android:id="@+id/privacy_policy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:minHeight="60dp"
-                android:onClick="@{v -> viewModel.privacyPolicyClick(v)}"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/medium_offset"
-                android:paddingRight="@dimen/medium_offset"
-                app:layout_constraintTop_toBottomOf="@id/terms_of_service">
+                </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_privacy_policy"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
-
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/banner_ad_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/SETTINGS_BANNER_ADS"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

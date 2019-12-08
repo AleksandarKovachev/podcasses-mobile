@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.ads.AdRequest;
 import com.podcasses.R;
 import com.podcasses.adapter.LanguageAdapter;
 import com.podcasses.dagger.BaseApplication;
@@ -88,6 +89,8 @@ public class SettingsFragment extends BaseFragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_settings);
         setHasOptionsMenu(true);
+
+        binder.bannerAdView.loadAd(new AdRequest.Builder().build());
 
         return binder.getRoot();
     }
