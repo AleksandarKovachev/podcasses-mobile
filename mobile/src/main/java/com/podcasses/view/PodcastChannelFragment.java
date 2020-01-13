@@ -114,7 +114,6 @@ public class PodcastChannelFragment extends BaseFragment {
 
         setPodcastClick();
         setAuthorClick();
-        setChannelClick();
         return binding.getRoot();
     }
 
@@ -353,18 +352,6 @@ public class PodcastChannelFragment extends BaseFragment {
                 if (viewModel.getSelectedAuthor().get() != null) {
                     fragmentNavigation.pushFragment(AccountFragment.newInstance(fragmentCount + 1, viewModel.getSelectedAuthor().get(), false));
                     viewModel.getSelectedAuthor().set(null);
-                }
-            }
-        });
-    }
-
-    private void setChannelClick() {
-        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannelId().get() != null) {
-                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), null, false));
-                    viewModel.getSelectedChannelId().set(null);
                 }
             }
         });

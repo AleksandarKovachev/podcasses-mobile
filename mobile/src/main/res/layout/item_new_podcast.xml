@@ -99,7 +99,6 @@
                 android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="3"
-                android:onClick="@{() -> viewModel.onNewPodcastChannelIdClick(position)}"
                 android:text="@{viewModel.getNewPodcastAt(position).channel}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

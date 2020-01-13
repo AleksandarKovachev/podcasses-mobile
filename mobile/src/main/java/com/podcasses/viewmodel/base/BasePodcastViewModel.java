@@ -29,7 +29,6 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
 
     private MutableLiveData<List<Object>> podcasts = new MutableLiveData<>();
     private MutableLiveData<Podcast> selectedPodcast = new MutableLiveData<>();
-    private ObservableField<String> selectedChannelId = new ObservableField<>();
     private ObservableField<PodcastChannel> selectedPodcastChannel = new ObservableField<>();
     private MutableLiveData<List<PodcastChannel>> podcastChannels = new MutableLiveData<>();
     private PodcastAdapter podcastAdapter = new PodcastAdapter(R.layout.item_podcast, R.layout.ad_native_account_podcast, this);
@@ -113,16 +112,8 @@ public abstract class BasePodcastViewModel extends BaseViewModel {
         selectedPodcast.setValue(podcast);
     }
 
-    public ObservableField<String> getSelectedChannelId() {
-        return selectedChannelId;
-    }
-
     public ObservableField<PodcastChannel> getSelectedPodcastChannel() {
         return selectedPodcastChannel;
-    }
-
-    public void onChannelIdClick(Integer index) {
-        selectedChannelId.set(((Podcast) podcasts.getValue().get(index)).getChannelId());
     }
 
     public void onPodcastChannelClick(Integer index) {

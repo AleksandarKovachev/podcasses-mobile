@@ -185,6 +185,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
 
         binding.likeButton.setOnClickListener(onLikeClickListener);
         binding.dislikeButton.setOnClickListener(onDislikeClickListener);
+        binding.podcastChannel.setOnClickListener(onPodcastChannelClickListener);
 
         service = ((AudioPlayerService.LocalBinder) binder).getService();
         SimpleExoPlayer player = service.getPlayerInstance();
@@ -474,6 +475,10 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             }
         });
     }
+
+    private View.OnClickListener onPodcastChannelClickListener = v -> {
+        fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, podcast.getChannelId(), null, false));
+    };
 
     private void setAccountClickListener() {
         viewModel.getSelectedAccountId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {

@@ -94,7 +94,6 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
         super.onViewCreated(view, savedInstanceState);
         getData(null);
         setListClick();
-        setChannelIdClick();
         setPodcastChannelClick();
         setTrendingFilterChange();
     }
@@ -260,18 +259,6 @@ public class HomeFragment extends BaseFragment implements OnRefreshListener {
             if (podcast != null) {
                 fragmentNavigation.pushFragment(PodcastFragment.newInstance(fragmentCount + 1, podcast.getId(), podcast));
                 viewModel.getSelectedPodcast().setValue(null);
-            }
-        });
-    }
-
-    private void setChannelIdClick() {
-        viewModel.getSelectedChannelId().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-            @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
-                if (viewModel.getSelectedChannelId().get() != null) {
-                    fragmentNavigation.pushFragment(PodcastChannelFragment.newInstance(fragmentCount + 1, viewModel.getSelectedChannelId().get(), null, false));
-                    viewModel.getSelectedChannelId().set(null);
-                }
             }
         });
     }

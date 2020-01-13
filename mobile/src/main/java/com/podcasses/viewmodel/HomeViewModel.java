@@ -119,10 +119,6 @@ public class HomeViewModel extends BasePodcastViewModel {
         PopupMenuUtil.podcastPopupMenu(this, view, (Podcast) newPodcasts.getValue().get(position), apiCallInterface, token, fragmentManager);
     }
 
-    public void onNewPodcastChannelIdClick(Integer index) {
-        super.getSelectedChannelId().set(((Podcast) newPodcasts.getValue().get(index)).getChannelId());
-    }
-
     public void onNewPodcastClick(Integer index) {
         Podcast podcast = (Podcast) newPodcasts.getValue().get(index);
         super.getSelectedPodcast().setValue(podcast);

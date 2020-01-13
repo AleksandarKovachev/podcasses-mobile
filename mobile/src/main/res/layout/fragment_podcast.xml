@@ -112,11 +112,28 @@
                     android:id="@+id/podcast_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
                     android:padding="@dimen/medium_offset"
                     android:text="@{viewModel.podcast.title}"
-                    android:textSize="@dimen/medium_text_size"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Podcast Title" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/podcast_channel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="@dimen/small_offset"
+                    android:text="@{viewModel.podcast.channel}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintTop_toBottomOf="@id/podcast_title"
+                    tools:text="Podcast Channel" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/podcast_date"
@@ -127,7 +144,8 @@
                     android:text="@{viewModel.podcast.podcastDate}"
                     app:layout_constraintEnd_toStartOf="@id/podcast_duration"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_channel"
+                    tools:text="11.10.1995" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/podcast_duration"
@@ -138,7 +156,8 @@
                     android:text="@{viewModel.podcast.duration}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/podcast_date"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_title" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_channel"
+                    tools:text="2:24" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/podcast_views"
@@ -150,75 +169,47 @@
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@id/podcast_date"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_date"
+                    tools:text="Views: 200" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/like_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50sp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/like_button"
-                    app:layout_constraintBottom_toBottomOf="@id/podcast_date"
-                    app:layout_constraintEnd_toStartOf="@id/likes"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/likes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableStart="@drawable/like_button"
                     android:text="@{`` + viewModel.podcast.likes}"
-                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@id/podcast_date"
                     app:layout_constraintEnd_toStartOf="@id/dislike_button"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_date"
+                    tools:text="20" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/dislike_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50sp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/dislike_button"
-                    app:layout_constraintBottom_toBottomOf="@id/podcast_date"
-                    app:layout_constraintEnd_toStartOf="@id/dislikes"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/dislikes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
+                    android:drawableStart="@drawable/dislike_button"
                     android:text="@{`` + viewModel.podcast.dislikes}"
-                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="@id/podcast_date"
                     app:layout_constraintEnd_toStartOf="@id/download_button"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_date"
+                    tools:text="0" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/download_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50sp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
                     android:background="?selectableItemBackgroundBorderless"
+                    android:drawableStart="@drawable/ic_file_download"
                     android:onClick="@{(view) -> viewModel.onDownloadButtonClick(view)}"
-                    android:src="@drawable/ic_file_download"
+                    android:text="@{`` + viewModel.podcast.downloads}"
                     app:isDownloaded="@{viewModel.podcast.downloadUrl}"
                     app:layout_constraintBottom_toBottomOf="@id/podcast_date"
-                    app:layout_constraintEnd_toStartOf="@id/downloads"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/downloads"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/small_offset"
-                    android:text="@{`` + viewModel.podcast.downloads}"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@id/podcast_date"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_date" />
+                    app:layout_constraintTop_toBottomOf="@id/podcast_date"
+                    tools:text="10" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/podcast_description"
@@ -226,7 +217,9 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/small_offset"
                     android:text="@{viewModel.podcast.podcastDescription}"
-                    app:layout_constraintTop_toBottomOf="@id/podcast_views" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintTop_toBottomOf="@id/podcast_views"
+                    tools:text="Podcast Description" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/comments_view"

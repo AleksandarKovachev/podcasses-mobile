@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 
-import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
@@ -31,8 +31,8 @@ import com.podcasses.adapter.PodcastsPagerAdapter;
 import com.podcasses.dagger.BaseApplication;
 import com.podcasses.manager.DownloadTracker;
 import com.podcasses.model.entity.PodcastChannel;
-import com.podcasses.model.response.Nomenclature;
 import com.podcasses.model.response.Language;
+import com.podcasses.model.response.Nomenclature;
 
 import java.util.List;
 
@@ -57,10 +57,11 @@ public class CustomViewBindings {
     }
 
     @BindingAdapter("isDownloaded")
-    public static void isDownloaded(AppCompatImageButton view, String url) {
+    public static void isDownloaded(AppCompatButton view, String url) {
         DownloadTracker downloadTracker = ((BaseApplication) view.getContext().getApplicationContext()).getDownloadTracker();
         if (downloadTracker.isDownloaded(url)) {
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_cloud_done));
+            view.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(view.getContext(), R.drawable.ic_cloud_done), null, null, null);
         }
     }
 
