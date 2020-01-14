@@ -89,8 +89,11 @@ public class LocalDataSource {
         });
     }
 
-    void deletePodcastChannelsByUserId(String userId) {
-        Executors.newSingleThreadExecutor().execute(() -> podcastChannelDao.deletePodcastChannelsByUserId(userId));
+    void deletePodcastChannelsByUserId(String userId, List<PodcastChannel> data) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            podcastChannelDao.deletePodcastChannelsByUserId(userId);
+            podcastChannelDao.insertAll(data);
+        });
     }
 
     LiveData<List<Podcast>> getPodcasts(PodcastType type, int page) {
@@ -169,7 +172,7 @@ public class LocalDataSource {
         });
     }
 
-    void deletePodcastsByType(PodcastType type) {
+    void deleteAndInsertPodcastsByType(PodcastType type, List<Podcast> data) {
         Executors.newSingleThreadExecutor().execute(() -> {
             switch (type) {
                 case LIKED_PODCASTS:
@@ -196,6 +199,7 @@ public class LocalDataSource {
                 default:
                     break;
             }
+            insertPodcasts(type, data);
         });
     }
 
