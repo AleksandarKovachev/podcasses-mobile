@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Podcasses</string>
     <string name="account_type">com.podcasses</string>
+    <string name="player_channel_description">Канал за подкаст плейъра</string>
 
     <string name="title_home">Начало</string>
     <string name="title_history">История</string>

@@ -16,13 +16,12 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 
 import com.google.android.exoplayer2.DefaultControlDispatcher;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.gms.common.util.Strings;
@@ -38,6 +37,8 @@ import com.podcasses.retrofit.AuthenticationCallInterface;
 import com.podcasses.util.AuthenticationUtil;
 import com.podcasses.util.ConnectivityUtil;
 import com.podcasses.util.NetworkRequestsUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -76,13 +77,14 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
         ((BaseApplication) getApplication()).getAppComponent().inject(this);
 
-        player = ExoPlayerFactory.newSimpleInstance(context, new DefaultTrackSelector());
+        player = new SimpleExoPlayer.Builder(context).build();
         mediaSession = new MediaSessionCompat(context, this.getClass().getName());
         mediaSession.setActive(true);
         mediaSessionConnector = new MediaSessionConnector(mediaSession);
         mediaSessionConnector.setQueueNavigator(new TimelineQueueNavigator(mediaSession) {
+            @NotNull
             @Override
-            public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
+            public MediaDescriptionCompat getMediaDescription(@NotNull Player player, int windowIndex) {
                 return AudioPlayerService.this.getMediaDescription();
             }
         });
@@ -100,6 +102,8 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                 podcast = (Podcast) bundle.getSerializable("podcast");
             }
 
+            player.setAudioAttributes(AudioAttributes.DEFAULT, true);
+
             DataSource.Factory dataSourceFactory = ((BaseApplication) getApplication()).buildDataSourceFactory();
             player.prepare(new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource((Uri.parse(podcast.getPodcastUrl()))));
             player.setPlayWhenReady(true);
@@ -107,6 +111,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
             playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(context,
                     "playback_channel",
                     R.string.app_name,
+                    R.string.player_channel_description,
                     1,
                     new PodcastMediaDescriptionAdapter(context, podcast),
                     new PlayerNotificationManager.NotificationListener() {
@@ -191,7 +196,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(@NotNull Intent intent) {
         super.onBind(intent);
         return binder;
     }
