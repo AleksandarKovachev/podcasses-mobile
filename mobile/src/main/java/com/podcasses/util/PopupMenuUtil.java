@@ -36,7 +36,7 @@ public class PopupMenuUtil {
             switch (item.getItemId()) {
                 case R.id.navigation_mark_as_played:
                     if (token != null) {
-                        NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel, item, view.getContext(), apiCallInterface, podcast, token);
+                        NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel.getRepository(), view.getContext(), apiCallInterface, podcast, token);
                     } else {
                         AccountPodcast accountPodcast = new AccountPodcast();
                         accountPodcast.setPodcastId(podcast.getId());

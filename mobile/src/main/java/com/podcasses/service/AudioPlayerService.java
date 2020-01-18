@@ -191,6 +191,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (playbackState == Player.STATE_ENDED) {
+            saveMarkAsPlayed();
+        }
         saveTimeIndex();
     }
 
@@ -229,27 +232,43 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
                 .build();
     }
 
+    private void saveMarkAsPlayed() {
+        if (ConnectivityUtil.checkInternetConnection(this)) {
+            if (token == null) {
+                saveLocalAccountPodcast(true);
+            } else {
+                NetworkRequestsUtil.sendMarkAsPlayedRequest(mainDataRepository,
+                        this,
+                        apiCallInterface,
+                        podcast,
+                        token.getValue());
+            }
+        } else {
+            saveLocalAccountPodcast(true);
+        }
+    }
+
     private void saveTimeIndex() {
         if (player.getCurrentPosition() == 0) {
             return;
         }
         if (ConnectivityUtil.checkInternetConnection(this)) {
             if (token == null) {
-                saveLocalAccountPodcast();
+                saveLocalAccountPodcast(false);
             } else {
-                sendAccountPodcastToServer();
+                LiveData<ApiResponse> accountPodcastResponse =
+                        NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
+                                token.getValue(), podcast.getId(),
+                                player.getCurrentPosition(),
+                                accountPodcast == null || accountPodcast.getViewTimestamp() == null);
+                saveAccountPodcastFromNetwork(accountPodcastResponse);
             }
         } else {
-            saveLocalAccountPodcast();
+            saveLocalAccountPodcast(false);
         }
     }
 
-    private void sendAccountPodcastToServer() {
-        LiveData<ApiResponse> accountPodcastResponse =
-                NetworkRequestsUtil.sendPodcastViewRequest(this, apiCallInterface,
-                        token.getValue(), podcast.getId(),
-                        player.getCurrentPosition(),
-                        accountPodcast == null || accountPodcast.getViewTimestamp() == null);
+    private void saveAccountPodcastFromNetwork(LiveData<ApiResponse> accountPodcastResponse) {
         accountPodcastResponse.observe(this, response -> {
             switch (response.status) {
                 case SUCCESS:
@@ -266,7 +285,7 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         });
     }
 
-    private void saveLocalAccountPodcast() {
+    private void saveLocalAccountPodcast(boolean markAsPlayed) {
         if (accountPodcast == null) {
             accountPodcast = new AccountPodcast();
             accountPodcast.setPodcastId(podcast.getId());
@@ -274,6 +293,9 @@ public class AudioPlayerService extends LifecycleService implements Player.Event
         }
         if (accountPodcast.getViewTimestamp() == null) {
             accountPodcast.setViewTimestamp(new Date());
+        }
+        if (markAsPlayed) {
+            accountPodcast.setMarkAsPlayed(1);
         }
         accountPodcast.setTimeIndex(player.getCurrentPosition());
         mainDataRepository.saveAccountPodcast(accountPodcast);

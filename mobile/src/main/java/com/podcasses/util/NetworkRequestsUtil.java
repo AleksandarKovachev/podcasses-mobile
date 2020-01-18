@@ -1,7 +1,6 @@
 package com.podcasses.util;
 
 import android.content.Context;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
@@ -16,8 +15,8 @@ import com.podcasses.model.request.AccountPodcastRequest;
 import com.podcasses.model.response.AccountComment;
 import com.podcasses.model.response.ApiResponse;
 import com.podcasses.model.response.Comment;
+import com.podcasses.repository.MainDataRepository;
 import com.podcasses.retrofit.ApiCallInterface;
-import com.podcasses.viewmodel.base.BaseViewModel;
 
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
@@ -29,7 +28,8 @@ import retrofit2.Response;
  */
 public class NetworkRequestsUtil {
 
-    public static MutableLiveData<AccountPodcast> sendMarkAsPlayedRequest(BaseViewModel viewModel, MenuItem item, Context context, ApiCallInterface apiCallInterface, Podcast podcast, String token) {
+    public static MutableLiveData<AccountPodcast> sendMarkAsPlayedRequest(MainDataRepository repository, Context context,
+                                                                          ApiCallInterface apiCallInterface, Podcast podcast, String token) {
         MutableLiveData<AccountPodcast> accountPodcast = new MutableLiveData<>();
         AccountPodcastRequest accountPodcastRequest = new AccountPodcastRequest();
         accountPodcastRequest.setPodcastId(podcast.getId());
@@ -41,7 +41,7 @@ public class NetworkRequestsUtil {
                 if (response.isSuccessful() && response.body() != null) {
                     accountPodcast.setValue(response.body());
                     podcast.setMarkAsPlayed(response.body().getMarkAsPlayed() == 1);
-                    viewModel.saveAccountPodcast(response.body());
+                    repository.saveAccountPodcast(response.body());
                 }
             }
 

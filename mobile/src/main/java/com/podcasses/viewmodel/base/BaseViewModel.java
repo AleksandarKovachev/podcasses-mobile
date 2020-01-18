@@ -52,4 +52,7 @@ public class BaseViewModel extends ViewModel implements Observable {
         repository.saveAccountPodcast(accountPodcast);
     }
 
+    public MainDataRepository getRepository() {
+        return repository;
+    }
 }

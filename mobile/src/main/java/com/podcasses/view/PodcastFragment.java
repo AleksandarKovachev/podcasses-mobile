@@ -227,7 +227,7 @@ public class PodcastFragment extends BaseFragment implements Player.EventListene
             case R.id.navigation_mark_as_played:
                 if (token != null) {
                     LiveData<AccountPodcast> accountPodcast =
-                            NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel, item, getContext(), apiCallInterface, podcast, token.getValue());
+                            NetworkRequestsUtil.sendMarkAsPlayedRequest(viewModel.getRepository(), getContext(), apiCallInterface, podcast, token.getValue());
                     accountPodcast.observe(getViewLifecycleOwner(), a -> {
                         if (a != null) {
                             this.accountPodcast = a;
